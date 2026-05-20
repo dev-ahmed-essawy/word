@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Duel ⚔️ Real-Time Multiplayer Word Guess</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'neon-blue': '0 0 15px rgba(59, 130, 246, 0.5)',
+                        'neon-emerald': '0 0 15px rgba(16, 185, 129, 0.5)',
+                        'neon-rose': '0 0 15px rgba(244, 63, 94, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+        }
+        .text-neon {
+            text-shadow: 0 0 8px currentColor;
+        }
+        /* Custom scrollbar for guess lists */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white">
+
+    <!-- Top Glow Effect -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-8 relative z-10 w-full max-w-4xl mx-auto">
+        
+        <!-- HEADER -->
+        <header class="text-center mb-6">
+            <h1 class="font-display text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-rose-400 bg-clip-text text-transparent flex items-center justify-center gap-3 drop-shadow-sm">
+                <span>WORD DUEL</span>
+                <span class="text-3xl text-indigo-400 text-neon animate-pulse">⚔️</span>
+            </h1>
+            <p class="text-slate-400 text-xs md:text-sm mt-2 font-medium tracking-wider uppercase">Real-Time Two-Device Word Arena</p>
+        </header>
+
+        <!-- APP SCREENS CONTAINER -->
+        <div id="screen-container" class="w-full bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-800 p-6 md:p-8 shadow-2xl relative min-h-[480px] flex flex-col justify-between">
+            
+            <!-- SCREEN 1: WELCOME SCREEN (CREATE/JOIN) -->
+            <div id="screen-welcome" class="space-y-6 flex flex-col justify-center my-auto">
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl font-bold text-slate-100 font-display">Prepare Your Secret Words</h2>
+                    <p class="text-slate-400 text-sm">Face off head-to-head in a fast-paced live guessing match. Enter your name below to get started.</p>
+                </div>
+
+                <div class="space-y-4 max-w-md mx-auto w-full">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Your Player Name</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input type="text" id="input-player-name" maxlength="15" placeholder="Enter username..." class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- Create Game Card -->
+                        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-blue-500/50 transition-all flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="font-bold text-blue-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-plus-circle"></i> Create Room
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-1">Generate a brand new arena code and host the match.</p>
+                            </div>
+                            <button onclick="handleCreateGame()" id="btn-create-game" class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-blue transition-all flex items-center justify-center gap-2">
+                                <span>Host Duel</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- Join Game Card -->
+                        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-rose-500/50 transition-all flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="font-bold text-rose-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-right-to-bracket"></i> Join Duel
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-1">Already have a code? Enter it below to join the battle.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <input type="text" id="input-join-code" placeholder="Enter Code..." class="w-full text-center bg-slate-950 border border-slate-800 rounded-lg py-2 text-sm tracking-widest font-mono text-rose-400 font-bold uppercase focus:outline-none focus:border-rose-500">
+                                <button onclick="handleJoinGame()" id="btn-join-game" class="w-full py-2 px-4 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-rose transition-all flex items-center justify-center gap-2">
+                                    <span>Enter Arena</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: LOBBY SCREEN (WAITING FOR PLAYER 2) -->
+            <div id="screen-lobby" class="hidden space-y-6 flex flex-col justify-center my-auto text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-500/10 text-blue-400 mb-2 border border-blue-500/20 animate-pulse text-2xl">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </div>
+                
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold font-display">Waiting for a Challenger</h2>
+                    <p class="text-slate-400 text-sm max-w-md mx-auto">Share the room code or send the quick-join URL link to your opponent to begin the game!</p>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 max-w-md mx-auto w-full space-y-3">
+                    <span class="block text-xs font-bold uppercase tracking-widest text-slate-500">Duel Match Code</span>
+                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-lg p-3">
+                        <span id="lobby-code-display" class="font-mono text-2xl font-bold tracking-widest text-blue-400 px-2">-----</span>
+                        <button onclick="copyLobbyCode()" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-xs font-semibold rounded-md transition-all flex items-center gap-1.5 text-slate-200">
+                            <i class="fa-solid fa-copy"></i>
+                            <span id="btn-copy-text">Copy Code</span>
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <button onclick="copyLobbyUrl()" class="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-4 decoration-indigo-400/40 font-medium">
+                            <i class="fa-solid fa-link mr-1"></i> Copy Instant-Join Link
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2 text-slate-500 text-sm">
+                    <i class="fa-solid fa-spinner animate-spin"></i>
+                    <span>Waiting for Player 2 to join...</span>
+                </div>
+            </div>
+
+            <!-- SCREEN 3: ACTIVE GAMEPLAY SCREEN -->
+            <div id="screen-game" class="hidden flex-grow flex flex-col">
+                <!-- Game Scoreboard Bar -->
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-4 font-display">
+                    <!-- Player 1 Status -->
+                    <div id="score-p1-card" class="flex flex-col items-start p-2 rounded-lg transition-all">
+                        <span id="score-p1-name" class="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span> Player 1
+                        </span>
+                        <span id="score-p1-value" class="text-2xl font-bold text-blue-400 tracking-tight">0 <span class="text-xs text-slate-600">pts</span></span>
+                    </div>
+
+                    <!-- Round Info & Global Status -->
+                    <div class="text-center bg-slate-950/80 border border-slate-800/80 rounded-full px-4 py-1.5 flex flex-col items-center">
+                        <span id="game-round-indicator" class="text-xs font-bold uppercase tracking-widest text-indigo-400">Round 1</span>
+                        <span id="game-setter-status" class="text-[10px] text-slate-400 font-medium">P1 Setting Word</span>
+                    </div>
+
+                    <!-- Player 2 Status -->
+                    <div id="score-p2-card" class="flex flex-col items-end p-2 rounded-lg transition-all">
+                        <span id="score-p2-name" class="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
+                            Player 2 <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                        </span>
+                        <span id="score-p2-value" class="text-2xl font-bold text-rose-400 tracking-tight">0 <span class="text-xs text-slate-600">pts</span></span>
+                    </div>
+                </div>
+
+                <!-- GAME CENTRAL PANEL (Changes State dynamically depending on role) -->
+                <div id="game-central-panel" class="flex-grow flex flex-col justify-center py-4 relative">
+                    
+                    <!-- DYNAMIC STATE A: Waiting for Opponent to Set Word -->
+                    <div id="panel-waiting-setter" class="hidden text-center space-y-4 my-auto">
+                        <div class="relative inline-flex">
+                            <span class="absolute inline-flex h-full w-full rounded-full bg-indigo-500/10 animate-ping"></span>
+                            <div class="relative w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl">
+                                <i class="fa-solid fa-keyboard animate-bounce"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="text-xl font-bold text-slate-100">Opponent is choosing a word</h3>
+                            <p class="text-sm text-slate-400">Please stand by. They are locking in the secret code word now...</p>
+                        </div>
+                    </div>
+
+                    <!-- DYNAMIC STATE B: Local Setter - Setup Secret Word -->
+                    <div id="panel-local-setup-word" class="hidden max-w-md mx-auto w-full space-y-4 my-auto">
+                        <div class="text-center space-y-1">
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">Your Turn to Set the Word</span>
+                            <h3 class="text-xl font-bold text-slate-100 font-display">Enter Secret Word</h3>
+                            <p class="text-xs text-slate-400">Enter a single word of at least 2 letters. Your opponent gets 5 chances (15s each) to guess it. The first letter will be revealed.</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="relative">
+                                <input type="text" id="input-secret-word" placeholder="SECRETWORD" class="w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3.5 px-4 text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase placeholder:text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                            </div>
+                            <button onclick="handleLockInSecretWord()" id="btn-lock-word" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-[0.99] font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                                <span>Lock Word & Send Duel ⚡</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DYNAMIC STATE C: Local Setter - Wait for Opponent to Guess -->
+                    <div id="panel-local-setter-watching" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center my-auto">
+                        <div class="space-y-4 text-center md:text-left">
+                            <div class="space-y-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-500">Challenger Turn</span>
+                                <h3 class="text-2xl font-bold font-display">Opponent is guessing!</h3>
+                                <p class="text-sm text-slate-400">They are trying to solve your word. Monitor their progress in real-time.</p>
+                            </div>
+                            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+                                <span class="block text-xs text-slate-500 uppercase font-semibold">Your Locked Word</span>
+                                <span id="display-setter-own-word" class="text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase">-----</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Watch Details -->
+                        <div class="space-y-4">
+                            <!-- Live Timer Display for Setter -->
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+                                <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase">
+                                    <span>Time Left This Chance</span>
+                                    <span id="display-setter-timer-value" class="text-rose-400">15s</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                                    <div id="display-setter-timer-progress" class="h-full bg-gradient-to-r from-blue-500 to-rose-500 transition-all duration-100" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Guess Heart Board -->
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-400 uppercase">Opponent Hearts Left</span>
+                                <div id="display-setter-opponent-hearts" class="flex items-center gap-1.5 text-lg text-rose-500">
+                                    <!-- Dynamic Hearts -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DYNAMIC STATE D: Local Guesser - Guess Active Word Screen -->
+                    <div id="panel-local-guessing" class="hidden grid grid-cols-1 md:grid-cols-5 gap-6 my-auto">
+                        
+                        <!-- Main Arena (3 Cols) -->
+                        <div class="md:col-span-3 space-y-4 flex flex-col justify-center">
+                            <!-- Dynamic Masked Word Presentation -->
+                            <div class="text-center space-y-2">
+                                <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">Guesser Arena</span>
+                                <div id="display-masked-word" class="text-4xl md:text-5xl font-mono font-bold tracking-widest text-slate-100 uppercase p-4 bg-slate-950 border border-slate-800/80 rounded-2xl shadow-inner min-h-[80px] flex items-center justify-center">
+                                    H _ _ _
+                                </div>
+                                <p class="text-xs text-slate-500">Only the first letter is revealed. Guess the correct word!</p>
+                            </div>
+
+                            <!-- Input and Submit -->
+                            <div class="space-y-3">
+                                <div class="relative">
+                                    <input type="text" id="input-guess-word" placeholder="Enter your guess..." class="w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-xl font-bold tracking-wider uppercase placeholder:text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
+                                </div>
+                                <button onclick="handleGuessSubmit()" id="btn-submit-guess" class="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.99] font-bold rounded-xl shadow-neon-rose transition-all flex items-center justify-center gap-2">
+                                    <span>Lock In Guess 🎯</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Panel Status & Hearts (2 Cols) -->
+                        <div class="md:col-span-2 space-y-4">
+                            <!-- Real-Time Sync Countdown Timer -->
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-4 space-y-2">
+                                <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase">
+                                    <span>Chance Timer</span>
+                                    <span id="display-guesser-timer-value" class="text-rose-400 font-bold">15s</span>
+                                </div>
+                                <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden">
+                                    <div id="display-guesser-timer-progress" class="h-full bg-gradient-to-r from-blue-500 to-rose-500 transition-all duration-100" style="width: 100%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Heart Indicator -->
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-400 uppercase">Chances Left</span>
+                                <div id="display-guesser-hearts" class="flex items-center gap-1.5 text-lg text-rose-500">
+                                    <!-- Dynamic Hearts -->
+                                </div>
+                            </div>
+
+                            <!-- Last Guess Note -->
+                            <div id="guess-hint-note" class="text-xs text-center text-slate-500 font-medium">
+                                Fast! Submit inside the 15-second block or lose 1 chance automatically.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- BOTTOM GUESSES TRACKER LIST -->
+                <div id="guesses-tracker-section" class="border-t border-slate-800/80 pt-4 mt-auto">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 flex items-center justify-between">
+                        <span>Duel Turn Log</span>
+                        <span id="display-guesses-counter" class="text-[10px] text-slate-600 font-normal">0/5 chances used</span>
+                    </h4>
+                    <div id="list-guesses" class="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto custom-scroll pr-2 text-xs">
+                        <!-- Dynamic guesses badge logs e.g., "ATTACK (Incorrect)" -->
+                        <div class="text-slate-600 italic">No turns logged yet.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SCREEN 4: ROUND OVER OVERLAY -->
+            <div id="screen-round-outcome" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md rounded-2xl p-6 flex flex-col justify-center items-center text-center space-y-6 z-40">
+                <div id="outcome-animation-container" class="w-20 h-20 rounded-full flex items-center justify-center text-3xl border">
+                    <!-- Dynamic Dynamic Emoji and border colors -->
+                </div>
+                
+                <div class="space-y-2">
+                    <h3 id="outcome-title" class="text-2xl font-bold font-display">Title</h3>
+                    <p id="outcome-desc" class="text-sm text-slate-400 max-w-sm mx-auto">Detailed summary of score results and next phase setup.</p>
+                </div>
+
+                <!-- Reveal hidden word -->
+                <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-xs">
+                    <span class="text-slate-500 block uppercase font-bold tracking-widest text-[10px]">The Secret Word Was</span>
+                    <span id="outcome-word-reveal" class="text-xl font-bold font-mono tracking-widest text-indigo-400 uppercase">WORD</span>
+                </div>
+
+                <div class="w-full max-w-xs">
+                    <button onclick="handleAcknowledgeTurnOutcome()" id="btn-next-turn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-neon-blue">
+                        <span id="btn-next-turn-text">Continue Duel</span>
+                        <i class="fa-solid fa-angles-right text-xs"></i>
+                    </button>
+                    <span id="btn-next-turn-waiting-note" class="text-[10px] text-slate-500 mt-2 block hidden">Waiting for opponent to click continue...</span>
+                </div>
+            </div>
+
+            <!-- SCREEN 5: GAME OVER OVERLAY -->
+            <div id="screen-game-over" class="hidden absolute inset-0 bg-slate-950/98 backdrop-blur-md rounded-2xl p-6 flex flex-col justify-center items-center text-center space-y-6 z-50">
+                <div class="relative">
+                    <div class="text-6xl animate-bounce">🏆</div>
+                    <div class="absolute -top-1 -right-1 text-2xl">✨</div>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-3xl font-bold text-slate-100 font-display">VICTORY BANNER!</h3>
+                    <p id="gameover-winner-announcement" class="text-indigo-400 font-bold tracking-wide text-lg">Player 1 wins the Arena Duel!</p>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto">They reached the target of 5 points first and took the ultimate crown.</p>
+                </div>
+
+                <!-- Final Scoreboard Display -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-around gap-8 w-full max-w-xs font-display">
+                    <div class="text-center">
+                        <span id="gameover-p1-name" class="block text-xs text-slate-500">Player 1</span>
+                        <span id="gameover-p1-score" class="text-2xl font-bold text-blue-400">0</span>
+                    </div>
+                    <div class="text-slate-700 text-lg font-bold">VS</div>
+                    <div class="text-center">
+                        <span id="gameover-p2-name" class="block text-xs text-slate-500">Player 2</span>
+                        <span id="gameover-p2-score" class="text-2xl font-bold text-rose-400">0</span>
+                    </div>
+                </div>
+
+                <button onclick="handleRestartGame()" class="w-full max-w-xs py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-bold rounded-xl transition-all shadow-neon-emerald flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span>Start New Duel</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- NOTIFICATION / TOAST SYSTEM -->
+        <div id="custom-toast-holder" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none">
+            <!-- Dynamic notifications slide-in here -->
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full text-center py-4 text-[11px] text-slate-600 border-t border-slate-900 font-medium">
+        <span>Active Duel Protocol v2.5 • No extra configuration required.</span>
+    </footer>
+
+    <!-- FIREBASE AND CLIENT GAME CONTROLLER LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Variables
+        const urlParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+        const hashRoom = urlParams.get('room');
+        const hashApp = urlParams.get('app');
+        const appId = "word-guess-multiplayer";
+                    
+        const firebaseConfig = {
+          apiKey: "AIzaSyCoKgbRTDl71Ymb-OGtucJGZx8thAAubyU",
+          authDomain: "word-duel-c0158.firebaseapp.com",
+          projectId: "word-duel-c0158",
+          storageBucket: "word-duel-c0158.firebasestorage.app",
+          messagingSenderId: "958370381510",
+          appId: "1:958370381510:web:0a86666be2dff5944ce1c7",
+          measurementId: "G-QY7QKMWV0D"
+        };
+
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Core App & State Variables
+        let currentUserId = null;
+        let currentGameId = null;
+        let gameDataState = null;
+        let gameUnsubscribe = null;
+        let localPlayerRole = null; // 'player1' or 'player2'
+        let countdownTimerInterval = null;
+        let lastLoggedTimerValue = 15;
+        let isLocalTimeoutUpdating = false;
+
+        // Custom Sound Synthesizer using AudioContext (Eliminates external assets)
+        const soundEffects = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playTick() {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            },
+            playTimerWarning() {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.15);
+            },
+            playSuccess() {
+                this.init();
+                const now = this.ctx.currentTime;
+                // Double beep arpeggio
+                [523.25, 659.25, 783.99].forEach((freq, index) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.1);
+                    gain.gain.setValueAtTime(0.1, now + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.1 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + index * 0.1);
+                    osc.stop(now + index * 0.1 + 0.2);
+                });
+            },
+            playFailure() {
+                this.init();
+                const now = this.ctx.currentTime;
+                // Descending frequency buzz
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.4);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            },
+            playGameStart() {
+                this.init();
+                const now = this.ctx.currentTime;
+                [440, 554, 659, 880].forEach((freq, index) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.08);
+                    gain.gain.setValueAtTime(0.08, now + index * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.3);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + index * 0.08);
+                    osc.stop(now + index * 0.08 + 0.3);
+                });
+            }
+        };
+
+        // UI Toast Messages helper
+        window.showToast = function(message, type = 'info') {
+            const toastHolder = document.getElementById('custom-toast-holder');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-slate-900 border-slate-800 text-slate-100';
+            let iconClass = 'fa-info-circle text-blue-400';
+            if (type === 'success') {
+                bgClass = 'bg-slate-900 border-emerald-950 text-slate-100';
+                iconClass = 'fa-check-circle text-emerald-400';
+            } else if (type === 'error') {
+                bgClass = 'bg-slate-900 border-rose-950 text-slate-100';
+                iconClass = 'fa-times-circle text-rose-400';
+            } else if (type === 'warning') {
+                bgClass = 'bg-slate-900 border-amber-950 text-slate-100';
+                iconClass = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `${bgClass} border p-4 rounded-xl flex items-center gap-3 shadow-lg pointer-events-auto transition-all duration-300 transform translate-x-12 opacity-0`;
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-lg shrink-0"></i>
+                <span class="text-xs font-semibold">${message}</span>
+            `;
+            
+            toastHolder.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-x-12', 'opacity-0');
+            }, 50);
+
+            // Remove automatically
+            setTimeout(() => {
+                toast.classList.add('translate-x-12', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3500);
+        };
+
+        // Initialize Session authentication with robust fallback
+        async function authenticateUser() {
+            if (auth.currentUser) {
+                currentUserId = auth.currentUser.uid;
+                return;
+            }
+
+            // Try custom token first
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try {
+                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUserId = userCredential.user.uid;
+                    console.log("Authenticated successfully with Custom Token.");
+                    return;
+                } catch (err) {
+                    console.warn("Custom token rejected or expired, falling back to Anonymous authentication:", err);
+                }
+            }
+
+            // Fallback to anonymous
+            try {
+                const userCredential = await signInAnonymously(auth);
+                currentUserId = userCredential.user.uid;
+                console.log("Authenticated successfully via Anonymous Auth.");
+            } catch (err) {
+                console.error("Authentication complete failure: ", err);
+                showToast("Could not connect securely. Retrying...", "error");
+            }
+        }
+
+        // Generate clean random 5-letter game key
+        function generateId(length = 5) {
+            const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Removed easily confused characters
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += letters.charAt(Math.floor(Math.random() * letters.length));
+            }
+            return result;
+        }
+
+        // Clean user's name input
+        function getPlayerName() {
+            const val = document.getElementById('input-player-name').value.trim();
+            return val ? val : "Player " + generateId(3);
+        }
+
+        window.handleCreateGame = async function() {
+            const hostName = getPlayerName();
+            await authenticateUser();
+            
+            if (!auth.currentUser) {
+                showToast("Sign-in process failed. Please refresh.", "error");
+                return;
+            }
+
+            currentUserId = auth.currentUser.uid;
+            const generatedCode = generateId(5);
+            currentGameId = generatedCode;
+
+            const initialGameDoc = {
+                id: generatedCode,
+                status: 'lobby',
+                player1: {
+                    uid: currentUserId,
+                    name: hostName,
+                    score: 0,
+                    acknowledgedOutcome: false
+                },
+                player2: null,
+                currentRound: 1,
+                currentSetter: 'player1', // Round 1 starts with player1 setting
+                secretWord: '',
+                secretWordSubmitted: false,
+                chancesLeft: 5,
+                guesses: [],
+                timerStart: null,
+                timerActive: false,
+                turnOutcome: 'none', // 'none', 'guessed', 'failed'
+                lastAction: `Match created by ${hostName}!`,
+                createdAt: Date.now()
+            };
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', generatedCode);
+                await setDoc(docRef, initialGameDoc);
+                
+                // Track hash for easy links
+                window.location.hash = `room=${generatedCode}&app=${appId}`;
+                subscribeToGame(generatedCode);
+                soundEffects.playGameStart();
+                showToast("Game Room Generated!", "success");
+            } catch (error) {
+                console.error("Firestore creation error: ", error);
+                showToast("Could not establish lobby.", "error");
+            }
+        };
+
+        window.handleJoinGame = async function() {
+            const enteredCode = document.getElementById('input-join-code').value.trim().toUpperCase();
+            if (!enteredCode) {
+                showToast("Please enter a 5-letter Room Code first.", "warning");
+                return;
+            }
+
+            const guestName = getPlayerName();
+            await authenticateUser();
+            
+            if (!auth.currentUser) {
+                showToast("Authentication failed. Please check internet connection.", "error");
+                return;
+            }
+
+            currentUserId = auth.currentUser.uid;
+            currentGameId = enteredCode;
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', enteredCode);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    showToast("No active room found with this code.", "error");
+                    return;
+                }
+
+                const data = docSnap.data();
+                if (data.status !== 'lobby' && data.player2 && data.player2.uid !== currentUserId) {
+                    showToast("This Room is already full.", "error");
+                    return;
+                }
+
+                // If joining back to a game you created
+                if (data.player1.uid === currentUserId) {
+                    subscribeToGame(enteredCode);
+                    showToast("Welcome back to your room!", "success");
+                    return;
+                }
+
+                // Update room to join as player2
+                await updateDoc(docRef, {
+                    player2: {
+                        uid: currentUserId,
+                        name: guestName,
+                        score: 0,
+                        acknowledgedOutcome: false
+                    },
+                    status: 'playing',
+                    lastAction: `${guestName} entered the game!`
+                });
+
+                window.location.hash = `room=${enteredCode}&app=${appId}`;
+                subscribeToGame(enteredCode);
+                soundEffects.playGameStart();
+                showToast("Successfully joined room!", "success");
+
+            } catch (error) {
+                console.error("Firestore joining error: ", error);
+                showToast("Failed to join. Verify your connection or room code.", "error");
+            }
+        };
+
+        // Copy actions
+        window.copyLobbyCode = function() {
+            if (!currentGameId) return;
+            const el = document.createElement('textarea');
+            el.value = currentGameId;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const btnText = document.getElementById('btn-copy-text');
+            btnText.innerText = "Copied!";
+            setTimeout(() => {
+                btnText.innerText = "Copy Code";
+            }, 1500);
+            showToast("Room code copied to clipboard", "success");
+        };
+
+        window.copyLobbyUrl = function() {
+            if (!currentGameId) return;
+            const joinLink = window.location.origin + window.location.pathname + `#room=${currentGameId}&app=${appId}`;
+            const el = document.createElement('textarea');
+            el.value = joinLink;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("Quick Join link copied to clipboard", "success");
+        };
+
+        // Hook game engine on Firestore listener updates
+        function subscribeToGame(gameId) {
+            if (gameUnsubscribe) {
+                gameUnsubscribe();
+            }
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', gameId);
+            gameUnsubscribe = onSnapshot(docRef, (docSnap) => {
+                if (!docSnap.exists()) {
+                    showToast("The Room has been closed or removed.", "error");
+                    resetToWelcomeScreen();
+                    return;
+                }
+
+                const data = docSnap.data();
+                gameDataState = data;
+                processGameUpdate();
+            }, (error) => {
+                console.error("Snapshot error callback: ", error);
+                showToast("Real-time match updates interrupted.", "error");
+            });
+        }
+
+        function resetToWelcomeScreen() {
+            if (gameUnsubscribe) {
+                gameUnsubscribe();
+                gameUnsubscribe = null;
+            }
+            clearInterval(countdownTimerInterval);
+            currentGameId = null;
+            gameDataState = null;
+            localPlayerRole = null;
+            window.location.hash = "";
+            
+            document.getElementById('screen-welcome').classList.remove('hidden');
+            document.getElementById('screen-lobby').classList.add('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-round-outcome').classList.add('hidden');
+            document.getElementById('screen-game-over').classList.add('hidden');
+        }
+
+        function processGameUpdate() {
+            const data = gameDataState;
+            
+            // Assign roles
+            if (currentUserId === data.player1.uid) {
+                localPlayerRole = 'player1';
+            } else if (data.player2 && currentUserId === data.player2.uid) {
+                localPlayerRole = 'player2';
+            } else {
+                localPlayerRole = null;
+            }
+
+            // Route between game screens depending on status
+            if (data.status === 'lobby') {
+                showLobbyScreen(data);
+            } else if (data.status === 'playing' || data.status === 'turnover' || data.status === 'gameover') {
+                showGameScreen(data);
+            }
+        }
+
+        function showLobbyScreen(data) {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-lobby').classList.remove('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('lobby-code-display').innerText = data.id;
+        }
+
+        function showGameScreen(data) {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-lobby').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+
+            // 1. Update Board Names & Scores
+            const p1 = data.player1;
+            const p2 = data.player2 || { name: 'Joining...', score: 0 };
+
+            document.getElementById('score-p1-name').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block mr-1"></span> ${p1.name}`;
+            document.getElementById('score-p1-value').innerHTML = `${p1.score} <span class="text-xs text-slate-500">pts</span>`;
+            document.getElementById('score-p2-name').innerHTML = `${p2.name} <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block ml-1"></span>`;
+            document.getElementById('score-p2-value').innerHTML = `${p2.score} <span class="text-xs text-slate-500">pts</span>`;
+
+            // Style scoreboard active states
+            const activeSetter = data.currentSetter; // 'player1' or 'player2'
+            if (activeSetter === 'player1') {
+                document.getElementById('score-p1-card').className = "flex flex-col items-start p-2.5 bg-slate-950 rounded-xl border border-blue-500/20";
+                document.getElementById('score-p2-card').className = "flex flex-col items-end p-2.5 opacity-40";
+                document.getElementById('game-setter-status').innerText = `${p1.name} Setting`;
+            } else {
+                document.getElementById('score-p1-card').className = "flex flex-col items-start p-2.5 opacity-40";
+                document.getElementById('score-p2-card').className = "flex flex-col items-end p-2.5 bg-slate-950 rounded-xl border border-rose-500/20";
+                document.getElementById('game-setter-status').innerText = `${p2.name} Setting`;
+            }
+
+            document.getElementById('game-round-indicator').innerText = `ROUND ${data.currentRound}`;
+
+            // 2. Clear out sub-panels before enabling the active state
+            document.getElementById('panel-waiting-setter').classList.add('hidden');
+            document.getElementById('panel-local-setup-word').classList.add('hidden');
+            document.getElementById('panel-local-setter-watching').classList.add('hidden');
+            document.getElementById('panel-local-guessing').classList.add('hidden');
+
+            const isCurrentPlayerSetter = (localPlayerRole === activeSetter);
+
+            // Turn Sub-States Logic
+            if (!data.secretWordSubmitted) {
+                // Word is not submitted yet
+                clearInterval(countdownTimerInterval); // Halt timers
+                if (isCurrentPlayerSetter) {
+                    document.getElementById('panel-local-setup-word').classList.remove('hidden');
+                } else {
+                    document.getElementById('panel-waiting-setter').classList.remove('hidden');
+                }
+            } else {
+                // Secret Word has been configured! Guess Arena is Live
+                if (isCurrentPlayerSetter) {
+                    // Watch screen for setter
+                    document.getElementById('panel-local-setter-watching').classList.remove('hidden');
+                    document.getElementById('display-setter-own-word').innerText = atob(data.secretWord);
+                    renderHearts('display-setter-opponent-hearts', data.chancesLeft);
+                } else {
+                    // Guess input active screen for guesser
+                    document.getElementById('panel-local-guessing').classList.remove('hidden');
+                    const rawWord = atob(data.secretWord);
+                    document.getElementById('display-masked-word').innerText = getMaskedWordPresentation(rawWord);
+                    renderHearts('display-guesser-hearts', data.chancesLeft);
+                }
+
+                // Handle synchronized real-time countdown clocks
+                if (data.timerActive) {
+                    startOrSyncTurnTimer(data);
+                }
+            }
+
+            // 3. Populate Turn Guess list log at the bottom
+            populateGuessesList(data.guesses, data.chancesLeft);
+
+            // 4. Overlap screens for round outcome overlay
+            const outcomeScreen = document.getElementById('screen-round-outcome');
+            if (data.turnOutcome !== 'none') {
+                clearInterval(countdownTimerInterval);
+                displayRoundOutcome(data);
+                outcomeScreen.classList.remove('hidden');
+            } else {
+                outcomeScreen.classList.add('hidden');
+            }
+
+            // 5. Overall match finished win-condition overlays (5 targets)
+            const gameOverScreen = document.getElementById('screen-game-over');
+            if (p1.score >= 5 || p2.score >= 5) {
+                clearInterval(countdownTimerInterval);
+                displayMatchOver(data, p1, p2);
+                gameOverScreen.classList.remove('hidden');
+            } else {
+                gameOverScreen.classList.add('hidden');
+            }
+        }
+
+        // Render remaining health heart UI
+        function renderHearts(containerId, count) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const heart = document.createElement('i');
+                if (i < count) {
+                    heart.className = "fa-solid fa-heart text-rose-500 animate-pulse";
+                } else {
+                    heart.className = "fa-regular fa-heart text-slate-800";
+                }
+                container.appendChild(heart);
+            }
+        }
+
+        // Generate string e.g. "H * * *"
+        function getMaskedWordPresentation(word) {
+            if (!word) return "";
+            const charArray = word.split('');
+            return charArray[0] + " " + "_ ".repeat(charArray.length - 1);
+        }
+
+        // Populates the round log table safely
+        function populateGuessesList(guesses, chancesLeft) {
+            const container = document.getElementById('list-guesses');
+            document.getElementById('display-guesses-counter').innerText = `${5 - chancesLeft}/5 chances used`;
+
+            if (!guesses || guesses.length === 0) {
+                container.innerHTML = '<div class="text-slate-600 italic">No previous guesses submitted this chance.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            // Loop in reverse to keep newest guesses visible first
+            for (let i = guesses.length - 1; i >= 0; i--) {
+                const item = guesses[i];
+                const badge = document.createElement('div');
+                badge.className = "px-2.5 py-1 rounded bg-slate-950 border border-slate-800 flex items-center gap-1.5 shrink-0";
+                
+                if (item.correct) {
+                    badge.classList.add('border-emerald-950');
+                    badge.innerHTML = `<span class="font-mono text-emerald-400 font-bold uppercase">${item.guess}</span> <i class="fa-solid fa-check text-emerald-500 text-[10px]"></i>`;
+                } else if (item.guess === '[TIMEOUT]') {
+                    badge.classList.add('border-rose-950');
+                    badge.innerHTML = `<span class="font-mono text-rose-400 font-bold uppercase italic">[TIMEOUT]</span> <i class="fa-solid fa-hourglass-end text-rose-500 text-[10px]"></i>`;
+                } else {
+                    badge.innerHTML = `<span class="font-mono text-slate-400 uppercase line-through">${item.guess}</span> <i class="fa-solid fa-xmark text-rose-500 text-[10px]"></i>`;
+                }
+                container.appendChild(badge);
+            }
+        }
+
+        function startOrSyncTurnTimer(data) {
+            clearInterval(countdownTimerInterval);
+            isLocalTimeoutUpdating = false;
+
+            const timerTick = () => {
+                const elapsedMs = Date.now() - data.timerStart;
+                const totalAllowed = 15000;
+                const timeLeftSec = Math.max(0, Math.ceil((totalAllowed - elapsedMs) / 1000));
+                const percentage = Math.max(0, ((totalAllowed - elapsedMs) / totalAllowed) * 100);
+
+                // Update UI Bars for BOTH Setter & Guesser
+                const setProgress = document.getElementById('display-setter-timer-progress');
+                const setVal = document.getElementById('display-setter-timer-value');
+                const guessProgress = document.getElementById('display-guesser-timer-progress');
+                const guessVal = document.getElementById('display-guesser-timer-value');
+
+                if (setProgress) setProgress.style.width = `${percentage}%`;
+                if (setVal) {
+                    setVal.innerText = `${timeLeftSec}s`;
+                    if (timeLeftSec <= 3) {
+                        setVal.className = "text-rose-500 animate-pulse font-extrabold";
+                    } else {
+                        setVal.className = "text-amber-500";
+                    }
+                }
+
+                if (guessProgress) guessProgress.style.width = `${percentage}%`;
+                if (guessVal) {
+                    guessVal.innerText = `${timeLeftSec}s`;
+                    if (timeLeftSec <= 3) {
+                        guessVal.className = "text-rose-500 animate-pulse font-extrabold";
+                    } else {
+                        guessVal.className = "text-amber-500";
+                    }
+                }
+
+                // Sound ticks
+                if (timeLeftSec !== lastLoggedTimerValue) {
+                    lastLoggedTimerValue = timeLeftSec;
+                    if (timeLeftSec <= 4 && timeLeftSec > 0) {
+                        soundEffects.playTimerWarning();
+                    } else if (timeLeftSec > 0) {
+                        soundEffects.playTick();
+                    }
+                }
+
+                // Check for Timeout
+                if (timeLeftSec <= 0 && !isLocalTimeoutUpdating) {
+                    clearInterval(countdownTimerInterval);
+                    isLocalTimeoutUpdating = true;
+                    
+                    // Only the guesser processes their own timeouts to prevent write racing/conflicts
+                    const activeGuesser = (data.currentSetter === 'player1') ? 'player2' : 'player1';
+                    if (localPlayerRole === activeGuesser) {
+                        triggerLocalTimerTimeout();
+                    }
+                }
+            };
+
+            // Run right away, then loop on interval
+            timerTick();
+            countdownTimerInterval = setInterval(timerTick, 100);
+        }
+
+        async function triggerLocalTimerTimeout() {
+            if (!currentGameId || !gameDataState) return;
+            
+            const currentGuesses = [...gameDataState.guesses];
+            currentGuesses.push({
+                guess: '[TIMEOUT]',
+                correct: false,
+                timestamp: Date.now()
+            });
+
+            const nextChances = gameDataState.chancesLeft - 1;
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            soundEffects.playFailure();
+            showToast("Timer Expired! Chance Lost.", "error");
+
+            try {
+                if (nextChances <= 0) {
+                    // Guesser has lost all 5 chances -> Setter gets 1 point
+                    const activeSetter = gameDataState.currentSetter;
+                    const p1OutcomeScore = gameDataState.player1.score + (activeSetter === 'player1' ? 1 : 0);
+                    const p2OutcomeScore = (gameDataState.player2?.score || 0) + (activeSetter === 'player2' ? 1 : 0);
+
+                    await updateDoc(docRef, {
+                        chancesLeft: 0,
+                        guesses: currentGuesses,
+                        timerActive: false,
+                        turnOutcome: 'failed',
+                        'player1.score': p1OutcomeScore,
+                        'player2.score': p2OutcomeScore,
+                        lastAction: `Chance failed. ${activeSetter === 'player1' ? gameDataState.player1.name : gameDataState.player2.name} earns +1 Point!`
+                    });
+                } else {
+                    // Lose 1 chance and reset the timer
+                    await updateDoc(docRef, {
+                        chancesLeft: nextChances,
+                        guesses: currentGuesses,
+                        timerStart: Date.now(), // fresh 15s reset
+                        lastAction: "Seconds expired! 1 chance forfeited."
+                    });
+                }
+            } catch (error) {
+                console.error("Timeout updating error: ", error);
+            } finally {
+                isLocalTimeoutUpdating = false;
+            }
+        }
+
+        // Handle locked-in secret word submissions
+        window.handleLockInSecretWord = async function() {
+            const inputEl = document.getElementById('input-secret-word');
+            const cleanWord = inputEl.value.trim().toUpperCase();
+
+            // Word rules validation
+            if (!cleanWord || cleanWord.length < 2) {
+                showToast("Word must have at least 2 characters.", "warning");
+                return;
+            }
+            if (/\s/.test(cleanWord)) {
+                showToast("The secret word cannot contain space characters.", "warning");
+                return;
+            }
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+            
+            try {
+                // Obfuscate using base64 representation
+                const b64Secret = btoa(cleanWord);
+
+                await updateDoc(docRef, {
+                    secretWord: b64Secret,
+                    secretWordSubmitted: true,
+                    chancesLeft: 5,
+                    guesses: [],
+                    timerStart: Date.now(),
+                    timerActive: true,
+                    lastAction: `${localPlayerRole === 'player1' ? gameDataState.player1.name : gameDataState.player2.name} locked the word!`
+                });
+
+                inputEl.value = ''; // Clean input
+                showToast("Secret Word locked! Let the duel begin.", "success");
+            } catch (error) {
+                console.error("Word Locking Error: ", error);
+                showToast("Could not send word.", "error");
+            }
+        };
+
+        window.handleGuessSubmit = async function() {
+            const inputEl = document.getElementById('input-guess-word');
+            const rawGuess = inputEl.value.trim().toUpperCase();
+
+            if (!rawGuess) {
+                showToast("Please write down your guess first.", "warning");
+                return;
+            }
+
+            const data = gameDataState;
+            const actualWord = atob(data.secretWord);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            const isCorrect = (rawGuess === actualWord);
+            const updatedGuesses = [...data.guesses];
+            updatedGuesses.push({
+                guess: rawGuess,
+                correct: isCorrect,
+                timestamp: Date.now()
+            });
+
+            try {
+                if (isCorrect) {
+                    // Guesser won the turn! Guesser gets 1 point
+                    const activeGuesser = (data.currentSetter === 'player1') ? 'player2' : 'player1';
+                    const p1OutcomeScore = data.player1.score + (activeGuesser === 'player1' ? 1 : 0);
+                    const p2OutcomeScore = (data.player2?.score || 0) + (activeGuesser === 'player2' ? 1 : 0);
+
+                    soundEffects.playSuccess();
+                    await updateDoc(docRef, {
+                        guesses: updatedGuesses,
+                        timerActive: false,
+                        turnOutcome: 'guessed',
+                        'player1.score': p1OutcomeScore,
+                        'player2.score': p2OutcomeScore,
+                        lastAction: `Success! Word guessed correctly by ${activeGuesser === 'player1' ? data.player1.name : data.player2.name}!`
+                    });
+
+                    inputEl.value = '';
+                    showToast("Excellent! Word Solved.", "success");
+
+                } else {
+                    // Wrong Guess -> Subtract a heart
+                    const nextChances = data.chancesLeft - 1;
+                    soundEffects.playFailure();
+
+                    if (nextChances <= 0) {
+                        // Setter gets 1 point
+                        const activeSetter = data.currentSetter;
+                        const p1OutcomeScore = data.player1.score + (activeSetter === 'player1' ? 1 : 0);
+                        const p2OutcomeScore = (data.player2?.score || 0) + (activeSetter === 'player2' ? 1 : 0);
+
+                        await updateDoc(docRef, {
+                            chancesLeft: 0,
+                            guesses: updatedGuesses,
+                            timerActive: false,
+                            turnOutcome: 'failed',
+                            'player1.score': p1OutcomeScore,
+                            'player2.score': p2OutcomeScore,
+                            lastAction: `Match over. Word was too tough. ${activeSetter === 'player1' ? data.player1.name : data.player2.name} gains +1 Point!`
+                        });
+                    } else {
+                        // Regular incorrect try. Reset timer back to 15s for the next chance.
+                        await updateDoc(docRef, {
+                            chancesLeft: nextChances,
+                            guesses: updatedGuesses,
+                            timerStart: Date.now(), // Reset 15 seconds timer
+                            lastAction: `Wrong guess of: ${rawGuess}`
+                        });
+                        showToast("Incorrect word. Try again!", "error");
+                    }
+
+                    inputEl.value = '';
+                }
+
+            } catch (error) {
+                console.error("Guess process exception: ", error);
+                showToast("Could not submit the guess attempt.", "error");
+            }
+        };
+
+        // Render dynamic visual feedback elements after each round turns
+        function displayRoundOutcome(data) {
+            const avatar = document.getElementById('outcome-animation-container');
+            const title = document.getElementById('outcome-title');
+            const desc = document.getElementById('outcome-desc');
+            const reveal = document.getElementById('outcome-word-reveal');
+            const nextBtnText = document.getElementById('btn-next-turn-text');
+            const nextBtnWaiting = document.getElementById('btn-next-turn-waiting-note');
+
+            reveal.innerText = atob(data.secretWord);
+
+            // Determine winner details
+            const setterName = (data.currentSetter === 'player1') ? data.player1.name : (data.player2?.name || 'P2');
+            const guesserName = (data.currentSetter === 'player1') ? (data.player2?.name || 'P2') : data.player1.name;
+
+            if (data.turnOutcome === 'guessed') {
+                avatar.innerHTML = '🎯';
+                avatar.className = "w-20 h-20 rounded-full flex items-center justify-center text-4xl border border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-neon-emerald";
+                title.innerText = "Word Solved!";
+                title.className = "text-2xl font-bold font-display text-emerald-400";
+                desc.innerText = `${guesserName} cracked the secret code word successfully and earned +1 Point.`;
+            } else if (data.turnOutcome === 'failed') {
+                avatar.innerHTML = '☠️';
+                avatar.className = "w-20 h-20 rounded-full flex items-center justify-center text-4xl border border-rose-500 bg-rose-500/10 text-rose-400 shadow-neon-rose";
+                title.innerText = "Word Failed!";
+                title.className = "text-2xl font-bold font-display text-rose-400";
+                desc.innerText = `${guesserName} ran out of chances! ${setterName} wins the turn and gets +1 Point.`;
+            }
+
+            // Acknowledge logic to proceed to next turn
+            // If the local player has already acknowledged, change button look
+            const userAcked = (localPlayerRole === 'player1') ? data.player1.acknowledgedOutcome : (data.player2?.acknowledgedOutcome || false);
+            if (userAcked) {
+                nextBtnText.innerText = "Ready, waiting for other...";
+                nextBtnWaiting.classList.remove('hidden');
+                document.getElementById('btn-next-turn').className = "w-full py-3 bg-slate-800 text-slate-500 font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-2";
+            } else {
+                nextBtnText.innerText = "Ready for Next Turn";
+                nextBtnWaiting.classList.add('hidden');
+                document.getElementById('btn-next-turn').className = "w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-neon-blue";
+            }
+        }
+
+        // Handle continuation acknowledge actions
+        window.handleAcknowledgeTurnOutcome = async function() {
+            if (!currentGameId || !gameDataState) return;
+
+            const data = gameDataState;
+            // Guard to make sure you can't double click
+            const userAcked = (localPlayerRole === 'player1') ? data.player1.acknowledgedOutcome : (data.player2?.acknowledgedOutcome || false);
+            if (userAcked) return;
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            try {
+                const updatePayload = {};
+                if (localPlayerRole === 'player1') {
+                    updatePayload['player1.acknowledgedOutcome'] = true;
+                } else if (localPlayerRole === 'player2') {
+                    updatePayload['player2.acknowledgedOutcome'] = true;
+                }
+
+                await updateDoc(docRef, updatePayload);
+
+                // Re-fetch local context simulation to determine if both players are ready
+                const freshSnap = await getDoc(docRef);
+                const freshData = freshSnap.data();
+
+                if (freshData.player1.acknowledgedOutcome && freshData.player2.acknowledgedOutcome) {
+                    // Both have clicked! Transition to the next turn (reversed setter roles)
+                    const nextRound = freshData.currentRound + 1;
+                    const nextSetter = (freshData.currentSetter === 'player1') ? 'player2' : 'player1';
+
+                    await updateDoc(docRef, {
+                        currentRound: nextRound,
+                        currentSetter: nextSetter,
+                        secretWord: '',
+                        secretWordSubmitted: false,
+                        chancesLeft: 5,
+                        guesses: [],
+                        timerStart: null,
+                        timerActive: false,
+                        turnOutcome: 'none',
+                        'player1.acknowledgedOutcome': false,
+                        'player2.acknowledgedOutcome': false,
+                        lastAction: `Round ${nextRound} initialized! Setter is now ${nextSetter === 'player1' ? freshData.player1.name : freshData.player2.name}.`
+                    });
+                }
+
+            } catch (error) {
+                console.error("Continuation exception: ", error);
+                showToast("Failed to acknowledge next round.", "error");
+            }
+        };
+
+        // Render visual final result panels
+        function displayMatchOver(data, p1, p2) {
+            const banner = document.getElementById('gameover-winner-announcement');
+            const isP1Winner = p1.score >= 5;
+            const winnerName = isP1Winner ? p1.name : p2.name;
+
+            banner.innerText = `👑 ${winnerName} Wins the Arena!`;
+
+            document.getElementById('gameover-p1-name').innerText = p1.name;
+            document.getElementById('gameover-p1-score').innerText = p1.score;
+            document.getElementById('gameover-p2-name').innerText = p2.name;
+            document.getElementById('gameover-p2-score').innerText = p2.score;
+        }
+
+        window.handleRestartGame = async function() {
+            if (!currentGameId || !gameDataState) return;
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            try {
+                // Clear state, scores and restart match
+                await updateDoc(docRef, {
+                    status: 'playing',
+                    currentRound: 1,
+                    currentSetter: 'player1',
+                    secretWord: '',
+                    secretWordSubmitted: false,
+                    chancesLeft: 5,
+                    guesses: [],
+                    timerStart: null,
+                    timerActive: false,
+                    turnOutcome: 'none',
+                    'player1.score': 0,
+                    'player1.acknowledgedOutcome': false,
+                    'player2.score': 0,
+                    'player2.acknowledgedOutcome': false,
+                    lastAction: "A brand new arena has been requested! Match Reset!"
+                });
+
+                showToast("Arena Reset! Play again.", "success");
+            } catch (error) {
+                console.error("Restart exception: ", error);
+                showToast("Could not restart arena session.", "error");
+            }
+        };
+
+        // Parsing hash parameter updates securely
+        function parseHash() {
+            const hash = window.location.hash.substring(1); // remove '#'
+            if (!hash) return { room: null, app: null };
+            if (hash.includes('=')) {
+                // It's a query string format: e.g. room=ABCDE&app=xyz
+                const params = new URLSearchParams(hash);
+                return {
+                    room: params.get('room'),
+                    app: params.get('app')
+                };
+            } else {
+                // It's a plain code format: e.g. ABCDE
+                return { room: hash, app: null };
+            }
+        }
+
+        // Page auto-join hook helper
+        window.onload = async function() {
+            // Pre-authenticate the user immediately so any join/host actions are seamless
+            await authenticateUser();
+
+            const parsed = parseHash();
+            if (parsed.room && parsed.room.length === 5) {
+                document.getElementById('input-join-code').value = parsed.room;
+                showToast(`Auto-filled Duel Room: ${parsed.room}`, "info");
+            }
+        };
+
+    </script>
+</body>
+</html>
