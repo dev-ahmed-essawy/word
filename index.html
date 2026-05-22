@@ -931,7 +931,7 @@
         function getMaskedWordPresentation(word) {
             if (!word) return "";
             const charArray = word.split('');
-            return charArray[0] + " " + "_ ".repeat(charArray.length - 1);
+            return charArray[0] + charArray[1] + " " + "_ ".repeat(charArray.length - 2);
         }
 
         // Populates the round log table safely
