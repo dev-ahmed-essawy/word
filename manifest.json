@@ -3,7 +3,7 @@
   "short_name": "Word Duel",
   "description": "Live Word Guessing Arena Game",
   "start_url": "./",
-  "scope": "/word/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#020617",
@@ -17,7 +17,7 @@
     {
       "src": "images/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
