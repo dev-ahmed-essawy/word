@@ -216,6 +216,9 @@
                         <div class="space-y-3">
                             <div class="relative">
                                 <input type="text" id="input-secret-word" placeholder="SECRETWORD" class="w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3.5 px-4 text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase placeholder:text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <button onclick="handleAISuggestWord(event)" class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-400 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1" title="Get a random word suggestion">
+                                    ✨ AI Idea
+                                </button>
                             </div>
                             <button onclick="handleLockInSecretWord()" id="btn-lock-word" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-[0.99] font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
                                 <span>Lock Word & Send Duel ⚡</span>
@@ -272,6 +275,11 @@
                                     H _ _ _
                                 </div>
                                 <p class="text-xs text-slate-500">Only the first letter is revealed. Guess the correct word!</p>
+                                
+                                <!-- AI Hint Box -->
+                                <div id="ai-hint-container" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-xl hidden text-sm text-indigo-300 italic font-medium shadow-inner">
+                                </div>
+                                <button onclick="handleRequestHint()" id="btn-request-hint" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300 font-bold transition-all">✨ Get AI Hint (-5s Penalty)</button>
                             </div>
 
                             <!-- Input and Submit -->
@@ -637,6 +645,8 @@
                 currentSetter: 'player1', // Round 1 starts with player1 setting
                 secretWord: '',
                 secretWordSubmitted: false,
+                hintUsed: false,
+                geminiHint: '',
                 chancesLeft: 5,
                 guesses: [],
                 timerStart: null,
@@ -880,6 +890,20 @@
                     const rawWord = atob(data.secretWord);
                     document.getElementById('display-masked-word').innerText = getMaskedWordPresentation(rawWord);
                     renderHearts('display-guesser-hearts', data.chancesLeft);
+
+                    // Show/hide AI hint
+                    const hintContainer = document.getElementById('ai-hint-container');
+                    const btnRequestHint = document.getElementById('btn-request-hint');
+                    if (data.hintUsed && data.geminiHint) {
+                        hintContainer.innerText = `✨ ${data.geminiHint}`;
+                        hintContainer.classList.remove('hidden');
+                        btnRequestHint.classList.add('hidden');
+                    } else {
+                        hintContainer.classList.add('hidden');
+                        hintContainer.innerText = '';
+                        btnRequestHint.classList.remove('hidden');
+                        btnRequestHint.innerText = "✨ Get AI Hint (-5s Penalty)";
+                    }
                 }
 
                 // Handle synchronized real-time countdown clocks
@@ -963,6 +987,184 @@
                 container.appendChild(badge);
             }
         }
+
+        // --- NEW GEMINI AI FEATURES (FIXED & ENHANCED WITH INTERNAL DICTIONARY) ---
+        
+        // Comprehensive Internal Dictionary to reduce API load and provide instant responses
+        const INTERNAL_DICTIONARY = {
+            "APPLE": "A crunchy red or green fruit.",
+            "OCEAN": "A vast salty body of water.",
+            "FIRE": "It provides warmth but burns.",
+            "TIME": "It flows and never stops.",
+            "GALAXY": "A massive system of stars and planets.",
+            "PUZZLE": "A game that tests your ingenuity.",
+            "GUITAR": "A stringed instrument played by strumming.",
+            "RHYTHM": "A strong, regular, repeated pattern of sound.",
+            "CASTLE": "A large building fortified against attack.",
+            "SHADOW": "A dark area produced by a body blocking light.",
+            "BREEZE": "A gentle, refreshing wind.",
+            "CACTUS": "A spiky plant native to arid desert regions.",
+            "MYSTIC": "Relating to ancient mysteries or the occult.",
+            "QUARTZ": "A hard glossy mineral often used in watches.",
+            "ROCKET": "A vehicle designed for space travel.",
+            "PLANET": "A celestial body orbiting a star.",
+            "FOREST": "A large area covered chiefly with trees.",
+            "DRAGON": "A mythical monster resembling a giant reptile.",
+            "PIRATE": "A person who attacks and robs ships at sea.",
+            "NINJA": "A stealthy warrior skilled in espionage.",
+            "ROBOT": "A machine capable of carrying out complex actions.",
+            "ALIEN": "A creature from outer space.",
+            "GHOST": "An apparition of a dead person.",
+            "MAGIC": "Supernatural forces used to influence events.",
+            "SWORD": "A weapon with a long, sharp metal blade.",
+            "SHIELD": "A broad piece of armor held for protection.",
+            "POTION": "A liquid with healing or magical properties.",
+            "SPELL": "Words used as a magical charm or incantation.",
+            "CROWN": "An ornamental headdress worn by a monarch.",
+            "KNIGHT": "A mounted soldier in armor.",
+            "EAGLE": "A large bird of prey with a massive hooked bill.",
+            "TIGER": "A very large solitary cat with dark stripes.",
+            "LION": "A large tawny-colored cat known as the king of beasts.",
+            "BEAR": "A large, heavy mammal with thick fur.",
+            "WOLF": "A wild carnivorous mammal living in packs.",
+            "SNAKE": "A long limbless reptile.",
+            "SPIDER": "An eight-legged predatory arachnid.",
+            "SHARK": "A marine predator with a cartilaginous skeleton.",
+            "WHALE": "A very large marine mammal.",
+            "DOLPHIN": "A highly intelligent, social marine mammal."
+        };
+
+        // Helper function to safely execute API calls with Exponential Backoff
+        async function fetchGeminiWithBackoff(payload) {
+            const apiKey = ""; // Canvas runtime environment injects this safely
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            
+            for (let i = 0; i <= delays.length; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    
+                    // Throw immediately if we're on the last attempt so the catch block handles it
+                    if (i === delays.length) {
+                        throw new Error(`API failed with status: ${response.status}`);
+                    }
+                } catch (err) {
+                    if (i === delays.length) throw err;
+                }
+                
+                // Pause dynamically before the next retry (do not log this to console)
+                await new Promise(resolve => setTimeout(resolve, delays[i]));
+            }
+        }
+
+        window.handleAISuggestWord = async function(e) {
+            if (e) e.preventDefault();
+            const inputEl = document.getElementById('input-secret-word');
+            const btn = e.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true; // Prevent spamming
+            
+            const wordsList = Object.keys(INTERNAL_DICTIONARY);
+            
+            // 50% chance to use the internal dictionary to save API calls and "make AI's job easier"
+            if (Math.random() < 0.5) {
+                const word = wordsList[Math.floor(Math.random() * wordsList.length)];
+                inputEl.value = word;
+                showToast("✨ AI selected a tricky word from its database!", "success");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: "Suggest a single random, tricky English word between 4 and 8 letters. Output ONLY the word, no punctuation or extra text." }] }]
+                };
+                
+                const result = await fetchGeminiWithBackoff(payload);
+                const word = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
+                
+                if (word) {
+                    inputEl.value = word.replace(/[^A-Z]/g, '');
+                    showToast("✨ AI generated a tricky word!", "success");
+                } else {
+                    throw new Error("Empty AI Response");
+                }
+            } catch (err) {
+                // FALLBACK: Safe offline list just in case there's an API network issue
+                const word = wordsList[Math.floor(Math.random() * wordsList.length)];
+                inputEl.value = word;
+                showToast("✨ Generated a tricky word! (Fallback)", "success");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        window.handleRequestHint = async function() {
+            if (!gameDataState || gameDataState.hintUsed || !currentGameId) return;
+            const secretWord = atob(gameDataState.secretWord);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+            
+            const btn = document.getElementById('btn-request-hint');
+            btn.innerText = "✨ Thinking...";
+            btn.disabled = true;
+            
+            let finalHint = "";
+            
+            // CHECK INTERNAL DICTIONARY FIRST TO MAKE AI'S JOB EASIER AND RESPOND FASTER
+            if (INTERNAL_DICTIONARY[secretWord]) {
+                finalHint = INTERNAL_DICTIONARY[secretWord];
+                // Add a very tiny delay to simulate "Thinking" for UX polish
+                await new Promise(r => setTimeout(r, 400));
+            } else {
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: `Give a very short, cryptic 1-sentence hint for the word "${secretWord}". DO NOT use the word itself or its root. Keep it under 15 words.` }] }]
+                    };
+                    
+                    const result = await fetchGeminiWithBackoff(payload);
+                    const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                    
+                    if (aiText) {
+                        finalHint = aiText;
+                    } else {
+                        throw new Error("Empty AI Hint Response");
+                    }
+                } catch (err) {
+                    // FALLBACK: Emergency hint logic to make sure the user is never stuck
+                    finalHint = `It's an everyday word starting with the letter '${secretWord.charAt(0)}'!`;
+                }
+            }
+            
+            try {
+                // Penalty: Push timerStart 5 seconds into the past to reduce remaining time
+                const newTimerStart = gameDataState.timerStart - 5000;
+
+                await updateDoc(docRef, {
+                    hintUsed: true,
+                    geminiHint: finalHint,
+                    timerStart: newTimerStart,
+                    lastAction: `✨ AI Hint deployed! (-5s penalty to Guesser)`
+                });
+                soundEffects.playTimerWarning();
+                showToast("Hint revealed! (-5s penalty applied)", "warning");
+            } catch (err) {
+                console.error("Firestore sync error:", err);
+                showToast("Failed to sync hint with the room.", "error");
+                btn.innerText = "✨ Get AI Hint (-5s Penalty)";
+                btn.disabled = false;
+            }
+        };
 
         function startOrSyncTurnTimer(data) {
             clearInterval(countdownTimerInterval);
@@ -1274,6 +1476,8 @@
                         currentSetter: nextSetter,
                         secretWord: '',
                         secretWordSubmitted: false,
+                        hintUsed: false,
+                        geminiHint: '',
                         chancesLeft: 5,
                         guesses: [],
                         timerStart: null,
@@ -1318,6 +1522,8 @@
                     currentSetter: 'player1',
                     secretWord: '',
                     secretWordSubmitted: false,
+                    hintUsed: false,
+                    geminiHint: '',
                     chancesLeft: 5,
                     guesses: [],
                     timerStart: null,
