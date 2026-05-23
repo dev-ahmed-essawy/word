@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مبارزة الكلمات ⚔️ لعبة التخمين المباشرة</title>
+
+	<!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192.png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- خطوط جوجل (تم إضافة خط Cairo للغة العربية) -->
@@ -519,6 +527,17 @@
     <footer class="w-full text-center py-4 text-[11px] text-slate-600 border-t border-slate-900 font-medium">
         <span>الإصدار المطور للمبارزة v5.0 • تمت إضافة اللعب الفردي ضد البوت وتحديد النقاط.</span>
     </footer>
+
+	 <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('ServiceWorker registered!', reg.scope))
+                    .catch(err => console.error('ServiceWorker registration failed:', err));
+            });
+        }
+    </script>
 
     <!-- سكربت اللعبة وقواعد البيانات فايربيس -->
     <script type="module">
