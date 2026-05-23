@@ -88,7 +88,7 @@
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
     <!-- الحاوية الرئيسية -->
-    <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-8 relative z-10 w-full max-w-4xl mx-auto">
+    <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-8 relative z-10 w-full max-w-5xl mx-auto">
         
         <!-- الترويسة -->
         <header class="text-center mb-6">
@@ -96,14 +96,14 @@
                 <span>مبارزة الكلمات</span>
                 <span class="text-3xl text-indigo-400 text-neon animate-pulse">⚔️</span>
             </h1>
-            <p class="text-slate-400 text-xs md:text-sm mt-2 font-medium tracking-wider uppercase">ساحة حية لتخمين الكلمات بين جهازين</p>
+            <p class="text-slate-400 text-xs md:text-sm mt-2 font-medium tracking-wider uppercase">ساحة حية لتخمين الكلمات</p>
         </header>
 
         <!-- حاوية الشاشات -->
         <div id="screen-container" class="w-full bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-800 p-6 md:p-8 shadow-2xl relative min-h-[480px] flex flex-col justify-between">
             
-            <!-- شاشة 1: الترحيب (إنشاء / انضمام) -->
-            <div id="screen-welcome" class="space-y-6 flex flex-col justify-center my-auto">
+            <!-- شاشة 1: الترحيب (إنشاء / انضمام / لعب فردي) -->
+            <div id="screen-welcome" class="space-y-6 flex flex-col justify-center my-auto w-full max-w-4xl mx-auto">
                 <div class="text-center space-y-2 relative">
                     <!-- زر الملف الشخصي -->
                     <button onclick="showProfileScreen()" class="absolute top-0 start-0 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 text-indigo-300 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 border border-slate-700">
@@ -114,21 +114,49 @@
                     <p class="text-slate-400 text-sm">واجه خصمك في مباراة سريعة وحية لتخمين الكلمات الإنجليزية.</p>
                 </div>
 
-                <div class="space-y-4 max-w-md mx-auto w-full">
-                    <!-- تم إزالة حقل الاسم من هنا ونقله للملف الشخصي ليصبح أكثر احترافية، وسنستدعي الاسم من الملف -->
-                    <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-3 text-center">
-                        <p class="text-xs text-slate-500">تلعب باسم:</p>
-                        <p id="welcome-name-display" class="font-bold text-indigo-400 text-lg">لاعب ...</p>
+                <div class="space-y-4 w-full">
+                    
+                    <!-- الاسم و إعدادات المباراة العامة -->
+                    <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 max-w-xl mx-auto">
+                        <div class="text-center md:text-start">
+                            <p class="text-xs text-slate-500">تلعب باسم:</p>
+                            <p id="welcome-name-display" class="font-bold text-indigo-400 text-lg">لاعب ...</p>
+                        </div>
+                        <div class="h-8 w-px bg-slate-800 hidden md:block"></div>
+                        <div class="flex items-center gap-3 w-full md:w-auto">
+                            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider shrink-0"><i class="fa-solid fa-trophy"></i> الهدف</span>
+                            <select id="target-score-input" class="w-full md:w-32 bg-slate-900 border border-slate-700 rounded-lg py-2 px-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-bold text-center appearance-none cursor-pointer">
+                                <option value="3">3 نقاط</option>
+                                <option value="5" selected>5 نقاط</option>
+                                <option value="7">7 نقاط</option>
+                                <option value="10">10 نقاط</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                        
+                        <!-- كارت اللعب الفردي -->
+                        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden">
+                            <div class="absolute top-0 end-0 bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-bl-xl text-[10px] font-bold">جديد</div>
+                            <div>
+                                <h3 class="font-bold text-emerald-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-robot"></i> لعب فردي ضد AI
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-1">تدرب وتحدّ بوت الذكاء الاصطناعي مباشرة دون انتظار.</p>
+                            </div>
+                            <button onclick="handleSinglePlayer()" class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-emerald transition-all flex items-center justify-center gap-2">
+                                <span>تحدي البوت</span>
+                            </button>
+                        </div>
+
                         <!-- كارت إنشاء غرفة -->
                         <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-blue-500/50 transition-all flex flex-col justify-between space-y-4">
                             <div>
                                 <h3 class="font-bold text-blue-400 flex items-center gap-2">
                                     <i class="fa-solid fa-plus-circle"></i> إنشاء غرفة
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-1">قم بإنشاء ساحة جديدة واستضف المباراة.</p>
+                                <p class="text-xs text-slate-500 mt-1">قم بإنشاء ساحة جديدة واستضف صديقاً للمباراة.</p>
                             </div>
                             <button onclick="handleCreateGame()" id="btn-create-game" class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-blue transition-all flex items-center justify-center gap-2">
                                 <span>استضافة المبارزة</span>
@@ -140,9 +168,9 @@
                         <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-rose-500/50 transition-all flex flex-col justify-between space-y-4">
                             <div>
                                 <h3 class="font-bold text-rose-400 flex items-center gap-2">
-                                    <i class="fa-solid fa-right-to-bracket"></i> الانضمام
+                                    <i class="fa-solid fa-right-to-bracket"></i> الانضمام لغرفة
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-1">لديك رمز؟ أدخله هنا للانضمام للمعركة.</p>
+                                <p class="text-xs text-slate-500 mt-1">لديك رمز؟ أدخله هنا للانضمام للمعركة مع صديقك.</p>
                             </div>
                             <div class="space-y-2">
                                 <input type="text" id="input-join-code" placeholder="أدخل الرمز..." class="w-full text-center bg-slate-950 border border-slate-800 rounded-lg py-2 text-sm tracking-widest font-mono text-rose-400 font-bold uppercase focus:outline-none focus:border-rose-500">
@@ -151,6 +179,7 @@
                                 </button>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -204,8 +233,8 @@
 
                     <!-- النسخ الاحتياطي (Drive / Local) -->
                     <div class="bg-indigo-950/20 border border-indigo-900/30 rounded-xl p-4 space-y-2">
-                        <h3 class="text-xs font-bold text-indigo-300 flex items-center gap-1.5"><i class="fa-solid fa-cloud"></i> النسخ الاحتياطي (للجهاز أو Google Drive)</h3>
-                        <p class="text-[10px] text-slate-400">يتم حفظ بياناتك تلقائياً في خوادم اللعبة. لكن يمكنك تصديرها كملف والاحتفاظ بها في Google Drive أو جهازك لاستعادتها لاحقاً.</p>
+                        <h3 class="text-xs font-bold text-indigo-300 flex items-center gap-1.5"><i class="fa-solid fa-cloud"></i> النسخ الاحتياطي</h3>
+                        <p class="text-[10px] text-slate-400">يتم حفظ بياناتك تلقائياً في خوادم اللعبة. لكن يمكنك تصديرها كملف والاحتفاظ بها لاستعادتها لاحقاً.</p>
                         <div class="flex gap-2 mt-2">
                             <button onclick="downloadBackup()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-semibold border border-slate-700 transition-colors"><i class="fa-solid fa-download"></i> تنزيل نسخة</button>
                             <button onclick="triggerRestore()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-semibold border border-slate-700 transition-colors"><i class="fa-solid fa-upload"></i> استعادة البيانات</button>
@@ -260,10 +289,11 @@
                         <span id="score-p1-value" class="text-2xl font-bold text-blue-400 tracking-tight">0 <span class="text-xs text-slate-600">نقاط</span></span>
                     </div>
 
-                    <!-- معلومات الجولة -->
-                    <div class="text-center bg-slate-950/80 border border-slate-800/80 rounded-full px-4 py-1.5 flex flex-col items-center mx-2">
+                    <!-- معلومات الجولة والهدف -->
+                    <div class="text-center bg-slate-950/80 border border-slate-800/80 rounded-xl px-4 py-1.5 flex flex-col items-center mx-2 shadow-inner">
                         <span id="game-round-indicator" class="text-xs font-bold uppercase tracking-widest text-indigo-400">الجولة 1</span>
-                        <span id="game-setter-status" class="text-[10px] text-slate-400 font-medium whitespace-nowrap">اللاعب 1 يختار الكلمة</span>
+                        <span id="game-target-indicator" class="text-[10px] font-bold text-amber-500 mt-0.5">الهدف: 5 نقاط</span>
+                        <span id="game-setter-status" class="text-[10px] text-slate-400 font-medium whitespace-nowrap mt-1 pt-1 border-t border-slate-800">اللاعب 1 يختار الكلمة</span>
                     </div>
 
                     <!-- اللاعب الثاني -->
@@ -436,7 +466,7 @@
                         <span id="btn-next-turn-text">متابعة المبارزة</span>
                         <i class="fa-solid fa-angles-left text-xs"></i> <!-- السهم لليسار في العربية -->
                     </button>
-                    <span id="btn-next-turn-waiting-note" class="text-[10px] text-slate-500 mt-2 block hidden">في انتظار نقر الخصم للمتابعة...</span>
+                    <span id="btn-next-turn-waiting-note" class="text-[10px] text-slate-500 mt-2 block hidden">في انتظار المتابعة...</span>
                 </div>
             </div>
 
@@ -450,7 +480,7 @@
                 <div class="space-y-2">
                     <h3 class="text-3xl font-bold text-slate-100 font-display">إعلان الانتصار!</h3>
                     <p id="gameover-winner-announcement" class="text-indigo-400 font-bold tracking-wide text-lg">اللاعب 1 فاز في المبارزة!</p>
-                    <p class="text-xs text-slate-500 max-w-sm mx-auto">لقد وصل للهدف (5 نقاط) أولاً وتوّج بالبطولة.</p>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto" id="gameover-target-desc">لقد وصل للهدف أولاً وتوّج بالبطولة.</p>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-around gap-8 w-full max-w-xs font-display">
@@ -487,7 +517,7 @@
 
     <!-- تذييل الصفحة -->
     <footer class="w-full text-center py-4 text-[11px] text-slate-600 border-t border-slate-900 font-medium">
-        <span>الإصدار المطور للمبارزة v4.0 • تم إضافة الملفات الشخصية السحابية والنسخ الاحتياطي.</span>
+        <span>الإصدار المطور للمبارزة v5.0 • تمت إضافة اللعب الفردي ضد البوت وتحديد النقاط.</span>
     </footer>
 
     <!-- سكربت اللعبة وقواعد البيانات فايربيس -->
@@ -533,12 +563,17 @@
         let isLocalTimeoutUpdating = false;
         let isMatchResultRecordedLocally = false;
 
+        // متغيرات خاصة بالذكاء الاصطناعي (Bot)
+        window.botGuessTimer = null;
+        window.botSetTimer = null;
+        window.botAckTimer = null;
+
         // حالة الملف الشخصي (Profile State)
         let userProfile = {
             name: "",
             avatar: "👤",
             stats: { wins: 0, losses: 0, total: 0 },
-            history: [] // { date, opponent, result, score }
+            history: []
         };
 
         const availableAvatars = ["👤", "🦊", "🦁", "🐼", "🦅", "🐉", "🦄", "🐺", "🐯", "🦉", "🐙", "👻", "🤖", "👽", "🤠"];
@@ -699,7 +734,7 @@
         }
 
         window.saveProfile = async function() {
-            soundEffects.init(); // تفعيل الصوت بناءً على تفاعل المستخدم
+            soundEffects.init();
             const nameInput = document.getElementById('profile-name-input').value.trim();
             if (nameInput) {
                 userProfile.name = nameInput;
@@ -734,7 +769,7 @@
                 btn.innerText = avatar;
                 btn.onclick = () => {
                     userProfile.avatar = avatar;
-                    updateProfileUI(); // إعادة رسم لتحديث التحديد
+                    updateProfileUI();
                 };
                 avatarContainer.appendChild(btn);
             });
@@ -777,7 +812,7 @@
             document.getElementById('screen-welcome').classList.remove('hidden');
         }
 
-        // دوال النسخ الاحتياطي (استيراد وتصدير JSON لـ Google Drive / الجهاز)
+        // دوال النسخ الاحتياطي
         window.downloadBackup = function() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userProfile));
             const downloadAnchorNode = document.createElement('a');
@@ -813,7 +848,6 @@
                 }
             };
             reader.readAsText(file);
-            // تفريغ المدخل ليسمح برفع نفس الملف مجدداً إذا لزم الأمر
             event.target.value = '';
         };
 
@@ -832,7 +866,6 @@
                 score: `${finalScore} - ${opponentScore}`
             });
 
-            // الاحتفاظ بآخر 20 مباراة فقط
             if (userProfile.history.length > 20) userProfile.history.pop();
             
             await saveProfileDataToCloud();
@@ -868,8 +901,14 @@
             }
         }
 
-        window.handleCreateGame = async function() {
-            soundEffects.init(); // تفعيل واجهة الصوت
+        function getTargetScore() {
+            const selectEl = document.getElementById('target-score-input');
+            return parseInt(selectEl.value) || 5;
+        }
+
+        // بدء اللعب الفردي ضد البوت
+        window.handleSinglePlayer = async function() {
+            soundEffects.init();
             await authenticateUser();
             
             if (!auth.currentUser) {
@@ -877,6 +916,68 @@
                 return;
             }
 
+            const targetScore = getTargetScore();
+            const generatedCode = generateId(5);
+            currentGameId = generatedCode;
+            isMatchResultRecordedLocally = false;
+
+            const initialGameDoc = {
+                id: generatedCode,
+                status: 'playing', // الانتقال المباشر للعب
+                isSinglePlayer: true,
+                targetScore: targetScore,
+                player1: {
+                    uid: currentUserId,
+                    name: userProfile.name,
+                    avatar: userProfile.avatar,
+                    score: 0,
+                    acknowledgedOutcome: false
+                },
+                player2: {
+                    uid: 'bot_cpu',
+                    name: 'الذكاء الاصطناعي',
+                    avatar: '🤖',
+                    score: 0,
+                    acknowledgedOutcome: false
+                },
+                currentRound: 1,
+                currentSetter: 'player2', // نجعل البوت يضع الكلمة أولاً
+                secretWord: '',
+                secretWordSubmitted: false,
+                hintUsed: false,
+                geminiHint: '',
+                chancesLeft: 5,
+                guesses: [],
+                timerStart: null,
+                timerActive: false,
+                turnOutcome: 'none', 
+                lastAction: `بدأت المواجهة الفردية ضد البوت!`,
+                createdAt: Date.now()
+            };
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', generatedCode);
+                await setDoc(docRef, initialGameDoc);
+                
+                window.location.hash = `room=${generatedCode}&app=${appId}`;
+                subscribeToGame(generatedCode);
+                soundEffects.playGameStart();
+                showToast("بدأت المواجهة ضد البوت!", "success");
+            } catch (error) {
+                showToast("تعذر بدء اللعب الفردي.", "error");
+            }
+        };
+
+        window.handleCreateGame = async function() {
+            soundEffects.init();
+            await authenticateUser();
+            
+            if (!auth.currentUser) {
+                showToast("فشل في تسجيل الدخول. يرجى التحديث.", "error");
+                return;
+            }
+
+            const targetScore = getTargetScore();
             const generatedCode = generateId(5);
             currentGameId = generatedCode;
             isMatchResultRecordedLocally = false;
@@ -884,6 +985,8 @@
             const initialGameDoc = {
                 id: generatedCode,
                 status: 'lobby',
+                isSinglePlayer: false,
+                targetScore: targetScore,
                 player1: {
                     uid: currentUserId,
                     name: userProfile.name,
@@ -921,7 +1024,7 @@
         };
 
         window.handleJoinGame = async function() {
-            soundEffects.init(); // تفعيل واجهة الصوت
+            soundEffects.init();
             const enteredCode = document.getElementById('input-join-code').value.trim().toUpperCase();
             if (!enteredCode) {
                 showToast("يرجى إدخال رمز الغرفة المكون من 5 حروف.", "warning");
@@ -1035,6 +1138,7 @@
                 gameUnsubscribe = null;
             }
             clearInterval(countdownTimerInterval);
+            clearBotTimers();
             currentGameId = null;
             gameDataState = null;
             localPlayerRole = null;
@@ -1065,6 +1169,9 @@
             } else if (data.status === 'playing' || data.status === 'turnover' || data.status === 'gameover') {
                 showGameScreen(data);
             }
+
+            // تشغيل منطق البوت (الذكاء الاصطناعي)
+            handleBotLogic(data);
         }
 
         function showLobbyScreen(data) {
@@ -1081,6 +1188,7 @@
 
             const p1 = data.player1;
             const p2 = data.player2 || { name: 'جاري الانضمام...', avatar: '👤', score: 0 };
+            const targetScore = data.targetScore || 5;
 
             document.getElementById('score-p1-name').innerHTML = `<span id="score-p1-avatar" class="text-lg">${p1.avatar || '👤'}</span> ${p1.name}`;
             document.getElementById('score-p1-value').innerHTML = `${p1.score} <span class="text-xs text-slate-500">نقاط</span>`;
@@ -1099,6 +1207,7 @@
             }
 
             document.getElementById('game-round-indicator').innerText = `الجولة ${data.currentRound}`;
+            document.getElementById('game-target-indicator').innerText = `الهدف: ${targetScore} نقاط`;
 
             document.getElementById('panel-waiting-setter').classList.add('hidden');
             document.getElementById('panel-local-setup-word').classList.add('hidden');
@@ -1152,9 +1261,9 @@
             }
 
             const gameOverScreen = document.getElementById('screen-game-over');
-            if (p1.score >= 5 || p2.score >= 5) {
+            if (p1.score >= targetScore || p2.score >= targetScore) {
                 clearInterval(countdownTimerInterval);
-                displayMatchOver(data, p1, p2);
+                displayMatchOver(data, p1, p2, targetScore);
                 gameOverScreen.classList.remove('hidden');
             } else {
                 gameOverScreen.classList.add('hidden');
@@ -1212,6 +1321,115 @@
         // --- قاموس الكلمات المعزز ونظام التدقيق الإملائي ---
         const INTERNAL_DICTIONARY = {
             "AIR": "الغاز غير المرئي الذي نتنفسه ويحيط بالأرض.",
+			"ANIMAL": "كائن حي يتنفس ويتحرك ويستهلك المواد العضوية.",
+			"ANT": "حشرة صغيرة تعيش في مستعمرات متعاونة.",
+			"APPLE": "فاكهة مقرمشة تكون حمراء أو خضراء.",
+			"ART": "التعبير الإبداعي عن الخيال والمشاعر.",
+			"BALL": "جسم كروي يستخدم في الألعاب والرياضة.",
+			"BANK": "مؤسسة مالية لحفظ الأموال وإقراضها.",
+			"BIRD": "كائن ذو ريش يمتلك أجنحة ويستطيع الطيران غالباً.",
+			"BLOOD": "السائل الأحمر الذي يضخه القلب في جسم الإنسان والحيوان.",
+			"BOOK": "مجموعة من الأوراق المطبوعة والمجلدة معاً للقراءة.",
+			"CAMERA": "جهاز يُستخدم لالتقاط الصور وتسجيل مقاطع الفيديو.",
+			"CAR": "مركبة تسير على أربع عجلات وتستخدم للنقل.",
+			"CITY": "تجمع سكاني كبير يضم العديد من المباني والشوارع.",
+			"CLOUD": "تجمع مرئي لجزيئات الماء أو الجليد في الغلاف الجوي.",
+			"COMPUTER": "جهاز إلكتروني يعالج البيانات ويخزن المعلومات.",
+			"DATA": "معلومات أو حقائق تُجمع للتحليل أو المعالجة.",
+			"DAY": "الفترة الزمنية التي تكون فيها الشمس مشرقة في السماء.",
+			"DOG": "حيوان أليف وفي يُعرف بصوته النباح.",
+			"DOOR": "حاجز متحرك يُستخدم لإغلاق أو فتح مدخل المبنى أو الغرفة.",
+			"DREAM": "سلسلة من الأفكار والصور التي تحدث أثناء النوم.",
+			"EARTH": "الكوكب الثالث في النظام الشمسي وهو الكوكب الذي نعيش عليه.",
+			"EDUCATION": "عملية اكتساب المعرفة والمهارات والقيم.",
+			"EGG": "جسم بيضاوي تضعه الطيور والزواحف يحتوي على جنين.",
+			"ENERGY": "القدرة على بذل شغل أو إحداث تغيير.",
+			"EYE": "العضو البصري الذي يُستخدم للرؤية.",
+			"FAMILY": "مجموعة من الأشخاص تربطهم صلة قرابة ويعيشون معاً غالباً.",
+			"FIRE": "تفاعل كيميائي ينتج عنه حرارة وضوء ولهب.",
+			"FISH": "حيوان مائي يتنفس عن طريق الخياشيم ويسبح بالزعانف.",
+			"FLOWER": "الجزء الملون والجميل من النبات الذي ينتج البذور.",
+			"FOOD": "أي مادة يستهلكها الكائن الحي للحصول على الطاقة والنمو.",
+			"GAME": "نشاط ترفيهي أو تنافسي له قواعد محددة.",
+			"GARDEN": "مساحة من الأرض تُزرع فيها الزهور أو النباتات.",
+			"GLASS": "مادة صلبة شفافة تُستخدم في صنع النوافذ والأكواب.",
+			"GOLD": "معدن ثمين لامع أصفر اللون يُستخدم في المجوهرات.",
+			"GRASS": "نبات أخضر قصير يغطي الأرض في الحدائق والحقول.",
+			"HAND": "نهاية ذراع الإنسان التي تحتوي على الأصابع.",
+			"HEART": "العضو العضلي الذي يضخ الدم في جميع أنحاء الجسم.",
+			"HISTORY": "دراسة وتسجيل الأحداث التي وقعت في الماضي.",
+			"HOUSE": "مبنى يُستخدم كمكان للسكن والعيش.",
+			"HUMAN": "كائن بشري ينتمي إلى فصيلة الإنسان العاقل.",
+			"ICE": "الحالة الصلبة للماء عندما يتجمد.",
+			"IDEA": "فكرة أو تصور عقلي يتكون في الدماغ.",
+			"INFORMATION": "بيانات تمت معالجتها لتصبح ذات معنى وفائدة.",
+			"INTERNET": "شبكة حاسوبية عالمية تربط بين ملايين الأجهزة.",
+			"ISLAND": "مساحة من اليابسة محاطة بالمياه من جميع الجهات.",
+			"JOB": "العمل أو المهنة التي يقوم بها الشخص لكسب العيش.",
+			"JOURNEY": "الانتقال من مكان إلى آخر، غالباً لمسافة طويلة.",
+			"JUSTICE": "الإنصاف وتطبيق القوانين بشكل متساوٍ على الجميع.",
+			"KEY": "أداة معدنية تُستخدم لفتح أو إغلاق الأقفال.",
+			"KING": "الحاكم الذكر لدولة أو مملكة.",
+			"KNIFE": "أداة حادة تُستخدم لقطع الأشياء.",
+			"KNOWLEDGE": "المعلومات والفهم المكتسب من خلال التجربة أو التعليم.",
+			"LANGUAGE": "نظام من الرموز والأصوات يُستخدم للتواصل بين البشر.",
+			"LAW": "مجموعة من القواعد والأنظمة التي تحكم المجتمع.",
+			"LEAF": "الجزء الأخضر المسطح من النبات الذي ينمو على الساق.",
+			"LIGHT": "الإشعاع الكهرومغناطيسي الذي يجعل الأشياء مرئية.",
+			"LOVE": "شعور قوي بالمودة والارتباط العميق تجاه شخص ما.",
+			"MACHINE": "جهاز ميكانيكي أو كهربائي يؤدي مهام معينة.",
+			"MAN": "إنسان ذكر بالغ.",
+			"MAP": "رسم تخطيطي يمثل سطح الأرض أو جزءاً منه.",
+			"MILK": "سائل أبيض مغذٍ تنتجه إناث الثدييات.",
+			"MONEY": "العملات أو الأوراق النقدية المستخدمة كوسيلة للتبادل التجاري.",
+			"NAME": "الكلمة التي يُعرف بها شخص أو شيء.",
+			"NATURE": "العالم المادي وما يحتويه من نباتات وحيوانات وتضاريس.",
+			"NETWORK": "مجموعة من الأجهزة أو الأنظمة المترابطة معاً.",
+			"NIGHT": "الفترة المظلمة من اليوم عندما تغيب الشمس.",
+			"NUMBER": "مفهوم رياضي يُستخدم للعد والقياس.",
+			"OCEAN": "مسطح مائي واسع جداً ومالح.",
+			"OFFICE": "مكان مخصص للعمل الإداري أو المهني.",
+			"OIL": "سائل دهني يُستخرج من الأرض أو النباتات ويُستخدم كوقود أو طعام.",
+			"OXYGEN": "غاز ضروري لتنفس الكائنات الحية واحتراق المواد.",
+			"PAPER": "مادة رقيقة تُصنع من لب الخشب وتُستخدم للكتابة أو التغليف.",
+			"PEACE": "حالة من الهدوء والطمأنينة وغياب الحروب أو النزاعات.",
+			"PERSON": "كائن بشري فرد.",
+			"PLANT": "كائن حي ينمو في الأرض ويصنع غذاءه بنفسه.",
+			"PROBLEM": "مسألة أو موقف صعب يتطلب حلاً.",
+			"QUALITY": "مستوى التفوق أو السمة المميزة لشيء ما.",
+			"QUEEN": "امرأة تحكم مملكة أو تكون زوجة الملك.",
+			"QUESTION": "جملة تُطرح لطلب معلومة أو استفسار.",
+			"RAIN": "قطرات من الماء تتساقط من السحب إلى الأرض.",
+			"ROAD": "مسار مُمهد مخصص لسير المركبات والمشاة.",
+			"ROCK": "مادة صلبة طبيعية تتكون من المعادن وتشكل قشرة الأرض.",
+			"ROOM": "جزء محدد داخل مبنى محاط بجدران.",
+			"RULE": "مبدأ توجيهي يحدد ما يجب أو لا يجب فعله.",
+			"SCIENCE": "دراسة منهجية لطبيعة وسلوك العالم المادي والكون.",
+			"SEA": "مسطح كبير من المياه المالحة أصغر من المحيط.",
+			"SNOW": "بلورات جليدية تتساقط من السماء في المناطق الباردة.",
+			"SPACE": "الامتداد اللانهائي الذي يحتوي على الكواكب والنجوم والمجرات.",
+			"STAR": "جرم سماوي مضيء يتلألأ في السماء ليلاً.",
+			"TABLE": "قطعة أثاث ذات سطح مستوٍ مدعومة بأرجل.",
+			"TEACHER": "شخص مهنته تعليم الآخرين ونقل المعرفة لهم.",
+			"TIME": "المدة المستمرة التي تحدث فيها الأحداث من الماضي إلى المستقبل.",
+			"TREE": "نبات خشبي كبير ذو جذع وفروع وأوراق.",
+			"TRUTH": "الواقع أو الحقائق كما هي دون تزييف.",
+			"UNIVERSE": "كل ما هو موجود من فضاء ونجوم وكواكب ومادة.",
+			"UNIVERSITY": "مؤسسة للتعليم العالي والبحث العلمي.",
+			"USER": "الشخص الذي يستخدم نظاماً أو جهازاً أو خدمة.",
+			"VALUE": "الأهمية أو الفائدة أو القيمة النقدية لشيء ما.",
+			"VIDEO": "تسجيل مرئي متحرك للأحداث أو الصور.",
+			"VOICE": "الصوت الذي يصدره الإنسان أو الحيوان من خلال الفم.",
+			"WAR": "نزاع مسلح واسع النطاق بين دول أو مجموعات.",
+			"WATER": "سائل شفاف لا لون له ولا طعم، وهو أساس الحياة.",
+			"WEATHER": "حالة الغلاف الجوي في مكان وزمان معينين.",
+			"WINDOW": "فتحة في جدار تُغلق بالزجاج للسماح بدخول الضوء والهواء.",
+			"WOMAN": "إنسان أنثى بالغة.",
+			"YEAR": "فترة زمنية تستغرقها الأرض للدوران دورة كاملة حول الشمس.",
+			"YOUTH": "فترة الحياة بين الطفولة والبلوغ.",
+			"ZERO": "رقم يمثل غياب الكمية أو نقطة البداية.",
+			"ZONE": "منطقة جغرافية محددة لها خصائص أو استخدامات معينة.",
+						"AIR": "الغاز غير المرئي الذي نتنفسه ويحيط بالأرض.",
 			"ANIMAL": "كائن حي يتنفس ويتحرك ويستهلك المواد العضوية.",
 			"ANT": "حشرة صغيرة تعيش في مستعمرات متعاونة.",
 			"APPLE": "فاكهة مقرمشة تكون حمراء أو خضراء.",
@@ -1541,7 +1759,6 @@
 			"VEGETABLE": "نبات يُزرع ويُستخدم كغذاء للإنسان مثل الجزر والبطاطس.",
 			"WAITER": "الشخص الذي يقدم الطعام والمشروبات للزبائن في المطاعم.",
 			"WATERFALL": "تيار من الماء يسقط من ارتفاع عالٍ عبر مجرى نهر.",
-			"X-AXIS": "الخط الأفقي الأساسي في نظام الإحداثيات الرياضي.",
 			"YOGURT": "طعام يُصنع من الحليب المخمر بواسطة البكتيريا ويتميز بقوامه الكثيف.",
 			"YOLK": "الجزء الداخلي الأصفر من البيضة والذي يحتوي على معظم المواد المغذية.",
 			"ZEPPELIN": "منطاد ضخم قابل للتوجيه يُستخدم للطيران ونقل الركاب.",
@@ -1642,8 +1859,6 @@
 			"VIOLIN": "آلة موسيقية وترية خشبية تُعزف عن طريق تمرير قوس على أوتارها الأربعة.",
 			"WHEAT": "نبات عشبي تُطحن حبوبه لإنتاج الدقيق الذي يُصنع منه الخبز والمعكرونة.",
 			"WHISTLE": "أداة صغيرة تُنفخ بالفم لإصدار صوت حاد ومرتفع للتنبيه أو لفت الانتباه.",
-			"XENOBIOTIC": "مادة كيميائية غريبة لا ينتجها الجسم الحي بشكل طبيعي، كالأدوية والسموم.",
-			"XYLOGRAPHY": "فن طباعة النصوص أو الرسوم باستخدام قوالب خشبية محفورة تم دهنها بالحبر.",
 			"YELLOW": "لون من الألوان الأساسية، يشبه لون الشمس الساطعة أو ثمرة الليمون.",
 			"YIELD": "الكمية المنتجة من محصول زراعي، أو الاستسلام والتراجع أمام الضغط.",
 			"ZENITH": "النقطة الأعلى أو قمة الشيء، وفي الفلك هي النقطة التي تقع مباشرة فوق الرأس.",
@@ -1671,7 +1886,6 @@
 			"UPDATE": "إضافة أحدث المعلومات أو التعديلات إلى نظام أو برنامج لجعله عصرياً ومواكباً.",
 			"VITAMIN": "مركب عضوي حيوي يحتاجه الجسم بكميات صغيرة لضمان النمو السليم والصحة الجيدة.",
 			"WINDMILL": "آلة تستخدم طاقة الرياح عبر شفرات دوارة كبيرة لتوليد الطاقة أو طحن الحبوب.",
-			"XEROPHYTE": "نبات يمتلك خصائص بيولوجية تمكنه من البقاء في بيئات جافة جداً وقاسية كالصحراء.",
 			"YELL": "إصدار صوت عالٍ جداً أو صرخة قوية، غالباً بسبب الغضب أو الألم أو لجذب الانتباه.",
 			"ZOOLOGY": "الفرع من علم الأحياء الذي يختص بدراسة الحيوانات وتشريحها وسلوكها وتصنيفها.",
 			"ANCHOR": "أداة معدنية ثقيلة تُلقى في الماء لتثبيت السفينة ومنعها من الحركة.",
@@ -1747,7 +1961,6 @@
 			"USAGE": "الطريقة التي يُستخدم بها شيء ما، أو العادة المتبعة.",
 			"VOTE": "التعبير الرسمي عن الاختيار أو الرأي في انتخابات أو اقتراع.",
 			"WATERMELON": "فاكهة صيفية كبيرة الحجم، قشرتها خضراء ولبها أحمر مليء بالماء والبذور.",
-			"XANTHIC": "صفة تُطلق على الأشياء التي تميل إلى اللون الأصفر، خاصة في علم النبات.",
 			"YAWL": "قارب شراعي صغير مزود بصاريين يُستخدم في الملاحة البحرية.",
 			"ZIRCON": "حجر كريم يشبه الألماس يُستخدم غالباً في صناعة المجوهرات.",
 			"ANGLE": "المسافة أو الانفراج بين خطين مستقيمين يلتقيان في نقطة واحدة.",
@@ -1773,7 +1986,6 @@
 			"UNIT": "كمية قياسية تُستخدم للقياس، أو قسم مستقل ضمن منظمة أكبر.",
 			"VISION": "القدرة على الرؤية بالعينين، أو القدرة على التخيل والتخطيط للمستقبل.",
 			"WALNUT": "نوع من المكسرات له قشرة صلبة متجعدة ولب يشبه شكل الدماغ.",
-			"XYLOPHAGE": "حشرة أو كائن حي يتغذى بشكل أساسي على الخشب ويدمره.",
 			"YOKEL": "شخص من منطقة ريفية يُعتبر بسيطاً أو غير مألوف بطباع المدن.",
 			"ZAPPER": "جهاز إلكتروني يُصدر صدمة كهربائية صغيرة، يُستخدم غالباً لقتل الحشرات.",
 			"ALBUM": "كتاب أو غلاف فارغ مخصص لجمع الصور الفوتوغرافية أو الطوابع، أو مجموعة موسيقية.",
@@ -1798,10 +2010,8 @@
 			"TANK": "مركبة عسكرية مدرعة ومجنزرة، أو وعاء كبير لتخزين السوائل والغازات.",
 			"UPSTAIRS": "الطابق الأعلى في المبنى، أو الاتجاه صعوداً على السلالم.",
 			"VEST": "قطعة ملابس تُلبس فوق القميص وتحت السترة وتكون بدون أكمام.",
-			"WAVE": "حركة متعرجة ترتفع وتنخفض على سطح الماء، أو إشارة باليد للتحية.",
-			"XANTHOUS": "مصطلح يُستخدم لوصف الأشخاص ذوي الشعر الأصفر أو الأشقر الفاتح.",
-			"YAW": "انحراف السفينة أو الطائرة مؤقتاً عن مسارها المستقيم بسبب الرياح أو الأمواج.",
-			"ZINCITE": "معدن نادر يتكون أساساً من أكسيد الزنك ويتميز بلونه الأحمر أو البرتقالي."
+			"WAVE": "حركة متعرجة ترتفع وتنخفض على سطح الماء، أو إشارة باليد للتحية."
+			
         };
 
         async function isValidEnglishWord(word) {
@@ -1893,11 +2103,166 @@
             }
         };
 
+        // --- منطق الذكاء الاصطناعي (Bot Logic) ---
+        function clearBotTimers() {
+            if (window.botGuessTimer) { clearTimeout(window.botGuessTimer); window.botGuessTimer = null; }
+            if (window.botSetTimer) { clearTimeout(window.botSetTimer); window.botSetTimer = null; }
+            if (window.botAckTimer) { clearTimeout(window.botAckTimer); window.botAckTimer = null; }
+        }
+
+        async function botSetWord() {
+            try {
+                const wordsList = Object.keys(INTERNAL_DICTIONARY);
+                const cleanWord = wordsList[Math.floor(Math.random() * wordsList.length)];
+                const finalHint = INTERNAL_DICTIONARY[cleanWord];
+                const b64Secret = btoa(cleanWord);
+
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+                await updateDoc(docRef, {
+                    secretWord: b64Secret,
+                    secretWordSubmitted: true,
+                    geminiHint: finalHint,
+                    hintUsed: true,
+                    chancesLeft: 5,
+                    guesses: [],
+                    timerStart: Date.now(),
+                    timerActive: true,
+                    lastAction: `🤖 الذكاء الاصطناعي اختار كلمته!`
+                });
+            } catch (e) {
+                console.error("فشل البوت في وضع الكلمة", e);
+            }
+        }
+
+        function scheduleBotGuess(data) {
+            clearBotTimers();
+            const delay = Math.floor(Math.random() * 2500) + 2500; // 2.5 إلى 5 ثوانٍ تفكير
+            window.botGuessTimer = setTimeout(async () => {
+                window.botGuessTimer = null;
+                if (!gameDataState || gameDataState.status !== 'playing' || !gameDataState.timerActive || gameDataState.currentSetter !== 'player1') return;
+
+                const actualWord = atob(gameDataState.secretWord);
+                const firstLetter = actualWord.charAt(0);
+                
+                // يصبح البوت أذكى إذا تبقت له محاولات أقل
+                const chanceThreshold = gameDataState.chancesLeft <= 2 ? 0.35 : 0.15; 
+                const isSmartNow = Math.random() < chanceThreshold;
+
+                let botGuess = "";
+                if (isSmartNow) {
+                    botGuess = actualWord;
+                } else {
+                    const wordsList = Object.keys(INTERNAL_DICTIONARY).filter(w => w.startsWith(firstLetter));
+                    if (wordsList.length > 0) {
+                        botGuess = wordsList[Math.floor(Math.random() * wordsList.length)];
+                    } else {
+                        botGuess = "APPLE";
+                    }
+                }
+
+                const isCorrect = (botGuess === actualWord);
+                const updatedGuesses = [...gameDataState.guesses];
+                updatedGuesses.push({ guess: botGuess, correct: isCorrect, timestamp: Date.now() });
+                
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+                
+                try {
+                    if (isCorrect) {
+                        const p2OutcomeScore = gameDataState.player2.score + 1;
+                        await updateDoc(docRef, {
+                            guesses: updatedGuesses, timerActive: false, turnOutcome: 'guessed',
+                            'player2.score': p2OutcomeScore, lastAction: `🤖 الذكاء الاصطناعي حل الكلمة!`
+                        });
+                    } else {
+                        const nextChances = gameDataState.chancesLeft - 1;
+                        if (nextChances <= 0) {
+                            const p1OutcomeScore = gameDataState.player1.score + 1;
+                            await updateDoc(docRef, {
+                                chancesLeft: 0, guesses: updatedGuesses, timerActive: false, turnOutcome: 'failed',
+                                'player1.score': p1OutcomeScore, lastAction: `🤖 الذكاء الاصطناعي فشل! ربحت أنت نقطة!`
+                            });
+                        } else {
+                            await updateDoc(docRef, {
+                                chancesLeft: nextChances, guesses: updatedGuesses, timerStart: Date.now(),
+                                lastAction: `🤖 الذكاء الاصطناعي خمّن: ${botGuess}`
+                            });
+                        }
+                    }
+                } catch(e) {}
+            }, delay);
+        }
+
+        function handleBotLogic(data) {
+            if (!data.isSinglePlayer || localPlayerRole !== 'player1') return;
+            
+            // التعامل مع الانتقال للجولة التالية تلقائياً للبوت
+            if (data.turnOutcome !== 'none') {
+                clearBotTimers();
+                if (!data.player2.acknowledgedOutcome) {
+                    if (!window.botAckTimer) {
+                        window.botAckTimer = setTimeout(async () => {
+                            window.botAckTimer = null;
+                            if (gameDataState && gameDataState.turnOutcome !== 'none' && !gameDataState.player2.acknowledgedOutcome) {
+                                try {
+                                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+                                    await updateDoc(docRef, { 'player2.acknowledgedOutcome': true });
+                                    
+                                    const freshSnap = await getDoc(docRef);
+                                    const freshData = freshSnap.data();
+                                    if (freshData.player1.acknowledgedOutcome && freshData.player2.acknowledgedOutcome) {
+                                        await advanceRound(freshData, docRef);
+                                    }
+                                } catch(e){}
+                            }
+                        }, 2000);
+                    }
+                }
+                return;
+            }
+
+            if (data.status === 'playing') {
+                if (data.currentSetter === 'player2' && !data.secretWordSubmitted) {
+                    if (!window.botSetTimer) {
+                        window.botSetTimer = setTimeout(() => {
+                            window.botSetTimer = null;
+                            botSetWord();
+                        }, 1500); // مهلة 1.5 ثانية قبل اختيار الكلمة
+                    }
+                } else if (data.currentSetter === 'player1' && data.secretWordSubmitted && data.timerActive) {
+                    if (!window.botGuessTimer) scheduleBotGuess(data);
+                } else {
+                    clearBotTimers();
+                }
+            }
+        }
+        // ---------------------------------------------
+
+        // دالة مساعدة للانتقال للجولة التالية
+        async function advanceRound(freshData, docRef) {
+            const nextRound = freshData.currentRound + 1;
+            const nextSetter = (freshData.currentSetter === 'player1') ? 'player2' : 'player1';
+            await updateDoc(docRef, {
+                currentRound: nextRound,
+                currentSetter: nextSetter,
+                secretWord: '',
+                secretWordSubmitted: false,
+                hintUsed: false,
+                geminiHint: '',
+                chancesLeft: 5,
+                guesses: [],
+                timerStart: null,
+                timerActive: false,
+                turnOutcome: 'none',
+                'player1.acknowledgedOutcome': false,
+                'player2.acknowledgedOutcome': false,
+                lastAction: `بدأت الجولة ${nextRound}! صانع الكلمة الآن هو ${nextSetter === 'player1' ? freshData.player1.name : freshData.player2.name}.`
+            });
+        }
+
         function startOrSyncTurnTimer(data) {
             clearInterval(countdownTimerInterval);
             isLocalTimeoutUpdating = false;
 
-            // تخزين العناصر مؤقتاً خارج الحلقة لتسريع الأداء (Caching DOM Elements)
             const setProgress = document.getElementById('display-setter-timer-progress');
             const setVal = document.getElementById('display-setter-timer-value');
             const guessProgress = document.getElementById('display-guesser-timer-progress');
@@ -2227,25 +2592,7 @@
                 const freshData = freshSnap.data();
 
                 if (freshData.player1.acknowledgedOutcome && freshData.player2.acknowledgedOutcome) {
-                    const nextRound = freshData.currentRound + 1;
-                    const nextSetter = (freshData.currentSetter === 'player1') ? 'player2' : 'player1';
-
-                    await updateDoc(docRef, {
-                        currentRound: nextRound,
-                        currentSetter: nextSetter,
-                        secretWord: '',
-                        secretWordSubmitted: false,
-                        hintUsed: false,
-                        geminiHint: '',
-                        chancesLeft: 5,
-                        guesses: [],
-                        timerStart: null,
-                        timerActive: false,
-                        turnOutcome: 'none',
-                        'player1.acknowledgedOutcome': false,
-                        'player2.acknowledgedOutcome': false,
-                        lastAction: `بدأت الجولة ${nextRound}! صانع الكلمة الآن هو ${nextSetter === 'player1' ? freshData.player1.name : freshData.player2.name}.`
-                    });
+                    await advanceRound(freshData, docRef);
                 }
 
             } catch (error) {
@@ -2253,22 +2600,23 @@
             }
         };
 
-        function displayMatchOver(data, p1, p2) {
+        function displayMatchOver(data, p1, p2, targetScore) {
             const banner = document.getElementById('gameover-winner-announcement');
-            const isP1Winner = p1.score >= 5;
+            const isP1Winner = p1.score >= targetScore;
             const winnerName = isP1Winner ? p1.name : p2.name;
 
             banner.innerText = `👑 ${winnerName} بطل الساحة!`;
+            document.getElementById('gameover-target-desc').innerText = `لقد وصل للهدف (${targetScore} نقاط) أولاً وتوّج بالبطولة.`;
 
             document.getElementById('gameover-p1-name').innerText = p1.name;
             document.getElementById('gameover-p1-score').innerText = p1.score;
             document.getElementById('gameover-p2-name').innerText = p2.name;
             document.getElementById('gameover-p2-score').innerText = p2.score;
 
-            // تسجيل النتيجة محلياً وسحابياً للملف الشخصي
+            // تسجيل النتيجة محلياً وسحابياً للملف الشخصي (للاعبين الحقيقيين فقط)
             if (localPlayerRole === 'player1') {
                 recordMatchResultLocally(isP1Winner, p2.name || 'لاعب مجهول', p1.score, p2.score);
-            } else if (localPlayerRole === 'player2') {
+            } else if (localPlayerRole === 'player2' && !data.isSinglePlayer) {
                 recordMatchResultLocally(!isP1Winner, p1.name, p2.score, p1.score);
             }
         }
@@ -2277,10 +2625,11 @@
             if (!currentGameId || !gameDataState) return;
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
             try {
+                const isSingle = gameDataState.isSinglePlayer;
                 await updateDoc(docRef, {
-                    status: 'playing',
+                    status: 'playing', // اللعب مباشرة (سواء بوت أو ضيف أصدقاء، نعيد اللعب سريعاً)
                     currentRound: 1,
-                    currentSetter: 'player1',
+                    currentSetter: isSingle ? 'player2' : 'player1', // البوت يبدأ دائماً في الفردي
                     secretWord: '',
                     secretWordSubmitted: false,
                     hintUsed: false,
