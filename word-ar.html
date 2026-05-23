@@ -286,7 +286,6 @@
                                 <!-- حاوية تلميح الذكاء الاصطناعي -->
                                 <div id="ai-hint-container" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-xl hidden text-sm text-indigo-300 italic font-medium shadow-inner">
                                 </div>
-                                <button onclick="handleRequestHint()" id="btn-request-hint" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300 font-bold transition-all">✨ طلب مساعدة AI (-5 ثوانٍ خصم)</button>
                             </div>
 
                             <div class="space-y-3">
@@ -864,16 +863,12 @@
                     renderHearts('display-guesser-hearts', data.chancesLeft);
 
                     const hintContainer = document.getElementById('ai-hint-container');
-                    const btnRequestHint = document.getElementById('btn-request-hint');
-                    if (data.hintUsed && data.geminiHint) {
-                        hintContainer.innerText = `✨ ${data.geminiHint}`;
+                    if (data.geminiHint) {
+                        hintContainer.innerText = `💡 تلميح: ${data.geminiHint}`;
                         hintContainer.classList.remove('hidden');
-                        btnRequestHint.classList.add('hidden');
                     } else {
                         hintContainer.classList.add('hidden');
                         hintContainer.innerText = '';
-                        btnRequestHint.classList.remove('hidden');
-                        btnRequestHint.innerText = "✨ طلب مساعدة AI (-5 ثوانٍ خصم)";
                     }
                 }
 
@@ -1646,59 +1641,6 @@
             }
         };
 
-        // تحسين دالة التلميحات لتعطي التلميح بالعربية
-        window.handleRequestHint = async function() {
-            if (!gameDataState || gameDataState.hintUsed || !currentGameId) return;
-            const secretWord = atob(gameDataState.secretWord);
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
-            
-            const btn = document.getElementById('btn-request-hint');
-            btn.innerText = "✨ جاري التفكير...";
-            btn.disabled = true;
-            
-            let finalHint = "";
-            
-            // استخدام القاموس المحلي إن وجدت الكلمة لضمان سرعة الرد
-            if (INTERNAL_DICTIONARY[secretWord]) {
-                finalHint = INTERNAL_DICTIONARY[secretWord];
-                await new Promise(r => setTimeout(r, 400));
-            } else {
-                try {
-                    const payload = {
-                        contents: [{ parts: [{ text: `Provide a very short, cryptic 1-sentence hint in ARABIC language for the English word "${secretWord}". DO NOT use the word itself or its root. Keep it under 15 words. Reply strictly in Arabic.` }] }]
-                    };
-                    
-                    const result = await fetchGeminiWithBackoff(payload);
-                    const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-                    
-                    if (aiText) {
-                        finalHint = aiText;
-                    } else {
-                        throw new Error("التلميح فارغ");
-                    }
-                } catch (err) {
-                    finalHint = `إنها كلمة شائعة تبدأ بحرف '${secretWord.charAt(0)}'!`;
-                }
-            }
-            
-            try {
-                const newTimerStart = gameDataState.timerStart - 5000;
-
-                await updateDoc(docRef, {
-                    hintUsed: true,
-                    geminiHint: finalHint,
-                    timerStart: newTimerStart,
-                    lastAction: `✨ تم الكشف عن التلميح! (خصم 5 ثوانٍ من المُخمّن)`
-                });
-                soundEffects.playTimerWarning();
-                showToast("ظهر التلميح! (تم خصم 5 ثوانٍ)", "warning");
-            } catch (err) {
-                showToast("فشل في مزامنة التلميح.", "error");
-                btn.innerText = "✨ طلب مساعدة AI (-5 ثوانٍ خصم)";
-                btn.disabled = false;
-            }
-        };
-
         function startOrSyncTurnTimer(data) {
             clearInterval(countdownTimerInterval);
             isLocalTimeoutUpdating = false;
@@ -1821,7 +1763,7 @@
 
             // تفعيل حالة التحميل
             const originalBtnHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التدقيق...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التدقيق والتجهيز...';
             btn.disabled = true;
 
             // التحقق من صحة الكلمة إملائياً
@@ -1833,6 +1775,28 @@
                 return;
             }
 
+            // --- استخراج التلميح تلقائياً ---
+            let finalHint = "";
+            if (INTERNAL_DICTIONARY[cleanWord]) {
+                finalHint = INTERNAL_DICTIONARY[cleanWord];
+            } else {
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: `Provide a very short, cryptic 1-sentence hint in ARABIC language for the English word "${cleanWord}". DO NOT use the word itself or its root. Keep it under 15 words. Reply strictly in Arabic.` }] }]
+                    };
+                    const result = await fetchGeminiWithBackoff(payload);
+                    const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                    if (aiText) {
+                        finalHint = aiText;
+                    } else {
+                        throw new Error("التلميح فارغ");
+                    }
+                } catch (err) {
+                    finalHint = `إنها كلمة إنجليزية تبدأ بحرف '${cleanWord.charAt(0)}'!`;
+                }
+            }
+            // -----------------------------
+
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
             
             try {
@@ -1841,6 +1805,8 @@
                 await updateDoc(docRef, {
                     secretWord: b64Secret,
                     secretWordSubmitted: true,
+                    geminiHint: finalHint,
+                    hintUsed: true,
                     chancesLeft: 5,
                     guesses: [],
                     timerStart: Date.now(),
@@ -1849,7 +1815,7 @@
                 });
 
                 inputEl.value = ''; 
-                showToast("تم إرسال الكلمة! لتبدأ المبارزة.", "success");
+                showToast("تم إرسال الكلمة وتجهيز التلميح! لتبدأ المبارزة.", "success");
             } catch (error) {
                 showToast("تعذر إرسال الكلمة للشبكة.", "error");
             } finally {
