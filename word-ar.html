@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مبارزة الكلمات ⚔️ لعبة التخمين المباشرة</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- خطوط جوجل (تم إضافة خط Cairo للغة العربية) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- أيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'], // تعيين الخط العربي كافتراضي
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    boxShadow: {
+                        'neon-blue': '0 0 15px rgba(59, 130, 246, 0.5)',
+                        'neon-emerald': '0 0 15px rgba(16, 185, 129, 0.5)',
+                        'neon-rose': '0 0 15px rgba(244, 63, 94, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+        }
+        .text-neon {
+            text-shadow: 0 0 8px currentColor;
+        }
+        /* شريط تمرير مخصص */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        /* لتصحيح اتجاه الإشعارات في النظام العربي */
+        .toast-enter {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .toast-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between overflow-x-hidden selection:bg-blue-500 selection:text-white">
+
+    <!-- تأثير الإضاءة العلوية -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <!-- الحاوية الرئيسية -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-8 relative z-10 w-full max-w-4xl mx-auto">
+        
+        <!-- الترويسة -->
+        <header class="text-center mb-6">
+            <h1 class="font-display text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-l from-blue-400 via-indigo-400 to-rose-400 bg-clip-text text-transparent flex items-center justify-center gap-3 drop-shadow-sm">
+                <span>مبارزة الكلمات</span>
+                <span class="text-3xl text-indigo-400 text-neon animate-pulse">⚔️</span>
+            </h1>
+            <p class="text-slate-400 text-xs md:text-sm mt-2 font-medium tracking-wider uppercase">ساحة حية لتخمين الكلمات بين جهازين</p>
+        </header>
+
+        <!-- حاوية الشاشات -->
+        <div id="screen-container" class="w-full bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-800 p-6 md:p-8 shadow-2xl relative min-h-[480px] flex flex-col justify-between">
+            
+            <!-- شاشة 1: الترحيب (إنشاء / انضمام) -->
+            <div id="screen-welcome" class="space-y-6 flex flex-col justify-center my-auto">
+                <div class="text-center space-y-2">
+                    <h2 class="text-2xl font-bold text-slate-100 font-display">جهّز كلماتك السرية</h2>
+                    <p class="text-slate-400 text-sm">واجه خصمك في مباراة سريعة وحية لتخمين الكلمات الإنجليزية. أدخل اسمك للبدء.</p>
+                </div>
+
+                <div class="space-y-4 max-w-md mx-auto w-full">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">اسم اللاعب</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 start-0 flex items-center ps-3 text-slate-500">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input type="text" id="input-player-name" maxlength="15" placeholder="أدخل اسمك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 ps-10 pe-4 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- كارت إنشاء غرفة -->
+                        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-blue-500/50 transition-all flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="font-bold text-blue-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-plus-circle"></i> إنشاء غرفة
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-1">قم بإنشاء ساحة جديدة واستضف المباراة.</p>
+                            </div>
+                            <button onclick="handleCreateGame()" id="btn-create-game" class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-blue transition-all flex items-center justify-center gap-2">
+                                <span>استضافة المبارزة</span>
+                                <i class="fa-solid fa-arrow-left text-xs"></i> <!-- السهم لليسار في العربية -->
+                            </button>
+                        </div>
+
+                        <!-- كارت الانضمام -->
+                        <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-rose-500/50 transition-all flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="font-bold text-rose-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-right-to-bracket"></i> الانضمام
+                                </h3>
+                                <p class="text-xs text-slate-500 mt-1">لديك رمز؟ أدخله هنا للانضمام للمعركة.</p>
+                            </div>
+                            <div class="space-y-2">
+                                <input type="text" id="input-join-code" placeholder="أدخل الرمز..." class="w-full text-center bg-slate-950 border border-slate-800 rounded-lg py-2 text-sm tracking-widest font-mono text-rose-400 font-bold uppercase focus:outline-none focus:border-rose-500">
+                                <button onclick="handleJoinGame()" id="btn-join-game" class="w-full py-2 px-4 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-rose transition-all flex items-center justify-center gap-2">
+                                    <span>دخول الساحة</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شاشة 2: الانتظار في الغرفة -->
+            <div id="screen-lobby" class="hidden space-y-6 flex flex-col justify-center my-auto text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-500/10 text-blue-400 mb-2 border border-blue-500/20 animate-pulse text-2xl mx-auto">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </div>
+                
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold font-display">في انتظار منافس...</h2>
+                    <p class="text-slate-400 text-sm max-w-md mx-auto">شارك رمز الغرفة أو أرسل رابط الانضمام السريع لخصمك لتبدأ اللعبة!</p>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 max-w-md mx-auto w-full space-y-3">
+                    <span class="block text-xs font-bold uppercase tracking-widest text-slate-500">رمز المباراة</span>
+                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-lg p-3">
+                        <span id="lobby-code-display" class="font-mono text-2xl font-bold tracking-widest text-blue-400 px-2">-----</span>
+                        <button onclick="copyLobbyCode()" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-xs font-semibold rounded-md transition-all flex items-center gap-1.5 text-slate-200">
+                            <i class="fa-solid fa-copy"></i>
+                            <span id="btn-copy-text">نسخ الرمز</span>
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <button onclick="copyLobbyUrl()" class="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-4 decoration-indigo-400/40 font-medium">
+                            <i class="fa-solid fa-link ms-1"></i> نسخ رابط الانضمام المباشر
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2 text-slate-500 text-sm">
+                    <i class="fa-solid fa-spinner animate-spin"></i>
+                    <span>بانتظار انضمام اللاعب الثاني...</span>
+                </div>
+            </div>
+
+            <!-- شاشة 3: اللعب النشط -->
+            <div id="screen-game" class="hidden flex-grow flex flex-col">
+                <!-- شريط النتائج العلوي -->
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-4 font-display">
+                    <!-- اللاعب الأول -->
+                    <div id="score-p1-card" class="flex flex-col items-start p-2 rounded-lg transition-all">
+                        <span id="score-p1-name" class="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span> اللاعب 1
+                        </span>
+                        <span id="score-p1-value" class="text-2xl font-bold text-blue-400 tracking-tight">0 <span class="text-xs text-slate-600">نقاط</span></span>
+                    </div>
+
+                    <!-- معلومات الجولة -->
+                    <div class="text-center bg-slate-950/80 border border-slate-800/80 rounded-full px-4 py-1.5 flex flex-col items-center mx-2">
+                        <span id="game-round-indicator" class="text-xs font-bold uppercase tracking-widest text-indigo-400">الجولة 1</span>
+                        <span id="game-setter-status" class="text-[10px] text-slate-400 font-medium whitespace-nowrap">اللاعب 1 يختار الكلمة</span>
+                    </div>
+
+                    <!-- اللاعب الثاني -->
+                    <div id="score-p2-card" class="flex flex-col items-end p-2 rounded-lg transition-all">
+                        <span id="score-p2-name" class="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
+                            اللاعب 2 <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                        </span>
+                        <span id="score-p2-value" class="text-2xl font-bold text-rose-400 tracking-tight">0 <span class="text-xs text-slate-600">نقاط</span></span>
+                    </div>
+                </div>
+
+                <!-- اللوحة المركزية للديناميكية -->
+                <div id="game-central-panel" class="flex-grow flex flex-col justify-center py-4 relative">
+                    
+                    <!-- حالة أ: انتظار الخصم لتحديد الكلمة -->
+                    <div id="panel-waiting-setter" class="hidden text-center space-y-4 my-auto">
+                        <div class="relative inline-flex">
+                            <span class="absolute inline-flex h-full w-full rounded-full bg-indigo-500/10 animate-ping"></span>
+                            <div class="relative w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl">
+                                <i class="fa-solid fa-keyboard animate-bounce"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <h3 class="text-xl font-bold text-slate-100">الخصم يختار الكلمة</h3>
+                            <p class="text-sm text-slate-400">يرجى الانتظار، يقوم خصمك الآن بتحديد الكلمة السرية الإنجليزية...</p>
+                        </div>
+                    </div>
+
+                    <!-- حالة ب: دور اللاعب الحالي لكتابة الكلمة -->
+                    <div id="panel-local-setup-word" class="hidden max-w-md mx-auto w-full space-y-4 my-auto">
+                        <div class="text-center space-y-1">
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">دورك لوضع الكلمة</span>
+                            <h3 class="text-xl font-bold text-slate-100 font-display">أدخل الكلمة السرية</h3>
+                            <p class="text-xs text-slate-400">أدخل كلمة إنجليزية صحيحة (حرفين على الأقل). لخصمك 5 محاولات (15 ثانية لكل محاولة) لاكتشافها.</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="relative">
+                                <input type="text" id="input-secret-word" dir="ltr" placeholder="WORD" class="w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3.5 px-4 text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase placeholder:text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <button onclick="handleAISuggestWord(event)" class="absolute end-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-400 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1" title="اقتراح كلمة صعبة">
+                                    ✨ كلمة ذكية
+                                </button>
+                            </div>
+                            <button onclick="handleLockInSecretWord()" id="btn-lock-word" class="w-full py-3 bg-gradient-to-l from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-[0.99] font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                                <span>تأكيد الكلمة وبدء الجولة ⚡</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- حالة ج: وضع المراقبة (صاحب الكلمة يشاهد التخمين) -->
+                    <div id="panel-local-setter-watching" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center my-auto">
+                        <div class="space-y-4 text-center md:text-start">
+                            <div class="space-y-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-500">دور المتحدي</span>
+                                <h3 class="text-2xl font-bold font-display">الخصم يخمن الآن!</h3>
+                                <p class="text-sm text-slate-400">خصمك يحاول كشف الكلمة. راقب تقدمه مباشرة.</p>
+                            </div>
+                            <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+                                <span class="block text-xs text-slate-500 uppercase font-semibold mb-1">كلمتك السرية</span>
+                                <span id="display-setter-own-word" class="text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase" dir="ltr">-----</span>
+                            </div>
+                        </div>
+                        
+                        <!-- تفاصيل المراقبة -->
+                        <div class="space-y-4">
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
+                                <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase">
+                                    <span>الوقت المتبقي للمحاولة</span>
+                                    <span id="display-setter-timer-value" class="text-rose-400" dir="ltr">15s</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden flex" dir="ltr">
+                                    <div id="display-setter-timer-progress" class="h-full bg-gradient-to-r from-blue-500 to-rose-500 transition-all duration-100" style="width: 100%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-400 uppercase">محاولات الخصم</span>
+                                <div id="display-setter-opponent-hearts" class="flex items-center gap-1.5 text-lg text-rose-500 flex-row-reverse">
+                                    <!-- قلوب ديناميكية -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- حالة د: دور اللاعب ليقوم بالتخمين -->
+                    <div id="panel-local-guessing" class="hidden grid grid-cols-1 md:grid-cols-5 gap-6 my-auto">
+                        
+                        <!-- ساحة التخمين الرئيسية -->
+                        <div class="md:col-span-3 space-y-4 flex flex-col justify-center">
+                            <div class="text-center space-y-2">
+                                <span class="text-xs font-bold text-rose-400 uppercase tracking-widest">ساحة التخمين</span>
+                                <div id="display-masked-word" dir="ltr" class="text-4xl md:text-5xl font-mono font-bold tracking-widest text-slate-100 uppercase p-4 bg-slate-950 border border-slate-800/80 rounded-2xl shadow-inner min-h-[80px] flex items-center justify-center">
+                                    H _ _ _
+                                </div>
+                                <p class="text-xs text-slate-500">تم كشف الحرف الأول فقط. خمّن الكلمة الإنجليزية!</p>
+                                
+                                <!-- حاوية تلميح الذكاء الاصطناعي -->
+                                <div id="ai-hint-container" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-xl hidden text-sm text-indigo-300 italic font-medium shadow-inner">
+                                </div>
+                                <button onclick="handleRequestHint()" id="btn-request-hint" class="mt-2 text-xs text-indigo-400 hover:text-indigo-300 font-bold transition-all">✨ طلب مساعدة AI (-5 ثوانٍ خصم)</button>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="relative">
+                                    <input type="text" id="input-guess-word" dir="ltr" placeholder="Type your guess..." class="w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-xl font-bold tracking-wider uppercase placeholder:text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
+                                </div>
+                                <button onclick="handleGuessSubmit()" id="btn-submit-guess" class="w-full py-3 bg-gradient-to-l from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.99] font-bold rounded-xl shadow-neon-rose transition-all flex items-center justify-center gap-2">
+                                    <span>تأكيد التخمين 🎯</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- لوحة الوقت والمحاولات -->
+                        <div class="md:col-span-2 space-y-4">
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-4 space-y-2">
+                                <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase">
+                                    <span>عداد الوقت</span>
+                                    <span id="display-guesser-timer-value" class="text-rose-400 font-bold" dir="ltr">15s</span>
+                                </div>
+                                <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden flex" dir="ltr">
+                                    <div id="display-guesser-timer-progress" class="h-full bg-gradient-to-r from-blue-500 to-rose-500 transition-all duration-100" style="width: 100%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-400 uppercase">المحاولات المتبقية</span>
+                                <div id="display-guesser-hearts" class="flex items-center gap-1.5 text-lg text-rose-500 flex-row-reverse">
+                                    <!-- قلوب ديناميكية -->
+                                </div>
+                            </div>
+
+                            <div id="guess-hint-note" class="text-xs text-center text-slate-500 font-medium">
+                                أسرع! أرسل إجابتك قبل انتهاء الـ 15 ثانية وإلا ستفقد محاولة.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- سجل التخمينات بالأسفل -->
+                <div id="guesses-tracker-section" class="border-t border-slate-800/80 pt-4 mt-auto">
+                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 flex items-center justify-between">
+                        <span>سجل التخمينات</span>
+                        <span id="display-guesses-counter" class="text-[10px] text-slate-600 font-normal">استخدمت 0/5</span>
+                    </h4>
+                    <div id="list-guesses" class="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto custom-scroll pe-2 text-xs" dir="ltr">
+                        <div class="text-slate-600 italic">لا توجد محاولات سابقة بعد.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- شاشة 4: نتيجة الجولة (تراكب Overlay) -->
+            <div id="screen-round-outcome" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md rounded-2xl p-6 flex flex-col justify-center items-center text-center space-y-6 z-40">
+                <div id="outcome-animation-container" class="w-20 h-20 rounded-full flex items-center justify-center text-3xl border">
+                    <!-- أيقونات ديناميكية -->
+                </div>
+                
+                <div class="space-y-2">
+                    <h3 id="outcome-title" class="text-2xl font-bold font-display">العنوان</h3>
+                    <p id="outcome-desc" class="text-sm text-slate-400 max-w-sm mx-auto">تفاصيل النتيجة</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-center text-xs">
+                    <span class="text-slate-500 block uppercase font-bold tracking-widest text-[10px] mb-1">الكلمة السرية كانت</span>
+                    <span id="outcome-word-reveal" class="text-xl font-bold font-mono tracking-widest text-indigo-400 uppercase" dir="ltr">WORD</span>
+                </div>
+
+                <div class="w-full max-w-xs">
+                    <button onclick="handleAcknowledgeTurnOutcome()" id="btn-next-turn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-neon-blue">
+                        <span id="btn-next-turn-text">متابعة المبارزة</span>
+                        <i class="fa-solid fa-angles-left text-xs"></i> <!-- السهم لليسار في العربية -->
+                    </button>
+                    <span id="btn-next-turn-waiting-note" class="text-[10px] text-slate-500 mt-2 block hidden">في انتظار نقر الخصم للمتابعة...</span>
+                </div>
+            </div>
+
+            <!-- شاشة 5: نهاية اللعبة وإعلان الفائز -->
+            <div id="screen-game-over" class="hidden absolute inset-0 bg-slate-950/98 backdrop-blur-md rounded-2xl p-6 flex flex-col justify-center items-center text-center space-y-6 z-50">
+                <div class="relative">
+                    <div class="text-6xl animate-bounce">🏆</div>
+                    <div class="absolute -top-1 -end-1 text-2xl">✨</div>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-3xl font-bold text-slate-100 font-display">إعلان الانتصار!</h3>
+                    <p id="gameover-winner-announcement" class="text-indigo-400 font-bold tracking-wide text-lg">اللاعب 1 فاز في المبارزة!</p>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto">لقد وصل للهدف (5 نقاط) أولاً وتوّج بالبطولة.</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-around gap-8 w-full max-w-xs font-display">
+                    <div class="text-center">
+                        <span id="gameover-p1-name" class="block text-xs text-slate-500">اللاعب 1</span>
+                        <span id="gameover-p1-score" class="text-2xl font-bold text-blue-400">0</span>
+                    </div>
+                    <div class="text-slate-700 text-lg font-bold">VS</div>
+                    <div class="text-center">
+                        <span id="gameover-p2-name" class="block text-xs text-slate-500">اللاعب 2</span>
+                        <span id="gameover-p2-score" class="text-2xl font-bold text-rose-400">0</span>
+                    </div>
+                </div>
+
+                <button onclick="handleRestartGame()" class="w-full max-w-xs py-3.5 bg-gradient-to-l from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-bold rounded-xl transition-all shadow-neon-emerald flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>بدء مبارزة جديدة</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- نظام الإشعارات (Toasts) -->
+        <div id="custom-toast-holder" class="fixed bottom-6 end-6 z-50 flex flex-col gap-2 max-w-md pointer-events-none">
+            <!-- ستضاف الإشعارات هنا ديناميكياً -->
+        </div>
+
+    </main>
+
+    <!-- تذييل الصفحة -->
+    <footer class="w-full text-center py-4 text-[11px] text-slate-600 border-t border-slate-900 font-medium">
+        <span>الإصدار المطور للمبارزة v3.0 • تم دمج المدقق الإملائي.</span>
+    </footer>
+
+    <!-- سكربت اللعبة وقواعد البيانات فايربيس -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // المتغيرات العامة
+        const urlParams = new URLSearchParams(window.location.hash.replace('#', '?'));
+        const hashRoom = urlParams.get('room');
+        const hashApp = urlParams.get('app');
+        const appId = "word-guess-multiplayer";
+                    
+        const firebaseConfig = {
+          apiKey: "AIzaSyCoKgbRTDl71Ymb-OGtucJGZx8thAAubyU", // القيمة ستوفر عبر النظام
+          authDomain: "word-duel-c0158.firebaseapp.com",
+          projectId: "word-duel-c0158",
+          storageBucket: "word-duel-c0158.firebasestorage.app",
+          messagingSenderId: "958370381510",
+          appId: "1:958370381510:web:0a86666be2dff5944ce1c7",
+          measurementId: "G-QY7QKMWV0D"
+        };
+
+        // تهيئة فايربيس
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // متغيرات حالة اللعبة
+        let currentUserId = null;
+        let currentGameId = null;
+        let gameDataState = null;
+        let gameUnsubscribe = null;
+        let localPlayerRole = null; 
+        let countdownTimerInterval = null;
+        let lastLoggedTimerValue = 15;
+        let isLocalTimeoutUpdating = false;
+
+        // نظام المؤثرات الصوتية المركب (لتفادي استخدام روابط خارجية)
+        const soundEffects = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playTick() {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            },
+            playTimerWarning() {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.15);
+            },
+            playSuccess() {
+                this.init();
+                const now = this.ctx.currentTime;
+                [523.25, 659.25, 783.99].forEach((freq, index) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.1);
+                    gain.gain.setValueAtTime(0.1, now + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.1 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + index * 0.1);
+                    osc.stop(now + index * 0.1 + 0.2);
+                });
+            },
+            playFailure() {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.4);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            },
+            playGameStart() {
+                this.init();
+                const now = this.ctx.currentTime;
+                [440, 554, 659, 880].forEach((freq, index) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.08);
+                    gain.gain.setValueAtTime(0.08, now + index * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.3);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + index * 0.08);
+                    osc.stop(now + index * 0.08 + 0.3);
+                });
+            }
+        };
+
+        // دالة المساعدة لعرض الإشعارات
+        window.showToast = function(message, type = 'info') {
+            const toastHolder = document.getElementById('custom-toast-holder');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-slate-900 border-slate-800 text-slate-100';
+            let iconClass = 'fa-info-circle text-blue-400';
+            if (type === 'success') {
+                bgClass = 'bg-slate-900 border-emerald-950 text-slate-100';
+                iconClass = 'fa-check-circle text-emerald-400';
+            } else if (type === 'error') {
+                bgClass = 'bg-slate-900 border-rose-950 text-slate-100';
+                iconClass = 'fa-times-circle text-rose-400';
+            } else if (type === 'warning') {
+                bgClass = 'bg-slate-900 border-amber-950 text-slate-100';
+                iconClass = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `${bgClass} border p-4 rounded-xl flex items-center gap-3 shadow-lg pointer-events-auto transition-all duration-300 toast-enter`;
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-lg shrink-0"></i>
+                <span class="text-xs font-semibold">${message}</span>
+            `;
+            
+            toastHolder.appendChild(toast);
+            
+            // تفعيل التحريك
+            setTimeout(() => {
+                toast.classList.replace('toast-enter', 'toast-active');
+            }, 50);
+
+            // الإزالة التلقائية
+            setTimeout(() => {
+                toast.classList.replace('toast-active', 'toast-enter');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3500);
+        };
+
+        // توثيق هوية المستخدم
+        async function authenticateUser() {
+            if (auth.currentUser) {
+                currentUserId = auth.currentUser.uid;
+                return;
+            }
+
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try {
+                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUserId = userCredential.user.uid;
+                    return;
+                } catch (err) {
+                    console.warn("فشل توثيق التوكن المخصص، جاري التحويل للمجهول:", err);
+                }
+            }
+
+            try {
+                const userCredential = await signInAnonymously(auth);
+                currentUserId = userCredential.user.uid;
+            } catch (err) {
+                showToast("فشل الاتصال الآمن بالخادم. أعد المحاولة.", "error");
+            }
+        }
+
+        function generateId(length = 5) {
+            const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; 
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += letters.charAt(Math.floor(Math.random() * letters.length));
+            }
+            return result;
+        }
+
+        function getPlayerName() {
+            const val = document.getElementById('input-player-name').value.trim();
+            return val ? val : "لاعب " + generateId(3);
+        }
+
+        window.handleCreateGame = async function() {
+            const hostName = getPlayerName();
+            await authenticateUser();
+            
+            if (!auth.currentUser) {
+                showToast("فشل في تسجيل الدخول. يرجى التحديث.", "error");
+                return;
+            }
+
+            currentUserId = auth.currentUser.uid;
+            const generatedCode = generateId(5);
+            currentGameId = generatedCode;
+
+            const initialGameDoc = {
+                id: generatedCode,
+                status: 'lobby',
+                player1: {
+                    uid: currentUserId,
+                    name: hostName,
+                    score: 0,
+                    acknowledgedOutcome: false
+                },
+                player2: null,
+                currentRound: 1,
+                currentSetter: 'player1', 
+                secretWord: '',
+                secretWordSubmitted: false,
+                hintUsed: false,
+                geminiHint: '',
+                chancesLeft: 5,
+                guesses: [],
+                timerStart: null,
+                timerActive: false,
+                turnOutcome: 'none', 
+                lastAction: `تم إنشاء المباراة بواسطة ${hostName}!`,
+                createdAt: Date.now()
+            };
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', generatedCode);
+                await setDoc(docRef, initialGameDoc);
+                
+                window.location.hash = `room=${generatedCode}&app=${appId}`;
+                subscribeToGame(generatedCode);
+                soundEffects.playGameStart();
+                showToast("تم إنشاء غرفة اللعب بنجاح!", "success");
+            } catch (error) {
+                showToast("تعذر إنشاء الغرفة.", "error");
+            }
+        };
+
+        window.handleJoinGame = async function() {
+            const enteredCode = document.getElementById('input-join-code').value.trim().toUpperCase();
+            if (!enteredCode) {
+                showToast("يرجى إدخال رمز الغرفة المكون من 5 حروف.", "warning");
+                return;
+            }
+
+            const guestName = getPlayerName();
+            await authenticateUser();
+            
+            if (!auth.currentUser) {
+                showToast("فشل الاتصال بالشبكة.", "error");
+                return;
+            }
+
+            currentUserId = auth.currentUser.uid;
+            currentGameId = enteredCode;
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', enteredCode);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    showToast("لم يتم العثور على غرفة بهذا الرمز.", "error");
+                    return;
+                }
+
+                const data = docSnap.data();
+                if (data.status !== 'lobby' && data.player2 && data.player2.uid !== currentUserId) {
+                    showToast("هذه الغرفة ممتلئة مسبقاً.", "error");
+                    return;
+                }
+
+                if (data.player1.uid === currentUserId) {
+                    subscribeToGame(enteredCode);
+                    showToast("مرحباً بعودتك إلى غرفتك!", "success");
+                    return;
+                }
+
+                await updateDoc(docRef, {
+                    player2: {
+                        uid: currentUserId,
+                        name: guestName,
+                        score: 0,
+                        acknowledgedOutcome: false
+                    },
+                    status: 'playing',
+                    lastAction: `دخل ${guestName} إلى المباراة!`
+                });
+
+                window.location.hash = `room=${enteredCode}&app=${appId}`;
+                subscribeToGame(enteredCode);
+                soundEffects.playGameStart();
+                showToast("تم الانضمام للغرفة بنجاح!", "success");
+
+            } catch (error) {
+                showToast("فشل الانضمام. يرجى التأكد من الرمز والاتصال.", "error");
+            }
+        };
+
+        window.copyLobbyCode = function() {
+            if (!currentGameId) return;
+            const el = document.createElement('textarea');
+            el.value = currentGameId;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const btnText = document.getElementById('btn-copy-text');
+            btnText.innerText = "تم النسخ!";
+            setTimeout(() => {
+                btnText.innerText = "نسخ الرمز";
+            }, 1500);
+            showToast("تم نسخ رمز الغرفة", "success");
+        };
+
+        window.copyLobbyUrl = function() {
+            if (!currentGameId) return;
+            const joinLink = window.location.origin + window.location.pathname + `#room=${currentGameId}&app=${appId}`;
+            const el = document.createElement('textarea');
+            el.value = joinLink;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("تم نسخ رابط الانضمام المباشر", "success");
+        };
+
+        function subscribeToGame(gameId) {
+            if (gameUnsubscribe) {
+                gameUnsubscribe();
+            }
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', gameId);
+            gameUnsubscribe = onSnapshot(docRef, (docSnap) => {
+                if (!docSnap.exists()) {
+                    showToast("تم إغلاق هذه الغرفة.", "error");
+                    resetToWelcomeScreen();
+                    return;
+                }
+
+                const data = docSnap.data();
+                gameDataState = data;
+                processGameUpdate();
+            }, (error) => {
+                showToast("انقطع الاتصال اللحظي بالمباراة.", "error");
+            });
+        }
+
+        function resetToWelcomeScreen() {
+            if (gameUnsubscribe) {
+                gameUnsubscribe();
+                gameUnsubscribe = null;
+            }
+            clearInterval(countdownTimerInterval);
+            currentGameId = null;
+            gameDataState = null;
+            localPlayerRole = null;
+            window.location.hash = "";
+            
+            document.getElementById('screen-welcome').classList.remove('hidden');
+            document.getElementById('screen-lobby').classList.add('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-round-outcome').classList.add('hidden');
+            document.getElementById('screen-game-over').classList.add('hidden');
+        }
+
+        function processGameUpdate() {
+            const data = gameDataState;
+            
+            if (currentUserId === data.player1.uid) {
+                localPlayerRole = 'player1';
+            } else if (data.player2 && currentUserId === data.player2.uid) {
+                localPlayerRole = 'player2';
+            } else {
+                localPlayerRole = null;
+            }
+
+            if (data.status === 'lobby') {
+                showLobbyScreen(data);
+            } else if (data.status === 'playing' || data.status === 'turnover' || data.status === 'gameover') {
+                showGameScreen(data);
+            }
+        }
+
+        function showLobbyScreen(data) {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-lobby').classList.remove('hidden');
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('lobby-code-display').innerText = data.id;
+        }
+
+        function showGameScreen(data) {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-lobby').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+
+            const p1 = data.player1;
+            const p2 = data.player2 || { name: 'جاري الانضمام...', score: 0 };
+
+            document.getElementById('score-p1-name').innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block me-1"></span> ${p1.name}`;
+            document.getElementById('score-p1-value').innerHTML = `${p1.score} <span class="text-xs text-slate-500">نقاط</span>`;
+            document.getElementById('score-p2-name').innerHTML = `${p2.name} <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block ms-1"></span>`;
+            document.getElementById('score-p2-value').innerHTML = `${p2.score} <span class="text-xs text-slate-500">نقاط</span>`;
+
+            const activeSetter = data.currentSetter; 
+            if (activeSetter === 'player1') {
+                document.getElementById('score-p1-card').className = "flex flex-col items-start p-2.5 bg-slate-950 rounded-xl border border-blue-500/20";
+                document.getElementById('score-p2-card').className = "flex flex-col items-end p-2.5 opacity-40";
+                document.getElementById('game-setter-status').innerText = `${p1.name} يكتب الكلمة`;
+            } else {
+                document.getElementById('score-p1-card').className = "flex flex-col items-start p-2.5 opacity-40";
+                document.getElementById('score-p2-card').className = "flex flex-col items-end p-2.5 bg-slate-950 rounded-xl border border-rose-500/20";
+                document.getElementById('game-setter-status').innerText = `${p2.name} يكتب الكلمة`;
+            }
+
+            document.getElementById('game-round-indicator').innerText = `الجولة ${data.currentRound}`;
+
+            document.getElementById('panel-waiting-setter').classList.add('hidden');
+            document.getElementById('panel-local-setup-word').classList.add('hidden');
+            document.getElementById('panel-local-setter-watching').classList.add('hidden');
+            document.getElementById('panel-local-guessing').classList.add('hidden');
+
+            const isCurrentPlayerSetter = (localPlayerRole === activeSetter);
+
+            if (!data.secretWordSubmitted) {
+                clearInterval(countdownTimerInterval);
+                if (isCurrentPlayerSetter) {
+                    document.getElementById('panel-local-setup-word').classList.remove('hidden');
+                } else {
+                    document.getElementById('panel-waiting-setter').classList.remove('hidden');
+                }
+            } else {
+                if (isCurrentPlayerSetter) {
+                    document.getElementById('panel-local-setter-watching').classList.remove('hidden');
+                    document.getElementById('display-setter-own-word').innerText = atob(data.secretWord);
+                    renderHearts('display-setter-opponent-hearts', data.chancesLeft);
+                } else {
+                    document.getElementById('panel-local-guessing').classList.remove('hidden');
+                    const rawWord = atob(data.secretWord);
+                    document.getElementById('display-masked-word').innerText = getMaskedWordPresentation(rawWord);
+                    renderHearts('display-guesser-hearts', data.chancesLeft);
+
+                    const hintContainer = document.getElementById('ai-hint-container');
+                    const btnRequestHint = document.getElementById('btn-request-hint');
+                    if (data.hintUsed && data.geminiHint) {
+                        hintContainer.innerText = `✨ ${data.geminiHint}`;
+                        hintContainer.classList.remove('hidden');
+                        btnRequestHint.classList.add('hidden');
+                    } else {
+                        hintContainer.classList.add('hidden');
+                        hintContainer.innerText = '';
+                        btnRequestHint.classList.remove('hidden');
+                        btnRequestHint.innerText = "✨ طلب مساعدة AI (-5 ثوانٍ خصم)";
+                    }
+                }
+
+                if (data.timerActive) {
+                    startOrSyncTurnTimer(data);
+                }
+            }
+
+            populateGuessesList(data.guesses, data.chancesLeft);
+
+            const outcomeScreen = document.getElementById('screen-round-outcome');
+            if (data.turnOutcome !== 'none') {
+                clearInterval(countdownTimerInterval);
+                displayRoundOutcome(data);
+                outcomeScreen.classList.remove('hidden');
+            } else {
+                outcomeScreen.classList.add('hidden');
+            }
+
+            const gameOverScreen = document.getElementById('screen-game-over');
+            if (p1.score >= 5 || p2.score >= 5) {
+                clearInterval(countdownTimerInterval);
+                displayMatchOver(data, p1, p2);
+                gameOverScreen.classList.remove('hidden');
+            } else {
+                gameOverScreen.classList.add('hidden');
+            }
+        }
+
+        function renderHearts(containerId, count) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const heart = document.createElement('i');
+                if (i < count) {
+                    heart.className = "fa-solid fa-heart text-rose-500 animate-pulse";
+                } else {
+                    heart.className = "fa-regular fa-heart text-slate-800";
+                }
+                container.appendChild(heart);
+            }
+        }
+
+        function getMaskedWordPresentation(word) {
+            if (!word) return "";
+            const charArray = word.split('');
+            return charArray[0] + charArray[1] + " " + "_ ".repeat(charArray.length - 2);
+        }
+
+        function populateGuessesList(guesses, chancesLeft) {
+            const container = document.getElementById('list-guesses');
+            document.getElementById('display-guesses-counter').innerText = `استخدمت ${5 - chancesLeft}/5`;
+
+            if (!guesses || guesses.length === 0) {
+                container.innerHTML = '<div class="text-slate-600 italic">لا توجد محاولات سابقة بعد.</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            for (let i = guesses.length - 1; i >= 0; i--) {
+                const item = guesses[i];
+                const badge = document.createElement('div');
+                badge.className = "px-2.5 py-1 rounded bg-slate-950 border border-slate-800 flex items-center gap-1.5 shrink-0";
+                
+                if (item.correct) {
+                    badge.classList.add('border-emerald-950');
+                    badge.innerHTML = `<span class="font-mono text-emerald-400 font-bold uppercase">${item.guess}</span> <i class="fa-solid fa-check text-emerald-500 text-[10px]"></i>`;
+                } else if (item.guess === '[TIMEOUT]') {
+                    badge.classList.add('border-rose-950');
+                    badge.innerHTML = `<span class="font-mono text-rose-400 font-bold uppercase italic">[وقت منتهي]</span> <i class="fa-solid fa-hourglass-end text-rose-500 text-[10px]"></i>`;
+                } else {
+                    badge.innerHTML = `<span class="font-mono text-slate-400 uppercase line-through">${item.guess}</span> <i class="fa-solid fa-xmark text-rose-500 text-[10px]"></i>`;
+                }
+                container.appendChild(badge);
+            }
+        }
+
+        // --- قاموس الكلمات المعزز ونظام التدقيق الإملائي ---
+        const INTERNAL_DICTIONARY = {
+            "APPLE": "فاكهة مقرمشة تكون حمراء أو خضراء.",
+            "OCEAN": "مسطح مائي واسع جداً ومالح.",
+            "FIRE": "يوفر الدفء ولكنه قد يحرق الأشياء.",
+            "TIME": "شيء يمر دائماً ولا يمكن إيقافه أبداً.",
+            "GALAXY": "نظام هائل يحتوي على النجوم والكواكب.",
+            "PUZZLE": "لعبة أو مشكلة تختبر ذكاءك.",
+            "GUITAR": "آلة موسيقية وترية تُعزف بالأصابع.",
+            "RHYTHM": "نمط منتظم ومتكرر من الصوت.",
+            "CASTLE": "مبنى ضخم ومحصن كان يسكنه الملوك.",
+            "SHADOW": "منطقة مظلمة تتكون عندما يحجب جسم ما الضوء.",
+            "BREEZE": "رياح لطيفة ومنعشة.",
+            "CACTUS": "نبات شوكي ينمو في الصحراء الجافة.",
+            "MYSTIC": "شيء غامض أو يتعلق بالأسرار القديمة.",
+            "QUARTZ": "معدن صلب ولامع يستخدم غالبًا في الساعات.",
+            "ROCKET": "مركبة مصممة للسفر في الفضاء الخارجي.",
+            "PLANET": "جسم سماوي كبير يدور حول نجم.",
+            "FOREST": "مساحة واسعة مغطاة بالأشجار الكثيفة.",
+            "DRAGON": "وحش أسطوري يشبه الزواحف العملاقة وينفث النار.",
+            "PIRATE": "شخص يهاجم ويسرق السفن في البحر.",
+            "NINJA": "محارب متخفٍ وبارع في فنون التجسس.",
+            "ROBOT": "آلة مبرمجة قادرة على أداء مهام معقدة.",
+            "ALIEN": "كائن فضائي من كوكب آخر.",
+            "GHOST": "طيف أو روح لشخص ميت.",
+            "MAGIC": "قوى خارقة تستخدم للتأثير على الأحداث.",
+            "SWORD": "سلاح ذو نصل معدني طويل وحاد.",
+            "SHIELD": "قطعة عريضة من الدروع تُحمل للحماية.",
+            "POTION": "سائل يُعتقد أن له خصائص سحرية أو علاجية.",
+            "SPELL": "كلمات تُستخدم كتعويذة سحرية.",
+            "CROWN": "غطاء رأس مزخرف يرتديه الملوك.",
+            "KNIGHT": "جندي يركب الخيل ويرتدي درعًا.",
+            "EAGLE": "طائر جارح كبير يمتلك منقارًا معقوفًا وقويًا.",
+            "TIGER": "قط بري ضخم يتميز بخطوط داكنة على فروه.",
+            "LION": "قط بري كبير يُعرف بلقب ملك الغابة.",
+            "BEAR": "حيوان ثديي ضخم وثقيل ذو فرو كثيف.",
+            "WOLF": "حيوان ثديي لاحم يعيش ويصطاد في قطعان.",
+            "SNAKE": "زاحف طويل يفتقر إلى الأطراف.",
+            "SPIDER": "كائن مفصلي يمتلك ثمانية أرجل ويغزل الشباك.",
+            "SHARK": "مفترس بحري يمتلك هيكلًا غضروفيًا.",
+            "WHALE": "حيوان ثديي بحري ضخم جداً.",
+            "DOLPHIN": "حيوان ثديي بحري اجتماعي وعالي الذكاء.",
+            "BICYCLE": "مركبة ذات عجلتين تعمل بالدواسات.",
+            "MOUNTAIN": "ارتفاع طبيعي شاهق في سطح الأرض.",
+            "RIVER": "مجرى مائي طبيعي كبير يتدفق باستمرار.",
+            "SUMMER": "الفصل الأكثر دفئًا في السنة.",
+            "WINTER": "الفصل الأكثر برودة في السنة.",
+            "WINDOW": "فتحة في الجدار للسماح بدخول الضوء والهواء.",
+            "MIRROR": "سطح يعكس صورة واضحة لما يقابله.",
+            "BRIDGE": "هيكل يُبنى للعبور فوق عائق كالأنهار.",
+            "CAMERA": "جهاز يستخدم لالتقاط الصور أو تسجيل الفيديو.",
+            "DESERT": "منطقة جغرافية قاحلة ونادرة الأمطار.",
+            "ISLAND": "قطعة من اليابسة محاطة بالمياه من جميع الجهات.",
+            "JUNGLE": "غابة كثيفة الأشجار والنباتات في المناطق الاستوائية."
+        };
+
+        // دالة التحقق من صحة الكلمة الإنجليزية (التدقيق الإملائي)
+        async function isValidEnglishWord(word) {
+            if (!word) return false;
+            // التحقق السريع من القاموس الداخلي
+            if (INTERNAL_DICTIONARY[word]) return true;
+            
+            try {
+                // الاعتماد على واجهة برمجة مجانية للتحقق من الكلمات
+                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                return response.ok;
+            } catch (e) {
+                // في حالة فشل الشبكة أو الواجهة، نسمح بالكلمة حتى لا تتوقف اللعبة
+                console.warn("تعذر الوصول لمدقق الكلمات، تم قبول الكلمة مؤقتاً.");
+                return true;
+            }
+        }
+
+        async function fetchGeminiWithBackoff(payload) {
+            const apiKey = ""; 
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            
+            for (let i = 0; i <= delays.length; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    
+                    // منع الانتظار الطويل في حال كان الخطأ من جهة العميل (مثل غياب مفتاح API)
+                    if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+                        throw new Error(`Client Error: ${response.status}`);
+                    }
+
+                    if (i === delays.length) {
+                        throw new Error(`API failed with status: ${response.status}`);
+                    }
+                } catch (err) {
+                    if (err.message.includes("Client Error") || i === delays.length) throw err;
+                }
+                await new Promise(resolve => setTimeout(resolve, delays[i]));
+            }
+        }
+
+        // تحسين دالة اقتراح الكلمات
+        window.handleAISuggestWord = async function(e) {
+            if (e) e.preventDefault();
+            const inputEl = document.getElementById('input-secret-word');
+            const btn = e.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            
+            const wordsList = Object.keys(INTERNAL_DICTIONARY);
+            
+            // نسبة 40% للاعتماد على القاموس المحلي لتوفير الوقت والطلبات
+            if (Math.random() < 0.4) {
+                const word = wordsList[Math.floor(Math.random() * wordsList.length)];
+                inputEl.value = word;
+                showToast("✨ تم اختيار كلمة صعبة من القاموس!", "success");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                const payload = {
+                    // طلب كلمة إنجليزية فقط وبدون إضافات
+                    contents: [{ parts: [{ text: "Respond with EXACTLY ONE valid tricky English dictionary word between 4 and 8 letters. Output ONLY the word, no punctuation, no quotes, no extra text." }] }]
+                };
+                
+                const result = await fetchGeminiWithBackoff(payload);
+                let word = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
+                
+                if (word) {
+                    // إزالة أي رموز أو مسافات قد يضيفها الذكاء الاصطناعي عن طريق الخطأ
+                    word = word.replace(/[^A-Z]/g, '');
+                    if (word.length >= 2) {
+                        inputEl.value = word;
+                        showToast("✨ الذكاء الاصطناعي ولّد كلمة لك!", "success");
+                        return; // تم بنجاح، اخرج من الدالة
+                    }
+                }
+                
+                throw new Error("استجابة غير صالحة");
+            } catch (err) {
+                // التفعيل الفوري للخطة البديلة دون انتظار طويل
+                const word = wordsList[Math.floor(Math.random() * wordsList.length)];
+                inputEl.value = word;
+                showToast("✨ تم اختيار كلمة صعبة (احتياطي)!", "success");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        // تحسين دالة التلميحات لتعطي التلميح بالعربية
+        window.handleRequestHint = async function() {
+            if (!gameDataState || gameDataState.hintUsed || !currentGameId) return;
+            const secretWord = atob(gameDataState.secretWord);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+            
+            const btn = document.getElementById('btn-request-hint');
+            btn.innerText = "✨ جاري التفكير...";
+            btn.disabled = true;
+            
+            let finalHint = "";
+            
+            // استخدام القاموس المحلي إن وجدت الكلمة لضمان سرعة الرد
+            if (INTERNAL_DICTIONARY[secretWord]) {
+                finalHint = INTERNAL_DICTIONARY[secretWord];
+                await new Promise(r => setTimeout(r, 400));
+            } else {
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: `Provide a very short, cryptic 1-sentence hint in ARABIC language for the English word "${secretWord}". DO NOT use the word itself or its root. Keep it under 15 words. Reply strictly in Arabic.` }] }]
+                    };
+                    
+                    const result = await fetchGeminiWithBackoff(payload);
+                    const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                    
+                    if (aiText) {
+                        finalHint = aiText;
+                    } else {
+                        throw new Error("التلميح فارغ");
+                    }
+                } catch (err) {
+                    finalHint = `إنها كلمة شائعة تبدأ بحرف '${secretWord.charAt(0)}'!`;
+                }
+            }
+            
+            try {
+                const newTimerStart = gameDataState.timerStart - 5000;
+
+                await updateDoc(docRef, {
+                    hintUsed: true,
+                    geminiHint: finalHint,
+                    timerStart: newTimerStart,
+                    lastAction: `✨ تم الكشف عن التلميح! (خصم 5 ثوانٍ من المُخمّن)`
+                });
+                soundEffects.playTimerWarning();
+                showToast("ظهر التلميح! (تم خصم 5 ثوانٍ)", "warning");
+            } catch (err) {
+                showToast("فشل في مزامنة التلميح.", "error");
+                btn.innerText = "✨ طلب مساعدة AI (-5 ثوانٍ خصم)";
+                btn.disabled = false;
+            }
+        };
+
+        function startOrSyncTurnTimer(data) {
+            clearInterval(countdownTimerInterval);
+            isLocalTimeoutUpdating = false;
+
+            const timerTick = () => {
+                const elapsedMs = Date.now() - data.timerStart;
+                const totalAllowed = 15000;
+                const timeLeftSec = Math.max(0, Math.ceil((totalAllowed - elapsedMs) / 1000));
+                const percentage = Math.max(0, ((totalAllowed - elapsedMs) / totalAllowed) * 100);
+
+                const setProgress = document.getElementById('display-setter-timer-progress');
+                const setVal = document.getElementById('display-setter-timer-value');
+                const guessProgress = document.getElementById('display-guesser-timer-progress');
+                const guessVal = document.getElementById('display-guesser-timer-value');
+
+                if (setProgress) setProgress.style.width = `${percentage}%`;
+                if (setVal) {
+                    setVal.innerText = `${timeLeftSec}s`;
+                    if (timeLeftSec <= 3) {
+                        setVal.className = "text-rose-500 animate-pulse font-extrabold";
+                    } else {
+                        setVal.className = "text-amber-500";
+                    }
+                }
+
+                if (guessProgress) guessProgress.style.width = `${percentage}%`;
+                if (guessVal) {
+                    guessVal.innerText = `${timeLeftSec}s`;
+                    if (timeLeftSec <= 3) {
+                        guessVal.className = "text-rose-500 animate-pulse font-extrabold";
+                    } else {
+                        guessVal.className = "text-amber-500";
+                    }
+                }
+
+                if (timeLeftSec !== lastLoggedTimerValue) {
+                    lastLoggedTimerValue = timeLeftSec;
+                    if (timeLeftSec <= 4 && timeLeftSec > 0) {
+                        soundEffects.playTimerWarning();
+                    } else if (timeLeftSec > 0) {
+                        soundEffects.playTick();
+                    }
+                }
+
+                if (timeLeftSec <= 0 && !isLocalTimeoutUpdating) {
+                    clearInterval(countdownTimerInterval);
+                    isLocalTimeoutUpdating = true;
+                    
+                    const activeGuesser = (data.currentSetter === 'player1') ? 'player2' : 'player1';
+                    if (localPlayerRole === activeGuesser) {
+                        triggerLocalTimerTimeout();
+                    }
+                }
+            };
+
+            timerTick();
+            countdownTimerInterval = setInterval(timerTick, 100);
+        }
+
+        async function triggerLocalTimerTimeout() {
+            if (!currentGameId || !gameDataState) return;
+            
+            const currentGuesses = [...gameDataState.guesses];
+            currentGuesses.push({
+                guess: '[TIMEOUT]',
+                correct: false,
+                timestamp: Date.now()
+            });
+
+            const nextChances = gameDataState.chancesLeft - 1;
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            soundEffects.playFailure();
+            showToast("انتهى الوقت! فقدت محاولة.", "error");
+
+            try {
+                if (nextChances <= 0) {
+                    const activeSetter = gameDataState.currentSetter;
+                    const p1OutcomeScore = gameDataState.player1.score + (activeSetter === 'player1' ? 1 : 0);
+                    const p2OutcomeScore = (gameDataState.player2?.score || 0) + (activeSetter === 'player2' ? 1 : 0);
+
+                    await updateDoc(docRef, {
+                        chancesLeft: 0,
+                        guesses: currentGuesses,
+                        timerActive: false,
+                        turnOutcome: 'failed',
+                        'player1.score': p1OutcomeScore,
+                        'player2.score': p2OutcomeScore,
+                        lastAction: `نفدت المحاولات. ${activeSetter === 'player1' ? gameDataState.player1.name : gameDataState.player2.name} كسب نقطة!`
+                    });
+                } else {
+                    await updateDoc(docRef, {
+                        chancesLeft: nextChances,
+                        guesses: currentGuesses,
+                        timerStart: Date.now(), 
+                        lastAction: "انتهى الوقت! محاولة ضائعة."
+                    });
+                }
+            } catch (error) {
+                console.error("خطأ في تحديث الوقت المتبقي: ", error);
+            } finally {
+                isLocalTimeoutUpdating = false;
+            }
+        }
+
+        // إدخال الكلمة السرية مع التدقيق الإملائي (Spelling Check)
+        window.handleLockInSecretWord = async function() {
+            const inputEl = document.getElementById('input-secret-word');
+            const btn = document.getElementById('btn-lock-word');
+            const cleanWord = inputEl.value.trim().toUpperCase();
+
+            if (!cleanWord || cleanWord.length < 2) {
+                showToast("الكلمة يجب أن تكون من حرفين على الأقل.", "warning");
+                return;
+            }
+            if (/\s/.test(cleanWord)) {
+                showToast("لا يمكن أن تحتوي الكلمة على مسافات.", "warning");
+                return;
+            }
+
+            // تفعيل حالة التحميل
+            const originalBtnHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التدقيق...';
+            btn.disabled = true;
+
+            // التحقق من صحة الكلمة إملائياً
+            const isValid = await isValidEnglishWord(cleanWord);
+            if (!isValid) {
+                showToast("الكلمة غير موجودة في القاموس الإنجليزي! أدخل كلمة صحيحة.", "error");
+                btn.innerHTML = originalBtnHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+            
+            try {
+                const b64Secret = btoa(cleanWord);
+
+                await updateDoc(docRef, {
+                    secretWord: b64Secret,
+                    secretWordSubmitted: true,
+                    chancesLeft: 5,
+                    guesses: [],
+                    timerStart: Date.now(),
+                    timerActive: true,
+                    lastAction: `قام ${localPlayerRole === 'player1' ? gameDataState.player1.name : gameDataState.player2.name} بتأكيد الكلمة السرية!`
+                });
+
+                inputEl.value = ''; 
+                showToast("تم إرسال الكلمة! لتبدأ المبارزة.", "success");
+            } catch (error) {
+                showToast("تعذر إرسال الكلمة للشبكة.", "error");
+            } finally {
+                btn.innerHTML = originalBtnHTML;
+                btn.disabled = false;
+            }
+        };
+
+        // تقديم التخمين مع التدقيق الإملائي
+        window.handleGuessSubmit = async function() {
+            const inputEl = document.getElementById('input-guess-word');
+            const btn = document.getElementById('btn-submit-guess');
+            const rawGuess = inputEl.value.trim().toUpperCase();
+
+            if (!rawGuess) {
+                showToast("الرجاء كتابة تخمينك أولاً.", "warning");
+                return;
+            }
+
+            const originalBtnHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> التدقيق...';
+            btn.disabled = true;
+
+            // التحقق من أن التخمين كلمة حقيقية قبل احتسابه كمحاولة خاطئة
+            const isValid = await isValidEnglishWord(rawGuess);
+            if (!isValid) {
+                showToast("عفواً، هذه ليست كلمة إنجليزية حقيقية. لم يتم خصم محاولة.", "warning");
+                btn.innerHTML = originalBtnHTML;
+                btn.disabled = false;
+                inputEl.value = '';
+                return; // إيقاف التنفيذ دون خصم
+            }
+
+            const data = gameDataState;
+            const actualWord = atob(data.secretWord);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            const isCorrect = (rawGuess === actualWord);
+            const updatedGuesses = [...data.guesses];
+            updatedGuesses.push({
+                guess: rawGuess,
+                correct: isCorrect,
+                timestamp: Date.now()
+            });
+
+            try {
+                if (isCorrect) {
+                    const activeGuesser = (data.currentSetter === 'player1') ? 'player2' : 'player1';
+                    const p1OutcomeScore = data.player1.score + (activeGuesser === 'player1' ? 1 : 0);
+                    const p2OutcomeScore = (data.player2?.score || 0) + (activeGuesser === 'player2' ? 1 : 0);
+
+                    soundEffects.playSuccess();
+                    await updateDoc(docRef, {
+                        guesses: updatedGuesses,
+                        timerActive: false,
+                        turnOutcome: 'guessed',
+                        'player1.score': p1OutcomeScore,
+                        'player2.score': p2OutcomeScore,
+                        lastAction: `نجاح مبهر! الكلمة تم حلها بواسطة ${activeGuesser === 'player1' ? data.player1.name : data.player2.name}!`
+                    });
+
+                    inputEl.value = '';
+                    showToast("ممتاز! لقد كشفت الكلمة.", "success");
+
+                } else {
+                    const nextChances = data.chancesLeft - 1;
+                    soundEffects.playFailure();
+
+                    if (nextChances <= 0) {
+                        const activeSetter = data.currentSetter;
+                        const p1OutcomeScore = data.player1.score + (activeSetter === 'player1' ? 1 : 0);
+                        const p2OutcomeScore = (data.player2?.score || 0) + (activeSetter === 'player2' ? 1 : 0);
+
+                        await updateDoc(docRef, {
+                            chancesLeft: 0,
+                            guesses: updatedGuesses,
+                            timerActive: false,
+                            turnOutcome: 'failed',
+                            'player1.score': p1OutcomeScore,
+                            'player2.score': p2OutcomeScore,
+                            lastAction: `الكلمة كانت صعبة. ${activeSetter === 'player1' ? data.player1.name : data.player2.name} يكسب نقطة!`
+                        });
+                    } else {
+                        await updateDoc(docRef, {
+                            chancesLeft: nextChances,
+                            guesses: updatedGuesses,
+                            timerStart: Date.now(), 
+                            lastAction: `تخمين خاطئ: ${rawGuess}`
+                        });
+                        showToast("كلمة غير صحيحة. حاول مجدداً!", "error");
+                    }
+
+                    inputEl.value = '';
+                }
+
+            } catch (error) {
+                showToast("حدث خطأ أثناء إرسال التخمين.", "error");
+            } finally {
+                btn.innerHTML = originalBtnHTML;
+                btn.disabled = false;
+            }
+        };
+
+        function displayRoundOutcome(data) {
+            const avatar = document.getElementById('outcome-animation-container');
+            const title = document.getElementById('outcome-title');
+            const desc = document.getElementById('outcome-desc');
+            const reveal = document.getElementById('outcome-word-reveal');
+            const nextBtnText = document.getElementById('btn-next-turn-text');
+            const nextBtnWaiting = document.getElementById('btn-next-turn-waiting-note');
+
+            reveal.innerText = atob(data.secretWord);
+
+            const setterName = (data.currentSetter === 'player1') ? data.player1.name : (data.player2?.name || 'اللاعب 2');
+            const guesserName = (data.currentSetter === 'player1') ? (data.player2?.name || 'اللاعب 2') : data.player1.name;
+
+            if (data.turnOutcome === 'guessed') {
+                avatar.innerHTML = '🎯';
+                avatar.className = "w-20 h-20 rounded-full flex items-center justify-center text-4xl border border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-neon-emerald";
+                title.innerText = "تم حل الكلمة!";
+                title.className = "text-2xl font-bold font-display text-emerald-400";
+                desc.innerText = `نجح ${guesserName} في كشف الكلمة السرية وحصل على نقطة واحدة (+1).`;
+            } else if (data.turnOutcome === 'failed') {
+                avatar.innerHTML = '☠️';
+                avatar.className = "w-20 h-20 rounded-full flex items-center justify-center text-4xl border border-rose-500 bg-rose-500/10 text-rose-400 shadow-neon-rose";
+                title.innerText = "فشل التخمين!";
+                title.className = "text-2xl font-bold font-display text-rose-400";
+                desc.innerText = `نفدت محاولات ${guesserName}! ربح ${setterName} هذه الجولة ونال نقطة واحدة (+1).`;
+            }
+
+            const userAcked = (localPlayerRole === 'player1') ? data.player1.acknowledgedOutcome : (data.player2?.acknowledgedOutcome || false);
+            if (userAcked) {
+                nextBtnText.innerText = "جاهز، بانتظار الخصم...";
+                nextBtnWaiting.classList.remove('hidden');
+                document.getElementById('btn-next-turn').className = "w-full py-3 bg-slate-800 text-slate-500 font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-2";
+            } else {
+                nextBtnText.innerText = "استعد للجولة التالية";
+                nextBtnWaiting.classList.add('hidden');
+                document.getElementById('btn-next-turn').className = "w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-neon-blue";
+            }
+        }
+
+        window.handleAcknowledgeTurnOutcome = async function() {
+            if (!currentGameId || !gameDataState) return;
+
+            const data = gameDataState;
+            const userAcked = (localPlayerRole === 'player1') ? data.player1.acknowledgedOutcome : (data.player2?.acknowledgedOutcome || false);
+            if (userAcked) return;
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            try {
+                const updatePayload = {};
+                if (localPlayerRole === 'player1') {
+                    updatePayload['player1.acknowledgedOutcome'] = true;
+                } else if (localPlayerRole === 'player2') {
+                    updatePayload['player2.acknowledgedOutcome'] = true;
+                }
+
+                await updateDoc(docRef, updatePayload);
+
+                const freshSnap = await getDoc(docRef);
+                const freshData = freshSnap.data();
+
+                if (freshData.player1.acknowledgedOutcome && freshData.player2.acknowledgedOutcome) {
+                    const nextRound = freshData.currentRound + 1;
+                    const nextSetter = (freshData.currentSetter === 'player1') ? 'player2' : 'player1';
+
+                    await updateDoc(docRef, {
+                        currentRound: nextRound,
+                        currentSetter: nextSetter,
+                        secretWord: '',
+                        secretWordSubmitted: false,
+                        hintUsed: false,
+                        geminiHint: '',
+                        chancesLeft: 5,
+                        guesses: [],
+                        timerStart: null,
+                        timerActive: false,
+                        turnOutcome: 'none',
+                        'player1.acknowledgedOutcome': false,
+                        'player2.acknowledgedOutcome': false,
+                        lastAction: `بدأت الجولة ${nextRound}! صانع الكلمة الآن هو ${nextSetter === 'player1' ? freshData.player1.name : freshData.player2.name}.`
+                    });
+                }
+
+            } catch (error) {
+                showToast("فشل في تأكيد استمرارية الجولة.", "error");
+            }
+        };
+
+        function displayMatchOver(data, p1, p2) {
+            const banner = document.getElementById('gameover-winner-announcement');
+            const isP1Winner = p1.score >= 5;
+            const winnerName = isP1Winner ? p1.name : p2.name;
+
+            banner.innerText = `👑 ${winnerName} بطل الساحة!`;
+
+            document.getElementById('gameover-p1-name').innerText = p1.name;
+            document.getElementById('gameover-p1-score').innerText = p1.score;
+            document.getElementById('gameover-p2-name').innerText = p2.name;
+            document.getElementById('gameover-p2-score').innerText = p2.score;
+        }
+
+        window.handleRestartGame = async function() {
+            if (!currentGameId || !gameDataState) return;
+
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
+
+            try {
+                await updateDoc(docRef, {
+                    status: 'playing',
+                    currentRound: 1,
+                    currentSetter: 'player1',
+                    secretWord: '',
+                    secretWordSubmitted: false,
+                    hintUsed: false,
+                    geminiHint: '',
+                    chancesLeft: 5,
+                    guesses: [],
+                    timerStart: null,
+                    timerActive: false,
+                    turnOutcome: 'none',
+                    'player1.score': 0,
+                    'player1.acknowledgedOutcome': false,
+                    'player2.score': 0,
+                    'player2.acknowledgedOutcome': false,
+                    lastAction: "تم إعادة ضبط الساحة بالكامل! العب مجدداً!"
+                });
+
+                showToast("تم إعادة ضبط المباراة بنجاح.", "success");
+            } catch (error) {
+                showToast("تعذر بدء مبارزة جديدة.", "error");
+            }
+        };
+
+        function parseHash() {
+            const hash = window.location.hash.substring(1); 
+            if (!hash) return { room: null, app: null };
+            if (hash.includes('=')) {
+                const params = new URLSearchParams(hash);
+                return {
+                    room: params.get('room'),
+                    app: params.get('app')
+                };
+            } else {
+                return { room: hash, app: null };
+            }
+        }
+
+        window.onload = async function() {
+            await authenticateUser();
+
+            const parsed = parseHash();
+            if (parsed.room && parsed.room.length === 5) {
+                document.getElementById('input-join-code').value = parsed.room;
+                showToast(`تم إدراج رمز الغرفة تلقائياً: ${parsed.room}`, "info");
+            }
+        };
+
+    </script>
+</body>
+</html>
