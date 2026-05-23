@@ -902,12 +902,25 @@
         // --- Authentication & Start Game ---
 
         async function authenticateUser() {
+            // 1. If already authenticated in this active session, skip the process
+            if (currentUserId) return;
+
+            // 2. Wait for Firebase to load the saved session from local storage
+            await new Promise((resolve) => {
+                const unsubscribe = onAuthStateChanged(auth, (user) => {
+                    unsubscribe();
+                    resolve(user);
+                });
+            });
+
+            // 3. If a persisted session was found, use it
             if (auth.currentUser) {
                 currentUserId = auth.currentUser.uid;
                 await loadProfile();
                 return;
             }
 
+            // Check for custom token fallback
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 try {
                     const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
@@ -919,6 +932,7 @@
                 }
             }
 
+            // 4. Otherwise, create a NEW anonymous account
             try {
                 const userCredential = await signInAnonymously(auth);
                 currentUserId = userCredential.user.uid;
