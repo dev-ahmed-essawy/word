@@ -2,7 +2,7 @@
   "name": "Word Duel ⚔️",
   "short_name": "Word Duel",
   "description": "Real-Time Multiplayer Word Guess Duel",
-  "start_url": "/word/",
+  "start_url": "/",
   "scope": "/word/",
   "display": "standalone",
   "orientation": "portrait",
