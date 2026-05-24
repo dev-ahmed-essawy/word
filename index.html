@@ -614,7 +614,6 @@
         };
 
         const availableAvatars = ["👤", "🦊", "🦁", "🐼","🦝","🦅", "🐉", "🦄", "🐺", "🐯", "🦉", "🐙", "👻", "🤖", "👽", "🤠","🥷", "🧑‍🚀", "🧙‍♂️", "🧛‍♂️", "🧟","🐸","🐧", "🦚", "🐬", "🦈", "🧚", "🧜‍♂️", "🧞‍♂️", "🧟‍♂️", "🧙‍♀️" ];
-
         // Sound Effects System
         const soundEffects = {
             ctx: null,
@@ -1323,7 +1322,7 @@
                     if (data.geminiHint) {
                         // Persist translation if it matches the current round's hint
                         if (currentTranslatedHint && currentTranslatedHint.original === data.geminiHint) {
-                            hintText.innerHTML = `💡 Hint: ${data.geminiHint}<br><span class="text-amber-400/90 mt-1 block font-bold">🌍 ${currentTranslatedHint.lang}: ${currentTranslatedHint.text}</span>`;
+                            hintText.innerHTML = `💡 Hint: ${data.geminiHint}<div dir="auto" class="text-amber-400/90 mt-2 p-2 bg-slate-900/50 rounded border border-amber-500/20 font-bold">🌍 ${currentTranslatedHint.lang}: ${currentTranslatedHint.text}</div>`;
                         } else {
                             hintText.innerHTML = `💡 Hint: ${data.geminiHint}`;
                         }
@@ -2530,32 +2529,39 @@
 
         window.handleTranslateHint = async function() {
             if (!gameDataState || !gameDataState.geminiHint) return;
-            const targetLang = document.getElementById('hint-lang-select').value;
+            
+            // Get proper target language text
+            const selectEl = document.getElementById('hint-lang-select');
+            const targetLang = selectEl.options[selectEl.selectedIndex].text;
+            const targetLangValue = selectEl.value; // e.g. "Arabic"
             const originalHint = gameDataState.geminiHint;
             
             const btn = document.getElementById('btn-translate-hint');
-            const originalBtnHtml = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             btn.disabled = true;
 
             try {
+                // Ensure strict JSON payload extraction for accurate translation
                 const payload = {
-                    contents: [{ parts: [{ text: `Translate the following hint to ${targetLang}. Output ONLY the translated text, no quotation marks, no extra explanation: "${originalHint}"` }] }]
+                    contents: [{ parts: [{ text: `Translate the following sentence into ${targetLangValue}. Output ONLY the translated text, do not include quotation marks or any other formatting.\n\nSentence: "${originalHint}"` }] }]
                 };
+                
                 const result = await fetchGeminiWithBackoff(payload);
                 const translation = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
                 
                 if (translation) {
                     currentTranslatedHint = { lang: targetLang, text: translation, original: originalHint };
-                    document.getElementById('ai-hint-text').innerHTML = `💡 Hint: ${originalHint}<br><span class="text-amber-400/90 mt-1 block font-bold">🌍 ${targetLang}: ${translation}</span>`;
-                    showToast("Hint translated successfully!", "success");
+                    // Apply dir="auto" properly to support Arabic layout
+                    document.getElementById('ai-hint-text').innerHTML = `💡 Hint: ${originalHint}<div dir="auto" class="text-amber-400/90 mt-2 p-2 bg-slate-900/50 rounded-lg border border-amber-500/20 font-bold">🌍 ${targetLang}: ${translation}</div>`;
+                    showToast(`Translated to ${targetLangValue}!`, "success");
                 } else {
-                    throw new Error("Empty translation");
+                    throw new Error("Empty translation returned by API");
                 }
             } catch(err) {
-                showToast("Failed to translate hint.", "error");
+                console.error("Translation failed:", err);
+                showToast("Failed to translate hint. Try again.", "error");
             } finally {
-                btn.innerHTML = originalBtnHtml;
+                btn.innerHTML = '<i class="fa-solid fa-language"></i> Translate';
                 btn.disabled = false;
             }
         };
