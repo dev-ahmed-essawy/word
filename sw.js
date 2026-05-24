@@ -1,9 +1,18 @@
 const CACHE_NAME = 'word-duel-v1';
-const urlsToCache = [ '/', '/index.html', '/word-ar.html', '/word/word-ar.html'];
+const urlsToCache = [ './', 'index.html' ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME).then(cache => {
+      // Caching assets individually so one missing file won't abort installation
+      return Promise.allSettled(
+        urlsToCache.map(url => {
+          return cache.add(url).catch(err => {
+            console.warn(`Failed to cache PWA asset: ${url}`, err);
+          });
+        })
+      );
+    })
   );
 });
 
