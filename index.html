@@ -120,21 +120,29 @@
                     </button>
                     
                     <h2 class="text-2xl font-bold text-slate-100 font-display mt-8">Prepare Your Secret Words</h2>
-                    <p class="text-slate-400 text-sm">Face your opponent in a fast-paced live English word guessing match.</p>
+                    <p class="text-slate-400 text-sm">Face your opponent in a fast-paced live word guessing match.</p>
                 </div>
 
                 <div class="space-y-4 w-full">
                     
                     <!-- Player Name & General Settings -->
-                    <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 max-w-xl mx-auto">
-                        <div class="text-center md:text-start">
+                    <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 max-w-xl mx-auto w-full">
+                        <div class="text-center md:text-start whitespace-nowrap">
                             <p class="text-xs text-slate-500">Playing as:</p>
                             <p id="welcome-name-display" class="font-bold text-indigo-400 text-lg">Loading...</p>
                         </div>
                         <div class="h-8 w-px bg-slate-800 hidden md:block"></div>
                         <div class="flex items-center gap-3 w-full md:w-auto">
+                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider shrink-0"><i class="fa-solid fa-language"></i> Lang</span>
+                            <select id="game-lang-input" class="w-full md:w-28 bg-slate-900 border border-slate-700 rounded-lg py-2 px-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-bold text-center appearance-none cursor-pointer">
+                                <option value="EN" selected>English</option>
+                                <option value="AR">عربي (AR)</option>
+                            </select>
+                        </div>
+                        <div class="h-8 w-px bg-slate-800 hidden md:block"></div>
+                        <div class="flex items-center gap-3 w-full md:w-auto">
                             <span class="text-xs font-bold text-amber-500 uppercase tracking-wider shrink-0"><i class="fa-solid fa-trophy"></i> Target</span>
-                            <select id="target-score-input" class="w-full md:w-32 bg-slate-900 border border-slate-700 rounded-lg py-2 px-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-bold text-center appearance-none cursor-pointer">
+                            <select id="target-score-input" class="w-full md:w-28 bg-slate-900 border border-slate-700 rounded-lg py-2 px-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-bold text-center appearance-none cursor-pointer">
                                 <option value="3">3 Points</option>
                                 <option value="5" selected>5 Points</option>
                                 <option value="7">7 Points</option>
@@ -327,7 +335,7 @@
                         </div>
                         <div class="space-y-1">
                             <h3 class="text-xl font-bold text-slate-100">Opponent Setting Word</h3>
-                            <p class="text-sm text-slate-400">Please wait, your opponent is currently choosing the secret English word...</p>
+                            <p class="text-sm text-slate-400">Please wait, your opponent is currently choosing the secret word...</p>
                         </div>
                     </div>
 
@@ -336,7 +344,7 @@
                         <div class="text-center space-y-1">
                             <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20 animate-pulse">Your Turn to Set Word</span>
                             <h3 class="text-xl font-bold text-slate-100 font-display">Enter Secret Word</h3>
-                            <p class="text-xs text-slate-400">Enter a valid English word (min 2 letters). Your opponent gets 5 chances (15s each) to uncover it.</p>
+                            <p class="text-xs text-slate-400">Enter a valid word (min 2 letters). Your opponent gets 5 chances (15s each) to uncover it.</p>
                         </div>
                         
                         <div class="space-y-3">
@@ -397,22 +405,11 @@
                                 <div id="display-masked-word" class="text-4xl md:text-5xl font-mono font-bold tracking-widest text-slate-100 uppercase p-4 bg-slate-950 border border-slate-800/80 rounded-2xl shadow-inner min-h-[80px] flex items-center justify-center">
                                     H _ _ _
                                 </div>
-                                <p class="text-xs text-slate-500">Only the first letter is revealed. Guess the English word!</p>
+                                <p class="text-xs text-slate-500">Only the first letter is revealed. Guess the word!</p>
                                 
-                                <!-- AI Hint Container with Translation -->
+                                <!-- AI Hint Container -->
                                 <div id="ai-hint-container" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-xl hidden flex-col gap-2 shadow-inner">
-                                    <div id="ai-hint-text" class="text-sm text-indigo-300 italic font-medium text-left"></div>
-                                    <div class="flex justify-end items-center gap-2 border-t border-indigo-900/30 pt-2 mt-1">
-                                        <select id="hint-lang-select" class="bg-slate-900 border border-slate-700 rounded py-1 px-2 text-[11px] font-bold text-slate-300 focus:outline-none focus:border-indigo-500">
-                                            <option value="Arabic">Arabic 🇸🇦</option>
-                                            <option value="Spanish">Spanish 🇪🇸</option>
-                                            <option value="French">French 🇫🇷</option>
-                                            <option value="German">German 🇩🇪</option>
-                                        </select>
-                                        <button onclick="handleTranslateHint()" id="btn-translate-hint" class="px-2.5 py-1 bg-indigo-900/50 hover:bg-indigo-800 text-indigo-200 rounded text-[11px] font-bold transition-all flex items-center gap-1.5">
-                                            <i class="fa-solid fa-language"></i> Translate
-                                        </button>
-                                    </div>
+                                    <div id="ai-hint-text" class="text-sm text-indigo-300 font-medium text-center"></div>
                                 </div>
                             </div>
 
@@ -598,7 +595,6 @@
         let isMatchResultRecordedLocally = false;
         let activeTimerStart = null; 
         let localTimeLeft = 15; 
-        let currentTranslatedHint = null; // Store translation across timer ticks
 
         // Bot Variables
         window.botGuessTimer = null;
@@ -1001,6 +997,11 @@
             const selectEl = document.getElementById('target-score-input');
             return parseInt(selectEl.value) || 5;
         }
+        
+        function getSelectedLanguage() {
+            const selectEl = document.getElementById('game-lang-input');
+            return selectEl ? selectEl.value : 'EN';
+        }
 
         // Solo Play vs Bot
         window.handleSinglePlayer = async function() {
@@ -1013,16 +1014,17 @@
             }
 
             const targetScore = getTargetScore();
+            const gameLang = getSelectedLanguage();
             const generatedCode = generateId(5);
             currentGameId = generatedCode;
             isMatchResultRecordedLocally = false;
-            currentTranslatedHint = null;
 
             const initialGameDoc = {
                 id: generatedCode,
                 status: 'playing', 
                 isSinglePlayer: true,
                 targetScore: targetScore,
+                language: gameLang,
                 player1: {
                     uid: currentUserId,
                     name: userProfile.name,
@@ -1075,16 +1077,17 @@
             }
 
             const targetScore = getTargetScore();
+            const gameLang = getSelectedLanguage();
             const generatedCode = generateId(5);
             currentGameId = generatedCode;
             isMatchResultRecordedLocally = false;
-            currentTranslatedHint = null;
 
             const initialGameDoc = {
                 id: generatedCode,
                 status: 'lobby',
                 isSinglePlayer: false,
                 targetScore: targetScore,
+                language: gameLang,
                 player1: {
                     uid: currentUserId,
                     name: userProfile.name,
@@ -1138,7 +1141,6 @@
 
             currentGameId = enteredCode;
             isMatchResultRecordedLocally = false;
-            currentTranslatedHint = null;
 
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', enteredCode);
@@ -1242,7 +1244,6 @@
             gameDataState = null;
             localPlayerRole = null;
             isMatchResultRecordedLocally = false;
-            currentTranslatedHint = null;
             window.location.hash = "";
             
             document.getElementById('screen-welcome').classList.remove('hidden');
@@ -1339,13 +1340,7 @@
                     const hintText = document.getElementById('ai-hint-text');
                     
                     if (data.geminiHint) {
-                        // Persist translation if it matches the current round's hint
-                        if (currentTranslatedHint && currentTranslatedHint.original === data.geminiHint) {
-                            hintText.innerHTML = `💡 Hint: ${data.geminiHint}<div dir="auto" class="text-amber-400/90 mt-2 p-2 bg-slate-900/50 rounded border border-amber-500/20 font-bold">🌍 ${currentTranslatedHint.lang}: ${currentTranslatedHint.text}</div>`;
-                        } else {
-                            hintText.innerHTML = `💡 Hint: ${data.geminiHint}`;
-                        }
-                        
+                        hintText.innerHTML = `💡 Hint: <span dir="auto" class="font-semibold text-amber-200 block mt-1">${data.geminiHint}</span>`;
                         hintContainer.classList.remove('hidden');
                         hintContainer.classList.add('flex');
                     } else {
@@ -1423,18 +1418,69 @@
                 
                 if (item.correct) {
                     badge.classList.add('border-emerald-950');
-                    badge.innerHTML = `<span class="font-mono text-emerald-400 font-bold uppercase">${item.guess}</span> <i class="fa-solid fa-check text-emerald-500 text-[10px]"></i>`;
+                    badge.innerHTML = `<span class="font-mono text-emerald-400 font-bold uppercase" dir="auto">${item.guess}</span> <i class="fa-solid fa-check text-emerald-500 text-[10px]"></i>`;
                 } else if (item.guess === '[TIMEOUT]') {
                     badge.classList.add('border-rose-950');
                     badge.innerHTML = `<span class="font-mono text-rose-400 font-bold uppercase italic">[TIMEOUT]</span> <i class="fa-solid fa-hourglass-end text-rose-500 text-[10px]"></i>`;
                 } else {
-                    badge.innerHTML = `<span class="font-mono text-slate-400 uppercase line-through">${item.guess}</span> <i class="fa-solid fa-xmark text-rose-500 text-[10px]"></i>`;
+                    badge.innerHTML = `<span class="font-mono text-slate-400 uppercase line-through" dir="auto">${item.guess}</span> <i class="fa-solid fa-xmark text-rose-500 text-[10px]"></i>`;
                 }
                 container.appendChild(badge);
             }
         }
 
-        // --- English Dictionary & AI Hints ---
+        // --- Arabic & English Dictionaries ---
+        const ARABIC_DICTIONARY = {
+            "شمس": "نجم يضيء نهارنا ويبعث الدفء",
+            "قمر": "ينير السماء ليلاً ويتبدل شكله",
+            "بحر": "مسطح مائي واسع مالح الموج",
+            "جبل": "تضاريس أرضية مرتفعة تعانق السحاب",
+            "شجرة": "نبات خشبي ذو جذع وأوراق",
+            "كتاب": "خير جليس في الزمان وصفحاته غنية",
+            "قلم": "أداة نستخدمها لكتابة أفكارنا",
+            "ساعة": "تخبرنا بالوقت وتدق باستمرار",
+            "هاتف": "جهاز تواصل محمول يربطنا بالعالم",
+            "سيارة": "وسيلة تنقل ذات محرك وعجلات",
+            "طائرة": "تحلق في السماء كطائر معدني",
+            "قطار": "يسير على سكك حديدية بمركبات متصلة",
+            "أسد": "ملك الغابة ذو الزئير المخيف",
+            "نمر": "حيوان مفترس يتميز بخطوطه",
+            "فيل": "حيوان بري ضخم بخرطوم طويل",
+            "نملة": "حشرة صغيرة جداً يضرب بها المثل في العمل",
+            "عصفور": "طائر صغير يغرد في الصباح",
+            "سمكة": "كائن بحري يتنفس بالخياشيم",
+            "تفاحة": "فاكهة حمراء أو خضراء تبعد الطبيب",
+            "موزة": "فاكهة صفراء مقوسة يحبها القرد",
+            "برتقال": "فاكهة حمضية كروية غنية بفيتامين سي",
+            "عنب": "فاكهة تنمو في عناقيد وتصنع عصيراً",
+            "حليب": "مشروب أبيض مغذٍ للعظام من البقر",
+            "خبز": "طعام أساسي يصنع من الدقيق ويخبز",
+            "ماء": "سائل شفاف هو سر الحياة",
+            "هواء": "غاز خفي نستنشقه لنعيش",
+            "نار": "تعطينا الدفء والضوء ولكنها تحرق",
+            "أرض": "الكوكب الذي نعيش عليه وتنمو فيه النباتات",
+            "سماء": "مظلة زرقاء واسعة تظللنا جميعاً",
+            "وردة": "نبات ذو رائحة عطرة ومظهر جذاب",
+            "قلب": "عضو ينبض بالدم ومقر المشاعر",
+            "عين": "نافذة الروح وأداة البصر",
+            "بيت": "مكان نلجأ إليه ونشعر فيه بالأمان",
+            "مدرسة": "مكان نتلقى فيه العلم والمعرفة",
+            "طبيب": "شخص يعالج المرضى ويصف الدواء",
+            "معلم": "ينقل المعرفة والأخلاق للأجيال",
+            "صديق": "رفيق الدرب وكاتم الأسرار",
+            "وطن": "الأرض التي ننتمي إليها ونحبها",
+            "عائلة": "أقرب الناس إلينا والسند الدائم",
+            "نور": "شعاع يبدد الظلام ويكشف الأشياء",
+            "ليل": "فترة الظلام للراحة والنوم",
+            "نهار": "فترة الضوء للعمل والنشاط",
+            "صيف": "فصل حار نذهب فيه للشاطئ",
+            "شتاء": "فصل بارد ممطر نحتاج فيه للدفء",
+            "ربيع": "فصل تتفتح فيه الأزهار ويعتدل الجو",
+            "خريف": "فصل تتساقط فيه أوراق الأشجار",
+            "سيف": "سلاح ماضٍ استخدم في الحروب القديمة",
+            "حصان": "حيوان أصيل سريع العدو يستخدم للركوب"
+        };
+
         const INTERNAL_DICTIONARY = {
             "BE": "have the quality of being; (copula, used with an adjective or a predicate noun)",
 			"PERSON": "a human being",
@@ -2025,15 +2071,23 @@
 			"ZOOM": "move along very quickly"
         };
 
-        async function isValidEnglishWord(word) {
+        async function isValidWord(word) {
             if (!word) return false;
-            if (INTERNAL_DICTIONARY[word]) return true;
-            try {
-                const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-                return response.ok;
-            } catch (e) {
-                console.warn("Could not reach dictionary API, accepting word temporarily.");
-                return true;
+            const lang = gameDataState?.language || 'EN';
+
+            if (lang === 'AR') {
+                if (ARABIC_DICTIONARY[word]) return true;
+                // السماح بالكلمات العربية بشكل عام كبديل للقاموس الخارجي
+                return word.length >= 2 && /^[\u0600-\u06FF]+$/.test(word);
+            } else {
+                if (INTERNAL_DICTIONARY[word]) return true;
+                try {
+                    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                    return response.ok;
+                } catch (e) {
+                    console.warn("Could not reach dictionary API, accepting word temporarily.");
+                    return true;
+                }
             }
         }
 
@@ -2076,30 +2130,36 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             btn.disabled = true;
             
-            const wordsList = Object.keys(INTERNAL_DICTIONARY);
+            const lang = gameDataState?.language || 'EN';
+            const dict = lang === 'AR' ? ARABIC_DICTIONARY : INTERNAL_DICTIONARY;
+            const wordsList = Object.keys(dict);
             
             if (Math.random() < 0.4) {
                 const word = wordsList[Math.floor(Math.random() * wordsList.length)];
                 inputEl.value = word;
-                showToast("✨ Chosen a hard word from dictionary!", "success");
+                showToast(lang === 'AR' ? "✨ تم اختيار كلمة صعبة!" : "✨ Chosen a hard word!", "success");
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 return;
             }
 
             try {
+                const prompt = lang === 'AR' 
+                    ? "Respond with EXACTLY ONE valid tricky Arabic dictionary word between 4 and 8 letters. Output ONLY the word, no punctuation, no quotes, no extra text."
+                    : "Respond with EXACTLY ONE valid tricky English dictionary word between 4 and 8 letters. Output ONLY the word, no punctuation, no quotes, no extra text.";
+                
                 const payload = {
-                    contents: [{ parts: [{ text: "Respond with EXACTLY ONE valid tricky English dictionary word between 4 and 8 letters. Output ONLY the word, no punctuation, no quotes, no extra text." }] }]
+                    contents: [{ parts: [{ text: prompt }] }]
                 };
                 
                 const result = await fetchGeminiWithBackoff(payload);
                 let word = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toUpperCase();
                 
                 if (word) {
-                    word = word.replace(/[^A-Z]/g, '');
+                    word = lang === 'AR' ? word.replace(/[^\u0600-\u06FF]/g, '') : word.replace(/[^A-Z]/g, '');
                     if (word.length >= 2) {
                         inputEl.value = word;
-                        showToast("✨ AI generated a word for you!", "success");
+                        showToast(lang === 'AR' ? "✨ اقترح الذكاء الاصطناعي كلمة!" : "✨ AI generated a word for you!", "success");
                         return;
                     }
                 }
@@ -2107,7 +2167,7 @@
             } catch (err) {
                 const word = wordsList[Math.floor(Math.random() * wordsList.length)];
                 inputEl.value = word;
-                showToast("✨ Chosen a backup hard word!", "success");
+                showToast(lang === 'AR' ? "✨ تم اختيار كلمة احتياطية!" : "✨ Chosen a backup hard word!", "success");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -2123,10 +2183,12 @@
 
         async function botSetWord() {
             try {
-                const wordsList = Object.keys(INTERNAL_DICTIONARY);
+                const lang = gameDataState.language || 'EN';
+                const dict = lang === 'AR' ? ARABIC_DICTIONARY : INTERNAL_DICTIONARY;
+                const wordsList = Object.keys(dict);
                 const cleanWord = wordsList[Math.floor(Math.random() * wordsList.length)];
-                const finalHint = INTERNAL_DICTIONARY[cleanWord];
-                const b64Secret = btoa(cleanWord);
+                const finalHint = dict[cleanWord];
+                const b64Secret = btoa(unescape(encodeURIComponent(cleanWord))); // Secure btoa for arabic
 
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
                 await updateDoc(docRef, {
@@ -2152,22 +2214,25 @@
                 window.botGuessTimer = null;
                 if (!gameDataState || gameDataState.status !== 'playing' || !gameDataState.timerActive || gameDataState.currentSetter !== 'player1') return;
 
-                const actualWord = atob(gameDataState.secretWord);
+                const actualWord = decodeURIComponent(escape(atob(gameDataState.secretWord)));
                 const firstLetter = actualWord.charAt(0);
                 
                 // Bot gets smarter if few chances remain
                 const chanceThreshold = gameDataState.chancesLeft <= 2 ? 0.35 : 0.15; 
                 const isSmartNow = Math.random() < chanceThreshold;
 
+                const lang = gameDataState.language || 'EN';
+                const dict = lang === 'AR' ? ARABIC_DICTIONARY : INTERNAL_DICTIONARY;
+
                 let botGuess = "";
                 if (isSmartNow) {
                     botGuess = actualWord;
                 } else {
-                    const wordsList = Object.keys(INTERNAL_DICTIONARY).filter(w => w.startsWith(firstLetter));
+                    const wordsList = Object.keys(dict).filter(w => w.startsWith(firstLetter));
                     if (wordsList.length > 0) {
                         botGuess = wordsList[Math.floor(Math.random() * wordsList.length)];
                     } else {
-                        botGuess = "APPLE";
+                        botGuess = lang === 'AR' ? "تفاحة" : "APPLE";
                     }
                 }
 
@@ -2398,21 +2463,29 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validating...';
             btn.disabled = true;
 
-            const isValid = await isValidEnglishWord(cleanWord);
+            const isValid = await isValidWord(cleanWord);
             if (!isValid) {
-                showToast("Word not found in English dictionary! Enter a valid word.", "error");
+                const isAr = gameDataState?.language === 'AR';
+                showToast(isAr ? "الكلمة غير صحيحة! يرجى إدخال كلمة عربية صالحة." : "Word not found! Enter a valid word.", "error");
                 btn.innerHTML = originalBtnHTML;
                 btn.disabled = false;
                 return;
             }
 
+            const lang = gameDataState.language || 'EN';
+            const dict = lang === 'AR' ? ARABIC_DICTIONARY : INTERNAL_DICTIONARY;
+            
             let finalHint = "";
-            if (INTERNAL_DICTIONARY[cleanWord]) {
-                finalHint = INTERNAL_DICTIONARY[cleanWord];
+            if (dict[cleanWord]) {
+                finalHint = dict[cleanWord];
             } else {
                 try {
+                    const prompt = lang === 'AR'
+                        ? `Provide a very short, cryptic 1-sentence riddle or hint in Arabic for the word "${cleanWord}". Do NOT use the word itself or its root. Keep it under 15 words.`
+                        : `Provide a very short, cryptic 1-sentence riddle or hint in English for the word "${cleanWord}". Do NOT use the word itself or its root. Keep it under 15 words.`;
+                    
                     const payload = {
-                        contents: [{ parts: [{ text: `Provide a very short, cryptic 1-sentence riddle or hint in English for the word "${cleanWord}". Do NOT use the word itself or its root. Keep it under 15 words.` }] }]
+                        contents: [{ parts: [{ text: prompt }] }]
                     };
                     const result = await fetchGeminiWithBackoff(payload);
                     const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
@@ -2422,14 +2495,17 @@
                         throw new Error("Empty Hint");
                     }
                 } catch (err) {
-                    finalHint = `It's an English word starting with the letter '${cleanWord.charAt(0)}'!`;
+                    finalHint = lang === 'AR' 
+                        ? `إنها كلمة تبدأ بحرف '${cleanWord.charAt(0)}'!` 
+                        : `It's a word starting with the letter '${cleanWord.charAt(0)}'!`;
                 }
             }
 
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
             
             try {
-                const b64Secret = btoa(cleanWord);
+                // Use unescape/encodeURIComponent for reliable arabic btoa conversion
+                const b64Secret = btoa(unescape(encodeURIComponent(cleanWord)));
 
                 await updateDoc(docRef, {
                     secretWord: b64Secret,
@@ -2467,9 +2543,10 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
             btn.disabled = true;
 
-            const isValid = await isValidEnglishWord(rawGuess);
+            const lang = gameDataState?.language || 'EN';
+            const isValid = await isValidWord(rawGuess);
             if (!isValid) {
-                showToast("Sorry, not a real English word. No chance deducted.", "warning");
+                showToast(lang === 'AR' ? "كلمة غير صحيحة، لم تخسر محاولة." : "Sorry, not a real word. No chance deducted.", "warning");
                 btn.innerHTML = originalBtnHTML;
                 btn.disabled = false;
                 inputEl.value = '';
@@ -2477,7 +2554,7 @@
             }
 
             const data = gameDataState;
-            const actualWord = atob(data.secretWord);
+            const actualWord = decodeURIComponent(escape(atob(data.secretWord)));
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
 
             const isCorrect = (rawGuess === actualWord);
@@ -2532,7 +2609,7 @@
                             timerStart: Date.now(), 
                             lastAction: `Wrong guess: ${rawGuess}`
                         });
-                        showToast("Incorrect word. Try again!", "error");
+                        showToast(lang === 'AR' ? "إجابة خاطئة، حاول مرة أخرى!" : "Incorrect word. Try again!", "error");
                     }
 
                     inputEl.value = '';
@@ -2546,45 +2623,6 @@
             }
         };
 
-        window.handleTranslateHint = async function() {
-            if (!gameDataState || !gameDataState.geminiHint) return;
-            
-            // Get proper target language text
-            const selectEl = document.getElementById('hint-lang-select');
-            const targetLang = selectEl.options[selectEl.selectedIndex].text;
-            const targetLangValue = selectEl.value; // e.g. "Arabic"
-            const originalHint = gameDataState.geminiHint;
-            
-            const btn = document.getElementById('btn-translate-hint');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            try {
-                // Ensure strict JSON payload extraction for accurate translation
-                const payload = {
-                    contents: [{ parts: [{ text: `Translate the following sentence into ${targetLangValue}. Output ONLY the translated text, do not include quotation marks or any other formatting.\n\nSentence: "${originalHint}"` }] }]
-                };
-                
-                const result = await fetchGeminiWithBackoff(payload);
-                const translation = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-                
-                if (translation) {
-                    currentTranslatedHint = { lang: targetLang, text: translation, original: originalHint };
-                    // Apply dir="auto" properly to support Arabic layout
-                    document.getElementById('ai-hint-text').innerHTML = `💡 Hint: ${originalHint}<div dir="auto" class="text-amber-400/90 mt-2 p-2 bg-slate-900/50 rounded-lg border border-amber-500/20 font-bold">🌍 ${targetLang}: ${translation}</div>`;
-                    showToast(`Translated to ${targetLangValue}!`, "success");
-                } else {
-                    throw new Error("Empty translation returned by API");
-                }
-            } catch(err) {
-                console.error("Translation failed:", err);
-                showToast("Failed to translate hint. Try again.", "error");
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-language"></i> Translate';
-                btn.disabled = false;
-            }
-        };
-
         function displayRoundOutcome(data) {
             const avatar = document.getElementById('outcome-animation-container');
             const title = document.getElementById('outcome-title');
@@ -2593,7 +2631,7 @@
             const nextBtnText = document.getElementById('btn-next-turn-text');
             const nextBtnWaiting = document.getElementById('btn-next-turn-waiting-note');
 
-            reveal.innerText = atob(data.secretWord);
+            reveal.innerText = decodeURIComponent(escape(atob(data.secretWord)));
 
             const setterName = (data.currentSetter === 'player1') ? data.player1.name : (data.player2?.name || 'Player 2');
             const guesserName = (data.currentSetter === 'player1') ? (data.player2?.name || 'Player 2') : data.player1.name;
