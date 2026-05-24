@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html  dir="auto" class="h-full bg-slate-950 text-slate-100">
+<html dir="ltr" class="h-full bg-slate-950 text-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,16 +96,23 @@
     <!-- Top Glow Effect -->
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[150px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
+    <!-- UI Language Toggle -->
+    <div class="absolute top-4 start-4 z-50">
+        <button onclick="toggleUILanguage()" class="px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 text-slate-100 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-2 border border-slate-700">
+            <i class="fa-solid fa-language text-indigo-400"></i> <span id="ui-lang-text">عربي</span>
+        </button>
+    </div>
+
     <!-- Main Container -->
     <main class="flex-grow flex flex-col items-center justify-center p-4 md:p-8 relative z-10 w-full max-w-5xl mx-auto">
         
         <!-- Header -->
-        <header class="text-center mb-6"><a href="word-ar.html">
+        <header class="text-center mb-6 cursor-default mt-8 md:mt-0">
             <h1 class="font-display text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-rose-400 bg-clip-text text-transparent flex items-center justify-center gap-3 drop-shadow-sm">
-                <span>Word Duel</span>
+                <span data-i18n="app_title">Word Duel</span>
                 <span class="text-3xl text-indigo-400 text-neon animate-pulse">⚔️</span>
-            </h1></a>
-            <p class="text-slate-400 text-xs md:text-sm mt-2 font-medium tracking-wider uppercase">Live Word Guessing Arena</p>
+            </h1>
+            <p class="text-slate-400 text-xs md:text-sm mt-2 font-medium tracking-wider uppercase" data-i18n="app_subtitle">Live Word Guessing Arena</p>
         </header>
 
         <!-- Screens Container -->
@@ -116,11 +123,11 @@
                 <div class="text-center space-y-2 relative">
                     <!-- Profile Button -->
                     <button onclick="showProfileScreen()" class="absolute top-0 end-0 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700 text-indigo-300 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 border border-slate-700">
-                        <span id="welcome-avatar-display" class="text-lg">👤</span> Profile
+                        <span id="welcome-avatar-display" class="text-lg">👤</span> <span data-i18n="btn_profile">Profile</span>
                     </button>
                     
-                    <h2 class="text-2xl font-bold text-slate-100 font-display mt-8">Prepare Your Secret Words</h2>
-                    <p class="text-slate-400 text-sm">Face your opponent in a fast-paced live word guessing match.</p>
+                    <h2 class="text-2xl font-bold text-slate-100 font-display mt-8" data-i18n="prepare_title">Prepare Your Secret Words</h2>
+                    <p class="text-slate-400 text-sm" data-i18n="prepare_desc">Face your opponent in a fast-paced live word guessing match.</p>
                 </div>
 
                 <div class="space-y-4 w-full">
@@ -128,25 +135,28 @@
                     <!-- Player Name & General Settings -->
                     <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 max-w-xl mx-auto w-full">
                         <div class="text-center md:text-start whitespace-nowrap">
-                            <p class="text-xs text-slate-500">Playing as:</p>
-                            <p id="welcome-name-display" class="font-bold text-indigo-400 text-lg">Loading...</p>
+                            <p class="text-xs text-slate-500" data-i18n="playing_as">Playing as:</p>
+                            <p id="welcome-name-display" class="font-bold text-indigo-400 text-lg notranslate" dir="auto">Loading...</p>
                         </div>
                         <div class="h-8 w-px bg-slate-800 hidden md:block"></div>
                         <div class="flex items-center gap-3 w-full md:w-auto">
-                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider shrink-0"><i class="fa-solid fa-language"></i> Lang</span>
+                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider shrink-0">
+                                <i class="fa-solid fa-book"></i> <span data-i18n="word_lang">Dict</span>
+                            </span>
+                            <!-- Controls Match Dictionary Word Validation -->
                             <select id="game-lang-input" class="w-full md:w-28 bg-slate-900 border border-slate-700 rounded-lg py-2 px-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-bold text-center appearance-none cursor-pointer">
                                 <option value="EN" selected>English</option>
-                                <option value="AR">عربي (AR)</option>
+                                <option value="AR">عربي</option>
                             </select>
                         </div>
                         <div class="h-8 w-px bg-slate-800 hidden md:block"></div>
                         <div class="flex items-center gap-3 w-full md:w-auto">
-                            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider shrink-0"><i class="fa-solid fa-trophy"></i> Target</span>
+                            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider shrink-0"><i class="fa-solid fa-trophy"></i> <span data-i18n="target">Target</span></span>
                             <select id="target-score-input" class="w-full md:w-28 bg-slate-900 border border-slate-700 rounded-lg py-2 px-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all font-bold text-center appearance-none cursor-pointer">
-                                <option value="3">3 Points</option>
-                                <option value="5" selected>5 Points</option>
-                                <option value="7">7 Points</option>
-                                <option value="10">10 Points</option>
+                                <option value="3" data-i18n="pts_3">3 Points</option>
+                                <option value="5" selected data-i18n="pts_5">5 Points</option>
+                                <option value="7" data-i18n="pts_7">7 Points</option>
+                                <option value="10" data-i18n="pts_10">10 Points</option>
                             </select>
                         </div>
                     </div>
@@ -155,15 +165,15 @@
                         
                         <!-- Solo Play Card -->
                         <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden">
-                            <div class="absolute top-0 end-0 bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-bl-xl text-[10px] font-bold">NEW</div>
+                            <div class="absolute top-0 end-0 bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded-es-xl text-[10px] font-bold" data-i18n="badge_new">NEW</div>
                             <div>
                                 <h3 class="font-bold text-emerald-400 flex items-center gap-2">
-                                    <i class="fa-solid fa-robot"></i> Solo vs AI
+                                    <i class="fa-solid fa-robot"></i> <span data-i18n="solo_title">Solo vs AI</span>
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-1">Practice and challenge the AI bot instantly.</p>
+                                <p class="text-xs text-slate-500 mt-1" data-i18n="solo_desc">Practice and challenge the AI bot instantly.</p>
                             </div>
                             <button onclick="handleSinglePlayer()" class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-emerald transition-all flex items-center justify-center gap-2">
-                                <span>Challenge Bot</span>
+                                <span data-i18n="solo_btn">Challenge Bot</span>
                             </button>
                         </div>
 
@@ -171,12 +181,12 @@
                         <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-blue-500/50 transition-all flex flex-col justify-between space-y-4">
                             <div>
                                 <h3 class="font-bold text-blue-400 flex items-center gap-2">
-                                    <i class="fa-solid fa-plus-circle"></i> Create Room
+                                    <i class="fa-solid fa-plus-circle"></i> <span data-i18n="host_title">Create Room</span>
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-1">Create a new arena and host a friend for a match.</p>
+                                <p class="text-xs text-slate-500 mt-1" data-i18n="host_desc">Create a new arena and host a friend for a match.</p>
                             </div>
                             <button onclick="handleCreateGame()" id="btn-create-game" class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-blue transition-all flex items-center justify-center gap-2">
-                                <span>Host Duel</span>
+                                <span data-i18n="host_btn">Host Duel</span>
                                 <i class="fa-solid fa-arrow-right text-xs"></i>
                             </button>
                         </div>
@@ -185,14 +195,14 @@
                         <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 hover:border-rose-500/50 transition-all flex flex-col justify-between space-y-4">
                             <div>
                                 <h3 class="font-bold text-rose-400 flex items-center gap-2">
-                                    <i class="fa-solid fa-right-to-bracket"></i> Join Room
+                                    <i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="join_title">Join Room</span>
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-1">Got a code? Enter it here to join the battle.</p>
+                                <p class="text-xs text-slate-500 mt-1" data-i18n="join_desc">Got a code? Enter it here to join the battle.</p>
                             </div>
                             <div class="space-y-2">
-                                <input type="text" id="input-join-code" placeholder="Enter code..." class="w-full text-center bg-slate-950 border border-slate-800 rounded-lg py-2 text-sm tracking-widest font-mono text-rose-400 font-bold uppercase focus:outline-none focus:border-rose-500">
+                                <input type="text" id="input-join-code" data-i18n-placeholder="enter_code_ph" placeholder="Enter code..." class="notranslate w-full text-center bg-slate-950 border border-slate-800 rounded-lg py-2 text-sm tracking-widest font-mono text-rose-400 font-bold uppercase focus:outline-none focus:border-rose-500">
                                 <button onclick="handleJoinGame()" id="btn-join-game" class="w-full py-2 px-4 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.98] font-semibold rounded-lg text-sm shadow-neon-rose transition-all flex items-center justify-center gap-2">
-                                    <span>Enter Arena</span>
+                                    <span data-i18n="join_btn">Enter Arena</span>
                                 </button>
                             </div>
                         </div>
@@ -204,45 +214,45 @@
             <!-- Screen 1.5: Profile (Hidden by default) -->
             <div id="screen-profile" class="hidden flex flex-col h-full max-w-lg mx-auto w-full space-y-5">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2"><i class="fa-solid fa-id-card text-indigo-400"></i> Player Profile</h2>
+                    <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2"><i class="fa-solid fa-id-card text-indigo-400"></i> <span data-i18n="profile_title">Player Profile</span></h2>
                     <button onclick="hideProfileScreen()" class="text-slate-500 hover:text-slate-300 transition-colors"><i class="fa-solid fa-times text-xl"></i></button>
                 </div>
 
-                <div class="flex flex-col gap-4 overflow-y-auto custom-scroll pr-1 pb-4">
+                <div class="flex flex-col gap-4 overflow-y-auto custom-scroll pe-1 pb-4">
                     <!-- Avatar & Name Selection -->
                     <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-4 space-y-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Your Arena Name</label>
-                            <input type="text" id="profile-name-input" maxlength="15" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-3 text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-bold text-center">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2" data-i18n="arena_name">Your Arena Name</label>
+                            <input type="text" id="profile-name-input" dir="auto" maxlength="15" class="notranslate w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-3 text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-bold text-center">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Choose Avatar</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2" data-i18n="choose_avatar">Choose Avatar</label>
                             <div class="flex flex-wrap gap-3 justify-center" id="avatar-selection-container">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
-                        <button onclick="saveProfile()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold shadow-neon-blue transition-all">Save Changes</button>
+                        <button onclick="saveProfile()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold shadow-neon-blue transition-all" data-i18n="save_changes">Save Changes</button>
                     </div>
 
                     <!-- Stats -->
                     <div class="grid grid-cols-3 gap-3 text-center">
                         <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-3">
                             <span class="block text-2xl font-bold text-blue-400" id="stat-total">0</span>
-                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Matches</span>
+                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider" data-i18n="matches">Matches</span>
                         </div>
                         <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-3">
                             <span class="block text-2xl font-bold text-emerald-400" id="stat-wins">0</span>
-                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Wins</span>
+                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider" data-i18n="wins">Wins</span>
                         </div>
                         <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-3">
                             <span class="block text-2xl font-bold text-rose-400" id="stat-losses">0</span>
-                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Losses</span>
+                            <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider" data-i18n="losses">Losses</span>
                         </div>
                     </div>
 
                     <!-- Match History -->
                     <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-4 flex-grow flex flex-col">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 border-b border-slate-800 pb-2">Recent Battles Log</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 border-b border-slate-800 pb-2" data-i18n="recent_battles">Recent Battles Log</h3>
                         <div id="profile-history-list" class="space-y-2 flex-grow min-h-[120px] max-h-[150px] overflow-y-auto custom-scroll text-sm">
                             <!-- Dynamic History List -->
                         </div>
@@ -250,11 +260,11 @@
 
                     <!-- Backup/Restore -->
                     <div class="bg-indigo-950/20 border border-indigo-900/30 rounded-xl p-4 space-y-2">
-                        <h3 class="text-xs font-bold text-indigo-300 flex items-center gap-1.5"><i class="fa-solid fa-cloud"></i> Backup & Restore</h3>
-                        <p class="text-[10px] text-slate-400">Your data is saved automatically on servers. You can export a copy and restore it later.</p>
+                        <h3 class="text-xs font-bold text-indigo-300 flex items-center gap-1.5"><i class="fa-solid fa-cloud"></i> <span data-i18n="backup_restore">Backup & Restore</span></h3>
+                        <p class="text-[10px] text-slate-400" data-i18n="backup_desc">Your data is saved automatically on servers. You can export a copy and restore it later.</p>
                         <div class="flex gap-2 mt-2">
-                            <button onclick="downloadBackup()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-semibold border border-slate-700 transition-colors"><i class="fa-solid fa-download"></i> Download Copy</button>
-                            <button onclick="triggerRestore()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-semibold border border-slate-700 transition-colors"><i class="fa-solid fa-upload"></i> Restore Data</button>
+                            <button onclick="downloadBackup()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-semibold border border-slate-700 transition-colors"><i class="fa-solid fa-download"></i> <span data-i18n="dl_copy">Download</span></button>
+                            <button onclick="triggerRestore()" class="flex-1 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-semibold border border-slate-700 transition-colors"><i class="fa-solid fa-upload"></i> <span data-i18n="restore_data">Restore</span></button>
                             <input type="file" id="backup-file-input" accept=".json" class="hidden" onchange="handleRestore(event)">
                         </div>
                     </div>
@@ -268,29 +278,29 @@
                 </div>
                 
                 <div class="space-y-2">
-                    <h2 class="text-2xl font-bold font-display">Waiting for opponent...</h2>
-                    <p class="text-slate-400 text-sm max-w-md mx-auto">Share the room code or direct join link with your opponent to start!</p>
+                    <h2 class="text-2xl font-bold font-display" data-i18n="waiting_title">Waiting for opponent...</h2>
+                    <p class="text-slate-400 text-sm max-w-md mx-auto" data-i18n="waiting_desc">Share the room code or direct join link with your opponent to start!</p>
                 </div>
 
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 max-w-md mx-auto w-full space-y-3">
-                    <span class="block text-xs font-bold uppercase tracking-widest text-slate-500">Room Code</span>
+                    <span class="block text-xs font-bold uppercase tracking-widest text-slate-500" data-i18n="room_code">Room Code</span>
                     <div class="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-lg p-3">
-                        <span id="lobby-code-display" class="font-mono text-2xl font-bold tracking-widest text-blue-400 px-2">-----</span>
+                        <span id="lobby-code-display" class="notranslate font-mono text-2xl font-bold tracking-widest text-blue-400 px-2">-----</span>
                         <button onclick="copyLobbyCode()" class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-xs font-semibold rounded-md transition-all flex items-center gap-1.5 text-slate-200">
                             <i class="fa-solid fa-copy"></i>
-                            <span id="btn-copy-text">Copy Code</span>
+                            <span id="btn-copy-text" data-i18n="copy_code">Copy Code</span>
                         </button>
                     </div>
                     <div class="text-center">
                         <button onclick="copyLobbyUrl()" class="text-xs text-indigo-400 hover:text-indigo-300 underline underline-offset-4 decoration-indigo-400/40 font-medium">
-                            <i class="fa-solid fa-link ms-1"></i> Copy Direct Join Link
+                            <i class="fa-solid fa-link ms-1"></i> <span data-i18n="copy_link">Copy Direct Join Link</span>
                         </button>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-center gap-2 text-slate-500 text-sm">
                     <i class="fa-solid fa-spinner animate-spin"></i>
-                    <span>Waiting for second player to join...</span>
+                    <span data-i18n="waiting_player2">Waiting for second player to join...</span>
                 </div>
             </div>
 
@@ -300,10 +310,10 @@
                 <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-4 font-display">
                     <!-- Player 1 -->
                     <div id="score-p1-card" class="flex flex-col items-start p-2 rounded-lg transition-all">
-                        <span id="score-p1-name" class="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
+                        <span id="score-p1-name" class="notranslate text-sm font-semibold text-slate-300 flex items-center gap-1.5" dir="auto">
                             <span id="score-p1-avatar" class="text-lg">👤</span> Player 1
                         </span>
-                        <span id="score-p1-value" class="text-2xl font-bold text-blue-400 tracking-tight">0 <span class="text-xs text-slate-600">pts</span></span>
+                        <span id="score-p1-value" class="text-2xl font-bold text-blue-400 tracking-tight">0 <span class="text-xs text-slate-600" data-i18n="pts">pts</span></span>
                     </div>
 
                     <!-- Round Info -->
@@ -315,10 +325,10 @@
 
                     <!-- Player 2 -->
                     <div id="score-p2-card" class="flex flex-col items-end p-2 rounded-lg transition-all">
-                        <span id="score-p2-name" class="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
+                        <span id="score-p2-name" class="notranslate text-sm font-semibold text-slate-300 flex items-center gap-1.5" dir="auto">
                             Player 2 <span id="score-p2-avatar" class="text-lg">👤</span> 
                         </span>
-                        <span id="score-p2-value" class="text-2xl font-bold text-rose-400 tracking-tight">0 <span class="text-xs text-slate-600">pts</span></span>
+                        <span id="score-p2-value" class="text-2xl font-bold text-rose-400 tracking-tight">0 <span class="text-xs text-slate-600" data-i18n="pts">pts</span></span>
                     </div>
                 </div>
 
@@ -334,28 +344,28 @@
                             </div>
                         </div>
                         <div class="space-y-1">
-                            <h3 class="text-xl font-bold text-slate-100">Opponent Setting Word</h3>
-                            <p class="text-sm text-slate-400">Please wait, your opponent is currently choosing the secret word...</p>
+                            <h3 class="text-xl font-bold text-slate-100" data-i18n="opp_setting_title">Opponent Setting Word</h3>
+                            <p class="text-sm text-slate-400" data-i18n="opp_setting_desc">Please wait, your opponent is currently choosing the secret word...</p>
                         </div>
                     </div>
 
                     <!-- State B: Local Player Setting Word -->
                     <div id="panel-local-setup-word" class="hidden max-w-md mx-auto w-full space-y-4 my-auto">
                         <div class="text-center space-y-1">
-                            <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20 animate-pulse">Your Turn to Set Word</span>
-                            <h3 class="text-xl font-bold text-slate-100 font-display">Enter Secret Word</h3>
-                            <p class="text-xs text-slate-400">Enter a valid word (min 2 letters). Your opponent gets 5 chances (15s each) to uncover it.</p>
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20 animate-pulse" data-i18n="your_turn_set">Your Turn to Set Word</span>
+                            <h3 class="text-xl font-bold text-slate-100 font-display" data-i18n="enter_secret_title">Enter Secret Word</h3>
+                            <p class="text-xs text-slate-400" data-i18n="enter_secret_desc">Enter a valid word (min 2 letters). Your opponent gets 5 chances (15s each) to uncover it.</p>
                         </div>
                         
                         <div class="space-y-3">
                             <div class="relative">
-                                <input type="text" id="input-secret-word" placeholder="WORD" class="w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3.5 px-4 text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase placeholder:text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                <input type="text" dir="auto" id="input-secret-word" data-i18n-placeholder="word_ph" placeholder="WORD" class="notranslate w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3.5 px-4 text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase placeholder:text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                                 <button onclick="handleAISuggestWord(event)" class="absolute end-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-indigo-400 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1" title="Suggest hard word">
-                                    ✨ Smart Word
+                                    ✨ <span data-i18n="smart_word">Smart Word</span>
                                 </button>
                             </div>
                             <button onclick="handleLockInSecretWord()" id="btn-lock-word" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-[0.99] font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-                                <span>Lock Word & Start Round ⚡</span>
+                                <span data-i18n="lock_word">Lock Word & Start Round ⚡</span>
                             </button>
                         </div>
                     </div>
@@ -364,13 +374,13 @@
                     <div id="panel-local-setter-watching" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 items-center my-auto">
                         <div class="space-y-4 text-center md:text-start">
                             <div class="space-y-1">
-                                <span class="text-xs font-bold uppercase tracking-wider text-amber-500">Challenger's Turn</span>
-                                <h3 class="text-2xl font-bold font-display">Opponent Guessing!</h3>
-                                <p class="text-sm text-slate-400">Your opponent is trying to uncover the word. Watch their progress live.</p>
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-500" data-i18n="challenger_turn">Challenger's Turn</span>
+                                <h3 class="text-2xl font-bold font-display" data-i18n="opp_guessing_title">Opponent Guessing!</h3>
+                                <p class="text-sm text-slate-400" data-i18n="opp_guessing_desc">Your opponent is trying to uncover the word. Watch their progress live.</p>
                             </div>
                             <div class="bg-slate-950/60 border border-slate-800 rounded-xl p-4">
-                                <span class="block text-xs text-slate-500 uppercase font-semibold mb-1">Your Secret Word</span>
-                                <span id="display-setter-own-word" class="text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase">-----</span>
+                                <span class="block text-xs text-slate-500 uppercase font-semibold mb-1" data-i18n="your_secret_word">Your Secret Word</span>
+                                <span id="display-setter-own-word" dir="auto" class="notranslate text-2xl font-bold tracking-widest font-mono text-indigo-400 uppercase">-----</span>
                             </div>
                         </div>
                         
@@ -378,7 +388,7 @@
                         <div class="space-y-4">
                             <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2">
                                 <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase">
-                                    <span>Time Left</span>
+                                    <span data-i18n="time_left">Time Left</span>
                                     <span id="display-setter-timer-value" class="text-rose-400">15s</span>
                                 </div>
                                 <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden flex">
@@ -387,7 +397,7 @@
                             </div>
                             
                             <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
-                                <span class="text-xs font-bold text-slate-400 uppercase">Opponent Chances</span>
+                                <span class="text-xs font-bold text-slate-400 uppercase" data-i18n="opp_chances">Opponent Chances</span>
                                 <div id="display-setter-opponent-hearts" class="flex items-center gap-1.5 text-lg text-rose-500 flex-row">
                                     <!-- Dynamic hearts -->
                                 </div>
@@ -401,11 +411,11 @@
                         <!-- Main Guessing Arena -->
                         <div class="md:col-span-3 space-y-4 flex flex-col justify-center">
                             <div class="text-center space-y-2">
-                                <span class="text-xs font-bold text-rose-400 uppercase tracking-widest animate-pulse">Guessing Arena</span>
-                                <div id="display-masked-word" class="text-4xl md:text-5xl font-mono font-bold tracking-widest text-slate-100 uppercase p-4 bg-slate-950 border border-slate-800/80 rounded-2xl shadow-inner min-h-[80px] flex items-center justify-center">
+                                <span class="text-xs font-bold text-rose-400 uppercase tracking-widest animate-pulse" data-i18n="guessing_arena">Guessing Arena</span>
+                                <div id="display-masked-word" dir="ltr" class="notranslate text-4xl md:text-5xl font-mono font-bold tracking-widest text-slate-100 uppercase p-4 bg-slate-950 border border-slate-800/80 rounded-2xl shadow-inner min-h-[80px] flex items-center justify-center">
                                     H _ _ _
                                 </div>
-                                <p class="text-xs text-slate-500">Only the first letter is revealed. Guess the word!</p>
+                                <p class="text-xs text-slate-500" data-i18n="guess_desc">Only the first letter is revealed. Guess the word!</p>
                                 
                                 <!-- AI Hint Container -->
                                 <div id="ai-hint-container" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-xl hidden flex-col gap-2 shadow-inner">
@@ -415,10 +425,10 @@
 
                             <div class="space-y-3">
                                 <div class="relative">
-                                    <input type="text" id="input-guess-word" placeholder="Type your guess..." class="w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-xl font-bold tracking-wider uppercase placeholder:text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
+                                    <input type="text" dir="auto" id="input-guess-word" data-i18n-placeholder="type_guess_ph" placeholder="Type your guess..." class="notranslate w-full text-center bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-xl font-bold tracking-wider uppercase placeholder:text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500">
                                 </div>
                                 <button onclick="handleGuessSubmit()" id="btn-submit-guess" class="w-full py-3 bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 active:scale-[0.99] font-bold rounded-xl shadow-neon-rose transition-all flex items-center justify-center gap-2">
-                                    <span>Confirm Guess 🎯</span>
+                                    <span data-i18n="confirm_guess">Confirm Guess 🎯</span>
                                 </button>
                             </div>
                         </div>
@@ -427,7 +437,7 @@
                         <div class="md:col-span-2 space-y-4">
                             <div class="bg-slate-950/80 border border-slate-800/80 rounded-xl p-4 space-y-2">
                                 <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase">
-                                    <span>Timer</span>
+                                    <span data-i18n="timer">Timer</span>
                                     <span id="display-guesser-timer-value" class="text-rose-400 font-bold">15s</span>
                                 </div>
                                 <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden flex">
@@ -436,13 +446,13 @@
                             </div>
 
                             <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
-                                <span class="text-xs font-bold text-slate-400 uppercase">Chances Left</span>
+                                <span class="text-xs font-bold text-slate-400 uppercase" data-i18n="chances_left">Chances Left</span>
                                 <div id="display-guesser-hearts" class="flex items-center gap-1.5 text-lg text-rose-500 flex-row">
                                     <!-- Dynamic hearts -->
                                 </div>
                             </div>
 
-                            <div id="guess-hint-note" class="text-xs text-center text-slate-500 font-medium">
+                            <div id="guess-hint-note" class="text-xs text-center text-slate-500 font-medium" data-i18n="hurry_desc">
                                 Hurry! Submit your answer before 15s ends or lose a chance.
                             </div>
                         </div>
@@ -453,11 +463,11 @@
                 <!-- Bottom Guesses Tracker -->
                 <div id="guesses-tracker-section" class="border-t border-slate-800/80 pt-4 mt-auto">
                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 flex items-center justify-between">
-                        <span>Guesses Log</span>
+                        <span data-i18n="guesses_log">Guesses Log</span>
                         <span id="display-guesses-counter" class="text-[10px] text-slate-600 font-normal">Used 0/5</span>
                     </h4>
-                    <div id="list-guesses" class="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto custom-scroll text-xs">
-                        <div class="text-slate-600 italic">No previous attempts yet.</div>
+                    <div id="list-guesses" class="notranslate flex flex-wrap gap-2 max-h-[100px] overflow-y-auto custom-scroll text-xs">
+                        <div class="text-slate-600 italic" data-i18n="no_prev_attempts">No previous attempts yet.</div>
                     </div>
                 </div>
 
@@ -475,16 +485,16 @@
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-center text-xs">
-                    <span class="text-slate-500 block uppercase font-bold tracking-widest text-[10px] mb-1">The secret word was</span>
-                    <span id="outcome-word-reveal" class="text-xl font-bold font-mono tracking-widest text-indigo-400 uppercase">WORD</span>
+                    <span class="text-slate-500 block uppercase font-bold tracking-widest text-[10px] mb-1" data-i18n="secret_word_was">The secret word was</span>
+                    <span id="outcome-word-reveal" dir="auto" class="notranslate text-xl font-bold font-mono tracking-widest text-indigo-400 uppercase">WORD</span>
                 </div>
 
                 <div class="w-full max-w-xs">
                     <button onclick="handleAcknowledgeTurnOutcome()" id="btn-next-turn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-neon-blue">
-                        <span id="btn-next-turn-text">Continue Duel</span>
-                        <i class="fa-solid fa-angles-right text-xs"></i>
+                        <span id="btn-next-turn-text" data-i18n="continue_duel">Continue Duel</span>
+                        <i class="fa-solid fa-angles-right text-xs" id="btn-next-turn-icon"></i>
                     </button>
-                    <span id="btn-next-turn-waiting-note" class="text-[10px] text-slate-500 mt-2 block hidden">Waiting to continue...</span>
+                    <span id="btn-next-turn-waiting-note" class="text-[10px] text-slate-500 mt-2 block hidden" data-i18n="waiting_continue">Waiting to continue...</span>
                 </div>
             </div>
 
@@ -496,19 +506,19 @@
                 </div>
 
                 <div class="space-y-2">
-                    <h3 class="text-3xl font-bold text-slate-100 font-display">Victory Announcement!</h3>
+                    <h3 class="text-3xl font-bold text-slate-100 font-display" data-i18n="victory_title">Victory Announcement!</h3>
                     <p id="gameover-winner-announcement" class="text-indigo-400 font-bold tracking-wide text-lg">Player 1 won the duel!</p>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto" id="gameover-target-desc">Reached the target score first and claimed victory.</p>
                 </div>
 
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-around gap-8 w-full max-w-xs font-display">
                     <div class="text-center">
-                        <span id="gameover-p1-name" class="block text-xs text-slate-500">Player 1</span>
+                        <span id="gameover-p1-name" dir="auto" class="notranslate block text-xs text-slate-500">Player 1</span>
                         <span id="gameover-p1-score" class="text-2xl font-bold text-blue-400">0</span>
                     </div>
                     <div class="text-slate-700 text-lg font-bold">VS</div>
                     <div class="text-center">
-                        <span id="gameover-p2-name" class="block text-xs text-slate-500">Player 2</span>
+                        <span id="gameover-p2-name" dir="auto" class="notranslate block text-xs text-slate-500">Player 2</span>
                         <span id="gameover-p2-score" class="text-2xl font-bold text-rose-400">0</span>
                     </div>
                 </div>
@@ -516,10 +526,10 @@
                 <div class="w-full max-w-xs space-y-3 mt-4">
                     <button onclick="handleRestartGame()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] text-white font-bold rounded-xl transition-all shadow-neon-emerald flex items-center justify-center gap-2">
                         <i class="fa-solid fa-rotate-right"></i>
-                        <span>Start New Duel</span>
+                        <span data-i18n="start_new">Start New Duel</span>
                     </button>
                     <button onclick="resetToWelcomeScreen()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl transition-all flex items-center justify-center gap-2 text-sm">
-                        <i class="fa-solid fa-home"></i> Return to Home
+                        <i class="fa-solid fa-home"></i> <span data-i18n="return_home">Return to Home</span>
                     </button>
                 </div>
             </div>
@@ -535,12 +545,11 @@
 
     <!-- Footer -->
     <footer class="w-full text-center py-4 text-[11px] text-slate-600 border-t border-slate-900 font-medium">
-        <span>Word Duel • Single Player & Score limits active.</span>
+        <span data-i18n="footer">Word Duel • Single Player & Score limits active.</span>
     </footer>
 
 	<!-- PWA Service Worker Registration -->
     <script>
-        // Only register service worker when executing under normal secure protocols (http/https)
         if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
@@ -550,11 +559,324 @@
         }
     </script>
 
+    <!-- Translation Engine & UI Logic -->
+    <script>
+        const uiTranslations = {
+            en: {
+                app_title: "Word Duel",
+                app_subtitle: "Live Word Guessing Arena",
+                btn_profile: "Profile",
+                prepare_title: "Prepare Your Secret Words",
+                prepare_desc: "Face your opponent in a fast-paced live word guessing match.",
+                playing_as: "Playing as:",
+                word_lang: "Dict",
+                target: "Target",
+                pts_3: "3 Points",
+                pts_5: "5 Points",
+                pts_7: "7 Points",
+                pts_10: "10 Points",
+                badge_new: "NEW",
+                solo_title: "Solo vs AI",
+                solo_desc: "Practice and challenge the AI bot instantly.",
+                solo_btn: "Challenge Bot",
+                host_title: "Create Room",
+                host_desc: "Create a new arena and host a friend for a match.",
+                host_btn: "Host Duel",
+                join_title: "Join Room",
+                join_desc: "Got a code? Enter it here to join the battle.",
+                enter_code_ph: "Enter code...",
+                join_btn: "Enter Arena",
+                profile_title: "Player Profile",
+                arena_name: "Your Arena Name",
+                choose_avatar: "Choose Avatar",
+                save_changes: "Save Changes",
+                matches: "Matches",
+                wins: "Wins",
+                losses: "Losses",
+                recent_battles: "Recent Battles Log",
+                no_matches: "No matches played yet.",
+                backup_restore: "Backup & Restore",
+                backup_desc: "Your data is saved automatically on servers. You can export a copy and restore it later.",
+                dl_copy: "Download",
+                restore_data: "Restore",
+                waiting_title: "Waiting for opponent...",
+                waiting_desc: "Share the room code or direct join link with your opponent to start!",
+                room_code: "Room Code",
+                copy_code: "Copy Code",
+                copy_link: "Copy Direct Join Link",
+                waiting_player2: "Waiting for second player to join...",
+                pts: "pts",
+                opp_setting_title: "Opponent Setting Word",
+                opp_setting_desc: "Please wait, your opponent is currently choosing the secret word...",
+                your_turn_set: "Your Turn to Set Word",
+                enter_secret_title: "Enter Secret Word",
+                enter_secret_desc: "Enter a valid word (min 2 letters). Your opponent gets 5 chances (15s each) to uncover it.",
+                word_ph: "WORD",
+                smart_word: "Smart Word",
+                lock_word: "Lock Word & Start Round ⚡",
+                challenger_turn: "Challenger's Turn",
+                opp_guessing_title: "Opponent Guessing!",
+                opp_guessing_desc: "Your opponent is trying to uncover the word. Watch their progress live.",
+                your_secret_word: "Your Secret Word",
+                time_left: "Time Left",
+                opp_chances: "Opponent Chances",
+                guessing_arena: "Guessing Arena",
+                guess_desc: "Only the first letter is revealed. Guess the word!",
+                type_guess_ph: "Type your guess...",
+                confirm_guess: "Confirm Guess 🎯",
+                timer: "Timer",
+                chances_left: "Chances Left",
+                hurry_desc: "Hurry! Submit your answer before 15s ends or lose a chance.",
+                guesses_log: "Guesses Log",
+                no_prev_attempts: "No previous attempts yet.",
+                secret_word_was: "The secret word was",
+                continue_duel: "Continue Duel",
+                waiting_continue: "Waiting to continue...",
+                victory_title: "Victory Announcement!",
+                start_new: "Start New Duel",
+                return_home: "Return to Home",
+                footer: "Word Duel • Single Player & Score limits active.",
+                
+                // Dynamic texts
+                t_valid_name: "Please enter a valid name",
+                t_profile_updated: "Profile updated successfully",
+                t_backup_dl: "Backup downloaded successfully",
+                t_profile_restored: "Profile and data restored successfully",
+                t_backup_invalid: "Sorry, the backup file is invalid or corrupted",
+                t_read_err: "Error reading file",
+                t_auth_fail: "Failed to authenticate. Please refresh.",
+                t_server_fail: "Failed secure server connection. Try again.",
+                t_solo_started: "Match vs Bot started!",
+                t_solo_fail: "Failed to start solo match.",
+                t_room_created: "Game room created successfully!",
+                t_room_fail: "Failed to create room.",
+                t_enter_5: "Please enter a 5-letter room code.",
+                t_net_fail: "Network connection failed.",
+                t_no_room: "No room found with this code.",
+                t_room_full: "This room is already full.",
+                t_welcome_back: "Welcome back to your room!",
+                t_joined: "Joined room successfully!",
+                t_join_fail: "Failed to join. Please check the code and connection.",
+                t_code_copied: "Room code copied",
+                t_link_copied: "Direct join link copied",
+                t_room_closed: "This room was closed.",
+                t_conn_lost: "Real-time connection lost.",
+                t_word_min: "Word must be at least 2 letters.",
+                t_no_space: "Word cannot contain spaces.",
+                t_word_not_found: "Word not found! Enter a valid word.",
+                t_word_ready: "Word submitted and hint ready! Let the duel begin.",
+                t_word_send_fail: "Failed to send word to network.",
+                t_type_guess: "Please type your guess first.",
+                t_not_real_word: "Sorry, not a real word. No chance deducted.",
+                t_excellent: "Excellent! You uncovered the word.",
+                t_wrong_guess: "Incorrect word. Try again!",
+                t_guess_err: "Error submitting guess.",
+                t_continue_err: "Failed to confirm round continuation.",
+                t_match_reset: "Match reset successfully.",
+                t_reset_fail: "Failed to start new duel.",
+                t_auto_code: "Room code auto-inserted: {code}",
+                t_smart_hard: "✨ Chosen a hard word!",
+                t_smart_gen: "✨ AI generated a word for you!",
+                t_smart_backup: "✨ Chosen a backup hard word!",
+                t_time_up: "Time's up! Lost a chance.",
+                t_used: "Used {used}/{total}",
+                t_target_ind: "Target: {target} pts",
+                t_round_ind: "Round {round}",
+                t_setter_status: "{name} is setting word",
+                t_word_solved: "Word Solved!",
+                t_word_solved_desc: "{name} successfully uncovered the secret word and gained (+1) point.",
+                t_guess_failed: "Guess Failed!",
+                t_guess_failed_desc: "{name} ran out of chances! {setter} wins this round and gets (+1) point.",
+                t_winner: "👑 {name} is the Arena Champion!",
+                t_winner_desc: "Reached the target ({target} points) first and crowned champion.",
+                t_ready_waiting: "Ready, waiting for opponent...",
+                t_hint: "💡 Hint: "
+            },
+            ar: {
+                app_title: "مبارزة الكلمات",
+                app_subtitle: "ساحة تخمين الكلمات المباشرة",
+                btn_profile: "ملفي",
+                prepare_title: "جهز كلماتك السرية",
+                prepare_desc: "واجه خصمك في مباراة سريعة لتخمين الكلمات.",
+                playing_as: "تلعب كـ:",
+                word_lang: "القاموس",
+                target: "الهدف",
+                pts_3: "3 نقاط",
+                pts_5: "5 نقاط",
+                pts_7: "7 نقاط",
+                pts_10: "10 نقاط",
+                badge_new: "جديد",
+                solo_title: "لعب فردي ضد الذكاء الاصطناعي",
+                solo_desc: "تدرب وتحدى الروبوت فوراً.",
+                solo_btn: "تحدى الروبوت",
+                host_title: "إنشاء غرفة",
+                host_desc: "قم بإنشاء ساحة جديدة واستضف صديقاً لمباراة.",
+                host_btn: "استضافة مبارزة",
+                join_title: "الانضمام لغرفة",
+                join_desc: "لديك رمز؟ أدخله هنا للانضمام للمعركة.",
+                enter_code_ph: "أدخل الرمز...",
+                join_btn: "دخول الساحة",
+                profile_title: "ملف اللاعب",
+                arena_name: "اسمك في الساحة",
+                choose_avatar: "اختر شخصيتك",
+                save_changes: "حفظ التغييرات",
+                matches: "المباريات",
+                wins: "فوز",
+                losses: "خسارة",
+                recent_battles: "سجل المعارك الأخيرة",
+                no_matches: "لا توجد مباريات بعد.",
+                backup_restore: "النسخ الاحتياطي والاستعادة",
+                backup_desc: "بياناتك تحفظ تلقائياً. يمكنك تصدير نسخة واستعادتها لاحقاً.",
+                dl_copy: "تحميل نسخة",
+                restore_data: "استعادة",
+                waiting_title: "بانتظار الخصم...",
+                waiting_desc: "شارك رمز الغرفة أو رابط الانضمام المباشر مع خصمك لتبدأ!",
+                room_code: "رمز الغرفة",
+                copy_code: "نسخ الرمز",
+                copy_link: "نسخ رابط الانضمام المباشر",
+                waiting_player2: "بانتظار انضمام اللاعب الثاني...",
+                pts: "نقطة",
+                opp_setting_title: "الخصم يكتب الكلمة",
+                opp_setting_desc: "يرجى الانتظار، خصمك يقوم حالياً باختيار الكلمة السرية...",
+                your_turn_set: "دورك لكتابة الكلمة",
+                enter_secret_title: "أدخل الكلمة السرية",
+                enter_secret_desc: "أدخل كلمة صحيحة (حرفين على الأقل). لخصمك 5 محاولات لاكتشافها.",
+                word_ph: "كلمة",
+                smart_word: "كلمة ذكية",
+                lock_word: "تأكيد الكلمة وبدء الجولة ⚡",
+                challenger_turn: "دور الخصم",
+                opp_guessing_title: "الخصم يخمن!",
+                opp_guessing_desc: "خصمك يحاول اكتشاف الكلمة. راقب تقدمه مباشرة.",
+                your_secret_word: "كلمتك السرية",
+                time_left: "الوقت المتبقي",
+                opp_chances: "فرص الخصم",
+                guessing_arena: "ساحة التخمين",
+                guess_desc: "يظهر الحرف الأول فقط. خمّن الكلمة كاملة!",
+                type_guess_ph: "اكتب تخمينك...",
+                confirm_guess: "تأكيد التخمين 🎯",
+                timer: "المؤقت",
+                chances_left: "الفرص المتبقية",
+                hurry_desc: "أسرع! أرسل إجابتك قبل انتهاء الـ 15 ثانية وإلا ستفقد فرصة.",
+                guesses_log: "سجل التخمينات",
+                no_prev_attempts: "لا توجد محاولات سابقة بعد.",
+                secret_word_was: "الكلمة السرية كانت",
+                continue_duel: "متابعة المبارزة",
+                waiting_continue: "بانتظار المتابعة...",
+                victory_title: "إعلان الانتصار!",
+                start_new: "بدء مبارزة جديدة",
+                return_home: "العودة للرئيسية",
+                footer: "مبارزة الكلمات • اللعب الفردي وحدود النقاط مفعلة.",
+                
+                // Dynamic texts
+                t_valid_name: "يرجى إدخال اسم صحيح",
+                t_profile_updated: "تم تحديث الملف الشخصي بنجاح",
+                t_backup_dl: "تم تحميل النسخة الاحتياطية بنجاح",
+                t_profile_restored: "تم استعادة الملف الشخصي والبيانات بنجاح",
+                t_backup_invalid: "عذراً، ملف النسخة الاحتياطية غير صالح أو تالف",
+                t_read_err: "خطأ في قراءة الملف",
+                t_auth_fail: "فشلت المصادقة. يرجى تحديث الصفحة.",
+                t_server_fail: "فشل الاتصال الآمن بالخادم. حاول مجدداً.",
+                t_solo_started: "بدأت المباراة ضد الروبوت!",
+                t_solo_fail: "فشل بدء المباراة الفردية.",
+                t_room_created: "تم إنشاء غرفة اللعب بنجاح!",
+                t_room_fail: "فشل إنشاء الغرفة.",
+                t_enter_5: "يرجى إدخال رمز غرفة مكون من 5 أحرف.",
+                t_net_fail: "فشل الاتصال بالشبكة.",
+                t_no_room: "لم يتم العثور على غرفة بهذا الرمز.",
+                t_room_full: "هذه الغرفة ممتلئة بالفعل.",
+                t_welcome_back: "مرحباً بعودتك إلى غرفتك!",
+                t_joined: "تم الانضمام للغرفة بنجاح!",
+                t_join_fail: "فشل الانضمام. يرجى التحقق من الرمز والاتصال.",
+                t_code_copied: "تم نسخ رمز الغرفة",
+                t_link_copied: "تم نسخ رابط الانضمام المباشر",
+                t_room_closed: "تم إغلاق هذه الغرفة.",
+                t_conn_lost: "فُقد الاتصال المباشر.",
+                t_word_min: "يجب أن تتكون الكلمة من حرفين على الأقل.",
+                t_no_space: "لا يمكن أن تحتوي الكلمة على مسافات.",
+                t_word_not_found: "الكلمة غير صحيحة! يرجى إدخال كلمة صالحة.",
+                t_word_ready: "تم إرسال الكلمة والتلميح جاهز! لتبدأ المبارزة.",
+                t_word_send_fail: "فشل إرسال الكلمة للشبكة.",
+                t_type_guess: "يرجى كتابة تخمينك أولاً.",
+                t_not_real_word: "عذراً، كلمة غير صالحة. لم يتم خصم فرصة.",
+                t_excellent: "ممتاز! لقد اكتشفت الكلمة.",
+                t_wrong_guess: "كلمة غير صحيحة. حاول مرة أخرى!",
+                t_guess_err: "خطأ في إرسال التخمين.",
+                t_continue_err: "فشل تأكيد متابعة الجولة.",
+                t_match_reset: "تم إعادة تعيين المباراة بنجاح.",
+                t_reset_fail: "فشل بدء مبارزة جديدة.",
+                t_auto_code: "تم إدراج رمز الغرفة تلقائياً: {code}",
+                t_smart_hard: "✨ تم اختيار كلمة صعبة!",
+                t_smart_gen: "✨ اقترح الذكاء الاصطناعي كلمة لك!",
+                t_smart_backup: "✨ تم اختيار كلمة احتياطية صعبة!",
+                t_time_up: "انتهى الوقت! فقدت فرصة.",
+                t_used: "مُستخدم {used}/{total}",
+                t_target_ind: "الهدف: {target} نقاط",
+                t_round_ind: "الجولة {round}",
+                t_setter_status: "{name} يكتب الكلمة",
+                t_word_solved: "تم كشف الكلمة!",
+                t_word_solved_desc: "نجح {name} باكتشاف الكلمة السرية وحصل على نقطة (+1).",
+                t_guess_failed: "فشل التخمين!",
+                t_guess_failed_desc: "نفدت فرص {name}! {setter} يفوز بهذه الجولة ويحصل على نقطة (+1).",
+                t_winner: "👑 {name} هو بطل الساحة!",
+                t_winner_desc: "وصل للهدف ({target} نقاط) أولاً وتُوج كبطل.",
+                t_ready_waiting: "جاهز، بانتظار الخصم...",
+                t_hint: "💡 تلميح: "
+            }
+        };
+
+        let currentUILang = localStorage.getItem('word_duel_ui_lang') || 'en';
+
+        function t(key, params = {}) {
+            let str = uiTranslations[currentUILang][key] || key;
+            for (const [k, v] of Object.entries(params)) {
+                str = str.replace(`{${k}}`, v);
+            }
+            return str;
+        }
+
+        function applyTranslations() {
+            document.documentElement.dir = currentUILang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('ui-lang-text').innerText = currentUILang === 'ar' ? 'EN' : 'عربي';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (uiTranslations[currentUILang][key]) {
+                    el.innerText = uiTranslations[currentUILang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (uiTranslations[currentUILang][key]) {
+                    el.placeholder = uiTranslations[currentUILang][key];
+                }
+            });
+
+            if (document.getElementById('btn-copy-text').innerText === "Copied!" || document.getElementById('btn-copy-text').innerText === "تم النسخ!") {
+                document.getElementById('btn-copy-text').innerText = currentUILang === 'ar' ? "تم النسخ!" : "Copied!";
+            }
+        }
+
+        window.toggleUILanguage = function() {
+            currentUILang = currentUILang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('word_duel_ui_lang', currentUILang);
+            applyTranslations();
+            
+            // Re-render dynamic components if actively shown
+            if (typeof window.triggerGameUIRefresh === 'function') {
+                window.triggerGameUIRefresh();
+            }
+        };
+
+        // Initialize UI Translation on load
+        applyTranslations();
+
+    </script>
+
     <!-- Firebase & Game Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // Added Explicit setPersistence and browserLocalPersistence imports
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Variables
@@ -596,6 +918,10 @@
         let activeTimerStart = null; 
         let localTimeLeft = 15; 
 
+        window.triggerGameUIRefresh = function() {
+            if (gameDataState) processGameUpdate();
+        };
+
         // Bot Variables
         window.botGuessTimer = null;
         window.botSetTimer = null;
@@ -609,7 +935,21 @@
             history: []
         };
 
+        // Base64 Unicode Helpers
+        function encodeBase64Unicode(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            }));
+        }
+
+        function decodeBase64Unicode(str) {
+            return decodeURIComponent(atob(str).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
+
         const availableAvatars = ["👤", "🦊", "🦁", "🐼","🦝","🦅", "🐉", "🦄", "🐺", "🐯", "🦉", "🐙", "👻", "🤖", "👽", "🤠","🥷", "🧑‍🚀", "🧙‍♂️", "🧛‍♂️", "🧟","🐸","🐧", "🦚", "🐬", "🦈", "🧚", "🧜‍♂️", "🧞‍♂️", "🧟‍♂️", "🧙‍♀️" ];
+        
         // Sound Effects System
         const soundEffects = {
             ctx: null,
@@ -752,7 +1092,7 @@
                 updateProfileUI();
             } catch (e) {
                 console.error("Error loading profile", e);
-                showToast("Could not load cloud profile. Using local defaults.", "warning");
+                showToast(t("t_server_fail"), "warning");
                 updateProfileUI();
             }
         }
@@ -774,7 +1114,7 @@
             if (nameInput) {
                 userProfile.name = nameInput;
             } else {
-                showToast("Please enter a valid name", "warning");
+                showToast(t("t_valid_name"), "warning");
                 return;
             }
             
@@ -785,7 +1125,7 @@
             }
             
             updateProfileUI();
-            showToast("Profile updated successfully", "success");
+            showToast(t("t_profile_updated"), "success");
             hideProfileScreen();
         }
 
@@ -818,7 +1158,7 @@
             const historyList = document.getElementById('profile-history-list');
             historyList.innerHTML = '';
             if (userProfile.history.length === 0) {
-                historyList.innerHTML = '<p class="text-slate-500 italic text-center py-4">No matches played yet.</p>';
+                historyList.innerHTML = `<p class="text-slate-500 italic text-center py-4">${t('no_matches')}</p>`;
             } else {
                 userProfile.history.forEach(match => {
                     const dateStr = new Date(match.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -828,13 +1168,13 @@
                             <div class="flex items-center gap-2">
                                 <span class="text-lg">${isWin ? '🏆' : '💀'}</span>
                                 <div>
-                                    <span class="block text-slate-200 font-bold">vs ${match.opponent}</span>
+                                    <span class="block text-slate-200 font-bold notranslate" dir="auto">vs ${match.opponent}</span>
                                     <span class="block text-[10px] text-slate-500">${dateStr}</span>
                                 </div>
                             </div>
                             <div class="text-end">
                                 <span class="block font-bold font-mono ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${match.score}</span>
-                                <span class="block text-[10px] ${isWin ? 'text-emerald-500' : 'text-rose-500'}">${match.result}</span>
+                                <span class="block text-[10px] ${isWin ? 'text-emerald-500' : 'text-rose-500'}">${isWin ? t('wins') : t('losses')}</span>
                             </div>
                         </div>
                     `;
@@ -861,7 +1201,7 @@
             document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
-            showToast("Backup downloaded successfully", "success");
+            showToast(t("t_backup_dl"), "success");
         };
 
         window.triggerRestore = function() {
@@ -879,12 +1219,12 @@
                         userProfile = imported;
                         await saveProfileDataToCloud(); 
                         updateProfileUI();
-                        showToast("Profile and data restored successfully", "success");
+                        showToast(t("t_profile_restored"), "success");
                     } else {
-                        showToast("Sorry, the backup file is invalid or corrupted", "error");
+                        showToast(t("t_backup_invalid"), "error");
                     }
                 } catch (err) {
-                    showToast("Error reading file", "error");
+                    showToast(t("t_read_err"), "error");
                 }
             };
             reader.readAsText(file);
@@ -913,81 +1253,30 @@
         }
 
         // --- Authentication & Start Game ---
-
-        function waitForAuthInit() {
-            return new Promise((resolve) => {
-                const unsubscribe = onAuthStateChanged(auth, (user) => {
-                    unsubscribe();
-                    resolve(user);
-                });
-            });
-        }
-
         async function authenticateUser() {
-            // محاولة إجبار المتصفح على تذكر الجلسة
             try {
-                await setPersistence(auth, browserLocalPersistence);
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
             } catch (err) {
-                console.warn("Could not explicitly set local persistence (may be blocked by browser):", err);
+                console.error("Auth init failed", err);
+                showToast(t("t_server_fail"), "error");
             }
 
-            // انتظار فايربيس للتحقق من الجلسات القديمة
-            let user = await waitForAuthInit();
-            let isNewAnonymousLogin = false;
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    let localId = null;
+                    try { localId = localStorage.getItem('word_duel_local_uid'); } catch(e){}
 
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                try {
-                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
-                    user = userCredential.user;
-                } catch (err) {
-                    console.warn("Failed custom token auth, falling back:", err);
-                }
-            }
-
-            if (!user) {
-                try {
-                    const userCredential = await signInAnonymously(auth);
-                    user = userCredential.user;
-                    isNewAnonymousLogin = true;
-                } catch (err) {
-                    showToast("Failed secure server connection. Try again.", "error");
-                    return;
-                }
-            }
-
-            // --- التعديل الرئيسي لمنع مسح الحساب عند التحديث ---
-            // نتحقق مما إذا كان لدينا معرّف مستخدم (UID) محفوظ في التخزين المحلي للمتصفح
-            const savedUid = localStorage.getItem('word_duel_local_uid');
-
-            if (savedUid) {
-                // لدينا لاعب عائد! نستخدم الـ ID القديم الخاص به حتى لو قام فايربيس بعمل جلسة جديدة
-                currentUserId = savedUid;
-                isNewAnonymousLogin = false; // لم يعد لاعباً جديداً
-            } else {
-                // هذا لاعب جديد كلياً. نستخدم الـ UID الجديد ونحفظه في المتصفح للمرات القادمة
-                currentUserId = user.uid;
-                try {
-                    localStorage.setItem('word_duel_local_uid', currentUserId);
-                } catch(e) {
-                    console.warn("Local storage is disabled or unavailable");
-                }
-            }
-            // --------------------------------------------------
-
-            await loadProfile();
-
-            // إشعار للمستخدمين الجدد بأهمية حفظ بياناتهم
-            if (isNewAnonymousLogin && userProfile.stats.total === 0) {
-                setTimeout(() => {
-                     showToast("Tip: Use the Backup & Restore feature in your Profile to prevent lost stats!", "info");
-                }, 2500);
-            }
-
-            // تتبع أي تغييرات لاحقة في المصادقة (مع التأكد من عدم الكتابة فوق معرّفنا المحفوظ)
-            onAuthStateChanged(auth, async (newUser) => {
-                if (newUser && !localStorage.getItem('word_duel_local_uid')) {
-                    currentUserId = newUser.uid;
-                    try { localStorage.setItem('word_duel_local_uid', currentUserId); } catch(e){}
+                    // Persist ID manually over reloads to prevent resetting anon users
+                    if (localId) {
+                        currentUserId = localId;
+                    } else {
+                        currentUserId = user.uid;
+                        try { localStorage.setItem('word_duel_local_uid', currentUserId); } catch(e){}
+                    }
                     await loadProfile();
                 }
             });
@@ -1006,10 +1295,9 @@
         // Solo Play vs Bot
         window.handleSinglePlayer = async function() {
             soundEffects.init();
-            await authenticateUser();
             
-            if (!auth.currentUser) {
-                showToast("Failed to authenticate. Please refresh.", "error");
+            if (!currentUserId) {
+                showToast(t("t_auth_fail"), "warning");
                 return;
             }
 
@@ -1061,18 +1349,17 @@
                 window.location.hash = `room=${generatedCode}&app=${appId}`;
                 subscribeToGame(generatedCode);
                 soundEffects.playGameStart();
-                showToast("Match vs Bot started!", "success");
+                showToast(t("t_solo_started"), "success");
             } catch (error) {
-                showToast("Failed to start solo match.", "error");
+                showToast(t("t_solo_fail"), "error");
             }
         };
 
         window.handleCreateGame = async function() {
             soundEffects.init();
-            await authenticateUser();
             
-            if (!auth.currentUser) {
-                showToast("Failed to authenticate. Please refresh.", "error");
+            if (!currentUserId) {
+                showToast(t("t_auth_fail"), "warning");
                 return;
             }
 
@@ -1118,9 +1405,9 @@
                 window.location.hash = `room=${generatedCode}&app=${appId}`;
                 subscribeToGame(generatedCode);
                 soundEffects.playGameStart();
-                showToast("Game room created successfully!", "success");
+                showToast(t("t_room_created"), "success");
             } catch (error) {
-                showToast("Failed to create room.", "error");
+                showToast(t("t_room_fail"), "error");
             }
         };
 
@@ -1128,14 +1415,12 @@
             soundEffects.init();
             const enteredCode = document.getElementById('input-join-code').value.trim().toUpperCase();
             if (!enteredCode) {
-                showToast("Please enter a 5-letter room code.", "warning");
+                showToast(t("t_enter_5"), "warning");
                 return;
             }
 
-            await authenticateUser();
-            
-            if (!auth.currentUser) {
-                showToast("Network connection failed.", "error");
+            if (!currentUserId) {
+                showToast(t("t_auth_fail"), "warning");
                 return;
             }
 
@@ -1147,19 +1432,19 @@
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
-                    showToast("No room found with this code.", "error");
+                    showToast(t("t_no_room"), "error");
                     return;
                 }
 
                 const data = docSnap.data();
                 if (data.status !== 'lobby' && data.player2 && data.player2.uid !== currentUserId) {
-                    showToast("This room is already full.", "error");
+                    showToast(t("t_room_full"), "error");
                     return;
                 }
 
                 if (data.player1.uid === currentUserId) {
                     subscribeToGame(enteredCode);
-                    showToast("Welcome back to your room!", "success");
+                    showToast(t("t_welcome_back"), "success");
                     return;
                 }
 
@@ -1178,10 +1463,10 @@
                 window.location.hash = `room=${enteredCode}&app=${appId}`;
                 subscribeToGame(enteredCode);
                 soundEffects.playGameStart();
-                showToast("Joined room successfully!", "success");
+                showToast(t("t_joined"), "success");
 
             } catch (error) {
-                showToast("Failed to join. Please check the code and connection.", "error");
+                showToast(t("t_join_fail"), "error");
             }
         };
 
@@ -1195,9 +1480,9 @@
             document.body.removeChild(el);
 
             const btnText = document.getElementById('btn-copy-text');
-            btnText.innerText = "Copied!";
-            setTimeout(() => { btnText.innerText = "Copy Code"; }, 1500);
-            showToast("Room code copied", "success");
+            btnText.innerText = currentUILang === 'ar' ? "تم النسخ!" : "Copied!";
+            setTimeout(() => { btnText.innerText = t("copy_code"); }, 1500);
+            showToast(t("t_code_copied"), "success");
         };
 
         window.copyLobbyUrl = function() {
@@ -1209,7 +1494,7 @@
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-            showToast("Direct join link copied", "success");
+            showToast(t("t_link_copied"), "success");
         };
 
         function subscribeToGame(gameId) {
@@ -1220,7 +1505,7 @@
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', gameId);
             gameUnsubscribe = onSnapshot(docRef, (docSnap) => {
                 if (!docSnap.exists()) {
-                    showToast("This room was closed.", "error");
+                    showToast(t("t_room_closed"), "error");
                     resetToWelcomeScreen();
                     return;
                 }
@@ -1229,7 +1514,7 @@
                 gameDataState = data;
                 processGameUpdate();
             }, (error) => {
-                showToast("Real-time connection lost.", "error");
+                showToast(t("t_conn_lost"), "error");
             });
         }
 
@@ -1288,27 +1573,27 @@
             document.getElementById('screen-game').classList.remove('hidden');
 
             const p1 = data.player1;
-            const p2 = data.player2 || { name: 'Joining...', avatar: '👤', score: 0 };
+            const p2 = data.player2 || { name: '...', avatar: '👤', score: 0 };
             const targetScore = data.targetScore || 5;
 
-            document.getElementById('score-p1-name').innerHTML = `<span id="score-p1-avatar" class="text-lg">${p1.avatar || '👤'}</span> ${p1.name}`;
-            document.getElementById('score-p1-value').innerHTML = `${p1.score} <span class="text-xs text-slate-500">pts</span>`;
-            document.getElementById('score-p2-name').innerHTML = `${p2.name} <span id="score-p2-avatar" class="text-lg">${p2.avatar || '👤'}</span>`;
-            document.getElementById('score-p2-value').innerHTML = `${p2.score} <span class="text-xs text-slate-500">pts</span>`;
+            document.getElementById('score-p1-name').innerHTML = `<span id="score-p1-avatar" class="text-lg">${p1.avatar || '👤'}</span> <span class="notranslate" dir="auto">${p1.name}</span>`;
+            document.getElementById('score-p1-value').innerHTML = `${p1.score} <span class="text-xs text-slate-500">${t('pts')}</span>`;
+            document.getElementById('score-p2-name').innerHTML = `<span class="notranslate" dir="auto">${p2.name}</span> <span id="score-p2-avatar" class="text-lg">${p2.avatar || '👤'}</span>`;
+            document.getElementById('score-p2-value').innerHTML = `${p2.score} <span class="text-xs text-slate-500">${t('pts')}</span>`;
 
             const activeSetter = data.currentSetter; 
             if (activeSetter === 'player1') {
                 document.getElementById('score-p1-card').className = "flex flex-col items-start p-2.5 bg-slate-950 rounded-xl border border-blue-500/20 shadow-neon-blue";
                 document.getElementById('score-p2-card').className = "flex flex-col items-end p-2.5 opacity-40 border border-transparent";
-                document.getElementById('game-setter-status').innerText = `${p1.name} is setting word`;
+                document.getElementById('game-setter-status').innerText = t('t_setter_status', {name: p1.name});
             } else {
                 document.getElementById('score-p1-card').className = "flex flex-col items-start p-2.5 opacity-40 border border-transparent";
                 document.getElementById('score-p2-card').className = "flex flex-col items-end p-2.5 bg-slate-950 rounded-xl border border-rose-500/20 shadow-neon-rose";
-                document.getElementById('game-setter-status').innerText = `${p2.name} is setting word`;
+                document.getElementById('game-setter-status').innerText = t('t_setter_status', {name: p2.name});
             }
 
-            document.getElementById('game-round-indicator').innerText = `Round ${data.currentRound}`;
-            document.getElementById('game-target-indicator').innerText = `Target: ${targetScore} pts`;
+            document.getElementById('game-round-indicator').innerText = t('t_round_ind', {round: data.currentRound});
+            document.getElementById('game-target-indicator').innerText = t('t_target_ind', {target: targetScore});
 
             document.getElementById('panel-waiting-setter').classList.add('hidden');
             document.getElementById('panel-local-setup-word').classList.add('hidden');
@@ -1328,19 +1613,21 @@
             } else {
                 if (isCurrentPlayerSetter) {
                     document.getElementById('panel-local-setter-watching').classList.remove('hidden');
-                    document.getElementById('display-setter-own-word').innerText = atob(data.secretWord);
+                    document.getElementById('display-setter-own-word').innerText = decodeBase64Unicode(data.secretWord);
                     renderHearts('display-setter-opponent-hearts', data.chancesLeft);
                 } else {
                     document.getElementById('panel-local-guessing').classList.remove('hidden');
-                    const rawWord = atob(data.secretWord);
+                    const rawWord = decodeBase64Unicode(data.secretWord);
                     document.getElementById('display-masked-word').innerText = getMaskedWordPresentation(rawWord);
+                    document.getElementById('display-masked-word').dir = /[\u0600-\u06FF]/.test(rawWord) ? "rtl" : "ltr";
+                    
                     renderHearts('display-guesser-hearts', data.chancesLeft);
 
                     const hintContainer = document.getElementById('ai-hint-container');
                     const hintText = document.getElementById('ai-hint-text');
                     
                     if (data.geminiHint) {
-                        hintText.innerHTML = `💡 Hint: <span dir="auto" class="font-semibold text-amber-200 block mt-1">${data.geminiHint}</span>`;
+                        hintText.innerHTML = `${t('t_hint')}<span dir="auto" class="font-semibold text-amber-200 block mt-1">${data.geminiHint}</span>`;
                         hintContainer.classList.remove('hidden');
                         hintContainer.classList.add('flex');
                     } else {
@@ -1395,18 +1682,25 @@
             }
         }
 
+        // Adapted to handle Arabic nicely using Tatweel spaces
         function getMaskedWordPresentation(word) {
             if (!word) return "";
+            const isAr = /[\u0600-\u06FF]/.test(word);
             const charArray = word.split('');
-            return charArray[0] + charArray[1] + " " + "_ ".repeat(charArray.length - 2);
+            let masked = charArray[0] + " " + charArray[1];
+            
+            for (let i = 2; i < charArray.length; i++) {
+                masked += (isAr ? " ـ" : " _");
+            }
+            return masked;
         }
 
         function populateGuessesList(guesses, chancesLeft) {
             const container = document.getElementById('list-guesses');
-            document.getElementById('display-guesses-counter').innerText = `Used ${5 - chancesLeft}/5`;
+            document.getElementById('display-guesses-counter').innerText = t('t_used', {used: (5 - chancesLeft), total: 5});
 
             if (!guesses || guesses.length === 0) {
-                container.innerHTML = '<div class="text-slate-600 italic">No previous attempts yet.</div>';
+                container.innerHTML = `<div class="text-slate-600 italic">${t('no_prev_attempts')}</div>`;
                 return;
             }
 
@@ -1418,18 +1712,72 @@
                 
                 if (item.correct) {
                     badge.classList.add('border-emerald-950');
-                    badge.innerHTML = `<span class="font-mono text-emerald-400 font-bold uppercase" dir="auto">${item.guess}</span> <i class="fa-solid fa-check text-emerald-500 text-[10px]"></i>`;
+                    badge.innerHTML = `<span class="font-mono text-emerald-400 font-bold uppercase notranslate" dir="auto">${item.guess}</span> <i class="fa-solid fa-check text-emerald-500 text-[10px]"></i>`;
                 } else if (item.guess === '[TIMEOUT]') {
                     badge.classList.add('border-rose-950');
-                    badge.innerHTML = `<span class="font-mono text-rose-400 font-bold uppercase italic">[TIMEOUT]</span> <i class="fa-solid fa-hourglass-end text-rose-500 text-[10px]"></i>`;
+                    badge.innerHTML = `<span class="font-mono text-rose-400 font-bold uppercase italic notranslate">[TIMEOUT]</span> <i class="fa-solid fa-hourglass-end text-rose-500 text-[10px]"></i>`;
                 } else {
-                    badge.innerHTML = `<span class="font-mono text-slate-400 uppercase line-through" dir="auto">${item.guess}</span> <i class="fa-solid fa-xmark text-rose-500 text-[10px]"></i>`;
+                    badge.innerHTML = `<span class="font-mono text-slate-400 uppercase line-through notranslate" dir="auto">${item.guess}</span> <i class="fa-solid fa-xmark text-rose-500 text-[10px]"></i>`;
                 }
                 container.appendChild(badge);
             }
         }
 
-        // --- Arabic & English Dictionaries ---
+        // --- English Dictionary ---
+        const INTERNAL_DICTIONARY = {
+            "APPLE": "A round fruit with red or green skin and a whitish interior.",
+            "BANANA": "A long curved fruit that grows in clusters and has soft pulpy flesh and yellow skin.",
+            "ORANGE": "A round juicy citrus fruit with a tough bright reddish-yellow rind.",
+            "GRAPE": "A berry growing in clusters on a vine, used as fruit and for making wine.",
+            "HOUSE": "A building for human habitation.",
+            "MOUSE": "A small rodent that typically has a pointed snout.",
+            "WATER": "A transparent, tasteless, odorless, and nearly colorless chemical substance.",
+            "LIGHT": "The natural agent that stimulates sight and makes things visible.",
+            "TRAIN": "A series of connected railway carriages or wagons.",
+            "HEART": "A hollow muscular organ that pumps the blood through the circulatory system.",
+            "CHAIR": "A separate seat for one person, typically with a back and four legs.",
+            "TABLE": "A piece of furniture with a flat top and one or more legs.",
+            "CLOCK": "A mechanical or electrical device for measuring time.",
+            "EARTH": "The planet on which we live.",
+            "SUN": "The star around which the earth orbits.",
+            "MOON": "The natural satellite of the earth.",
+            "BREAD": "Food made of flour, water, and yeast or another leavening agent.",
+            "SMILE": "A pleased, kind, or amused facial expression.",
+            "DREAM": "A series of thoughts, images, and sensations occurring in a person's mind during sleep.",
+            "NIGHT": "The period of darkness in each twenty-four hours.",
+            "RIVER": "A large natural stream of water flowing in a channel to the sea.",
+            "MONEY": "A current medium of exchange in the form of coins and banknotes.",
+            "MUSIC": "Vocal or instrumental sounds combined in such a way as to produce beauty of form.",
+            "PAPER": "Material manufactured in thin sheets from the pulp of wood.",
+            "GLASS": "A hard, brittle substance, typically transparent.",
+            "STONE": "Hard solid nonmetallic mineral matter of which rock is made.",
+            "PLANT": "A living organism of the kind exemplified by trees, shrubs, herbs.",
+            "FRUIT": "The sweet and fleshy product of a tree or other plant that contains seed.",
+            "CHILD": "A young human being below the age of puberty.",
+            "BIRD": "A warm-blooded egg-laying vertebrate distinguished by the possession of feathers.",
+            "FISH": "A limbless cold-blooded vertebrate animal with gills and fins.",
+            "HORSE": "A solid-hoofed plant-eating domesticated mammal with a flowing mane and tail.",
+            "TIGER": "A very large solitary cat with a yellow-orange coat and dark stripes.",
+            "LION": "A large tawny-colored cat that lives in prides.",
+            "BEAR": "A large, heavy, mammal that walks on the soles of its feet.",
+            "WOLF": "A wild carnivorous mammal of the dog family.",
+            "SNAKE": "A long limbless reptile that has no eyelids, a short tail, and jaws that are capable of considerable extension.",
+            "EAGLE": "A large bird of prey with a massive hooked bill and long broad wings.",
+            "OCEAN": "A very large expanse of sea, in particular, each of the main areas into which the sea is divided.",
+            "BEACH": "A pebbly or sandy shore, especially by the ocean between high- and low-water marks.",
+            "CLOUD": "A visible mass of condensed water vapor floating in the atmosphere.",
+            "STORM": "A violent disturbance of the atmosphere with strong winds and usually rain, thunder, lightning.",
+            "SNOW": "Atmospheric water vapor frozen into ice crystals and falling in light white flakes.",
+            "FIRE": "Combustion or burning, in which substances combine chemically with oxygen from the air.",
+            "WIND": "The perceptible natural movement of the air.",
+            "RAIN": "Moisture condensed from the atmosphere that falls visibly in separate drops.",
+            "WOOD": "The hard fibrous material that forms the main substance of the trunk or branches of a tree.",
+            "IRON": "A strong, hard magnetic silvery-gray metal.",
+            "GOLD": "A yellow precious metal.",
+            "SILVER": "A precious shiny grayish-white metal."
+        };
+
+        // --- Arabic Dictionary ---
         const ARABIC_DICTIONARY = {
             "شمس": "نجم يضيء نهارنا ويبعث الدفء",
             "قمر": "ينير السماء ليلاً ويتبدل شكله",
@@ -1479,6 +1827,7 @@
             "خريف": "فصل تتساقط فيه أوراق الأشجار",
             "سيف": "سلاح ماضٍ استخدم في الحروب القديمة",
             "حصان": "حيوان أصيل سريع العدو يستخدم للركوب",
+			
 			"مكتشف": "شخص يكتشف أشياء جديدة",
 			"باحث": "شخص يبحث عن معلومات",
 			"مخترع": "شخص يبتكر شيئًا جديدًا",
@@ -2170,603 +2519,12 @@
 			"ملابس": "يرتديها الإنسان"
         };
 
-        const INTERNAL_DICTIONARY = {
-            "BE": "have the quality of being; (copula, used with an adjective or a predicate noun)",
-			"PERSON": "a human being",
-			"SAY": "express in words",
-			"NOT": "negation of a word or group of words",
-			"GROUP": "any number of entities considered as a unit",
-			"HAVE": "have or possess, either in a concrete or an abstract sense",
-			"LOCATION": "a point or extent in space",
-			"MAN": "an adult person who is male",
-			"SEE": "perceive by sight or have the power to perceive by sight",
-			"SEEM": "give a certain impression or have a certain outward aspect",
-			"USE": "put into service; make work or employ for a particular purpose",
-			"KNOW": "be cognizant or aware of a fact or a specific piece of information",
-			"DO": "engage in",
-			"MAKE": "engage in",
-			"TWO": "being one more than one",
-			"OTHER": "not the same one or ones already mentioned or implied",
-			"YEAR": "a period of time containing 365 (or 366) days",
-			"ONE": "used of a single unit or thing; not two or more",
-			"ALSO": "in addition",
-			"EVEN": "used as an intensive especially to indicate something unexpected",
-			"WANT": "feel or have a desire for; want strongly",
-			"BEGIN": "take the first step or steps in carrying out an action",
-			"MORE": "used to form the comparative of some adjectives and adverbs",
-			"MANY": "amounting to a large but indefinite number",
-			"GO": "change location; move, travel, or proceed, also metaphorically",
-			"TRY": "make an effort or attempt",
-			"THEN": "subsequently or soon afterward",
-			"BECOME": "enter or assume a certain state or condition",
-			"YOUTH": "a young person",
-			"SO": "to a very great extent or degree",
-			"NEW": "not of long duration; having just come into being",
-			"NOW": "in the historical present; at this point in the narration",
-			"COME": "move toward, travel toward something or somebody",
-			"HEAR": "perceive (sound) via auditory sense",
-			"LOOK": "perceive with attention; direct one's gaze towards",
-			"THINK": "judge or regard; look upon; judge",
-			"PROVIDE": "give something useful or necessary to",
-			"EYE": "the organ of sight",
-			"VERY": "used as intensifiers",
-			"OWN": "belonging to or on behalf of a specified person",
-			"ONLY": "and nothing more",
-			"PEOPLE": "any group of human beings collectively",
-			"NEVER": "not ever; at no time in the past or future",
-			"AGAIN": "anew",
-			"ALL": "used to indicate the whole number or amount",
-			"ASK": "inquire about",
-			"GET": "come into the possession of something concrete or abstract",
-			"INCLUDE": "have as a part, be made up out of",
-			"STILL": "with reference to action or condition; without change",
-			"FIRST": "preceding all others in time or space or degree",
-			"THREE": "being one more than two",
-			"LET": "make it possible through a specific action",
-			"TIME": "an instance or single occasion for some event",
-			"HAND": "the extremity of the superior limb",
-			"SMALL": "limited or below average in number or quantity",
-			"HEAD": "the upper part of the human body or the front part of the body",
-			"KEEP": "keep in a certain state, position, or activity",
-			"EXPECT": "regard something as probable or likely",
-			"ALWAYS": "at all times; all the time and on every occasion",
-			"TELL": "express in words",
-			"FACE": "the front of the human head from the forehead to the chin",
-			"GOOD": "having desirable or positive qualities",
-			"HERE": "in or at this place; where the speaker or writer is",
-			"TURN": "change orientation or direction, also in the abstract sense",
-			"WALK": "use one's feet to advance; advance by steps",
-			"HELP": "give help or assistance; be of service",
-			"WAY": "how something is done or how it happens",
-			"FEEL": "undergo an emotional sensation or be in a particular state of mind",
-			"THERE": "in or at that place",
-			"HOWEVER": "despite anything to the contrary",
-			"MOST": "used to form the superlative",
-			"TOO": "to a degree exceeding normal or proper limits",
-			"GIVE": "cause to have, in the abstract sense or physical sense",
-			"ALMOST": "slightly short of or not quite accomplished",
-			"DAY": "time for Earth to make a complete rotation on its axis",
-			"FRIEND": "a person you know well and regard with affection and trust",
-			"STAND": "be standing; be upright",
-			"SOLDIER": "an enlisted man or woman who serves in an army",
-			"LITTLE": "limited or below average in number or quantity",
-			"NIGHT": "the time after sunset and before sunrise while it is dark",
-			"JUST": "and nothing more",
-			"FIND": "come upon, as if by accident; meet with",
-			"START": "take the first step or steps in carrying out an action",
-			"HOUSE": "a dwelling that serves as living quarters for families",
-			"OFTEN": "many times at short intervals",
-			"IDEA": "the content of cognition; the main thing you are thinking about",
-			"PROBLEM": "a state of difficulty that needs to be resolved",
-			"HAPPEN": "come to pass",
-			"CHILD": "a young person of either sex",
-			"AREA": "a particular geographical region of indefinite boundary",
-			"CONTINUE": "continue a certain state, condition, or activity",
-			"IMPORTANT": "of great significance or value",
-			"LEAVE": "go away from a place",
-			"REGIMENT": "army unit smaller than a division",
-			"BOY": "a youthful male person",
-			"REQUIRE": "require as useful, just, or proper",
-			"WOMAN": "an adult female person",
-			"DIE": "pass from physical life and lose all bodily attributes",
-			"NOTHING": "a quantity of no importance",
-			"LARGE": "above average in size or number or quantity",
-			"PAY": "give money, usually in exchange for goods or services",
-			"PUT": "put into a certain place or abstract location",
-			"MUCH": "great in quantity or degree or extent",
-			"POSSIBLE": "capable of happening or existing",
-			"SHOW": "give an exhibition of to an interested audience",
-			"TYPE": "a subdivision of a particular kind of thing",
-			"WATER": "binary compound that occurs at room temperature as a clear liquid",
-			"NO": "indicating a complete or almost complete lack",
-			"PLACE": "put into a certain place or abstract location",
-			"HIGH": "greater than normal in degree or intensity or amount",
-			"SIT": "be seated",
-			"CERTAIN": "definite but not specified or identified",
-			"NUMBER": "the property possessed by a sum or total of units",
-			"FOUR": "being one more than three",
-			"SOME": "indicate an unspecified number or quantity",
-			"LIVE": "inhabit or live in; be an inhabitant of",
-			"SAME": "same in identity",
-			"REMAIN": "stay the same; remain in a certain state",
-			"KIND": "a category of things distinguished by some common characteristic",
-			"SCHOOL": "an educational institution",
-			"BUILD": "make by combining materials and parts",
-			"DECIDE": "reach, make, or come to a decision about something",
-			"LOSE": "fail to keep or to maintain",
-			"PERHAPS": "by chance",
-			"BRING": "take something or somebody with oneself somewhere",
-			"RECEIVE": "get something; come into possession of",
-			"APPEAR": "give a certain impression or have a certain outward aspect",
-			"MIND": "that which is responsible for one's thoughts and feelings",
-			"WIFE": "a married woman; a man's partner in marriage",
-			"BELIEVE": "accept as true; take to be true",
-			"LONG": "being or indicating a relatively great duration",
-			"AMERICAN": "of or relating to the United States of America",
-			"WORD": "a unit of language that native speakers can identify",
-			"ADD": "make an addition to; join or combine",
-			"OBTAIN": "come into possession of",
-			"ROOM": "an area within a building enclosed by walls",
-			"READ": "interpret something that is written or printed",
-			"GREAT": "relatively large in size or number or extent",
-			"BODY": "the entire structure of an organism",
-			"PART": "something determined in relation to something that includes it",
-			"FIGHT": "be engaged in a fight; carry on a fight",
-			"PROBABLY": "with considerable certainty; without much doubt",
-			"WRITE": "produce a literary work",
-			"CONTAIN": "include or contain; have as a component",
-			"RETURN": "go or come back to place, condition, or activity",
-			"CAUSE": "give rise to; cause to happen or occur",
-			"MOVE": "change location; move, travel, or proceed",
-			"NEED": "require as useful, just, or proper",
-			"UNDERSTAND": "know and comprehend the nature or meaning of",
-			"EXPLAIN": "make plain and comprehensible",
-			"LAST": "immediately past",
-			"WHOLE": "including all components without exception",
-			"OLD": "having lived for a relatively long time",
-			"SECOND": "coming next after the first in position",
-			"STATE": "the territory occupied by one of the constituent districts",
-			"TALK": "exchange thoughts; talk with",
-			"ALREADY": "prior to a specified or implied time",
-			"BIG": "above average in size or number or quantity",
-			"CONSIDER": "deem to be",
-			"DETERMINE": "establish after a calculation or study",
-			"EVER": "at any time",
-			"LATER": "happening at a time subsequent to a reference time",
-			"TREE": "a tall perennial woody plant having a main trunk",
-			"YOUNG": "in an early period of life or development",
-			"PROGRAM": "a series of steps to be carried out",
-			"REMEMBER": "recall knowledge from memory; have a recollection",
-			"RUN": "move fast by using one's feet",
-			"ARM": "a human limb from the shoulder to the hand",
-			"CENTURY": "a period of 100 years",
-			"CITY": "a large and densely populated urban area",
-			"FIVE": "being one more than four",
-			"HORSE": "solid-hoofed herbivorous quadruped domesticated since prehistoric times",
-			"REACH": "reach a destination, either real or abstract",
-			"WEEK": "any period of seven consecutive days",
-			"BUY": "obtain by purchase; acquire by financial transaction",
-			"INFORMATION": "a message received and understood",
-			"REDUCE": "cut down on; make a reduction in",
-			"EFFECT": "a phenomenon that follows and is caused by some previous phenomenon",
-			"ENOUGH": "as much as necessary",
-			"ACHIEVE": "to gain with effort",
-			"EXIST": "have an existence, be extant",
-			"GOVERNMENT": "the organization that is the governing authority",
-			"MOTHER": "a woman who has given birth to a child",
-			"WAIT": "stay in one place and anticipate or expect something",
-			"SOMETIMES": "on certain occasions or in certain cases",
-			"DOOR": "a swinging or sliding barrier that closes an entrance",
-			"DOWN": "spatially or metaphorically from higher to lower",
-			"ONCE": "on one occasion",
-			"SPEND": "pass time in a specific way",
-			"FORM": "the phonological or orthographic appearance of a word",
-			"USUALLY": "under normal conditions",
-			"OFFER": "make available or accessible, provide or furnish",
-			"ACTION": "something done (usually as opposed to something said)",
-			"BEST": "having the most positive qualities",
-			"CREATE": "make or cause to be or to become",
-			"NAME": "a language unit by which a person or thing is known",
-			"PERIOD": "an amount of time",
-			"ROAD": "an open way for travel or transportation",
-			"MEAN": "mean or intend to express or convey",
-			"HOUR": "a period of time equal to 1/24th of a day",
-			"TAKE": "carry out",
-			"AVAILABLE": "obtainable or accessible and ready for use",
-			"BACK": "in or to or toward a former location",
-			"CALL": "assign a specified proper name to",
-			"SIDE": "a place within a region identified relative to a center",
-			"TEMPERATURE": "the degree of hotness or coldness of an environment",
-			"GOD": "the supernatural being conceived as perfect",
-			"LEARN": "gain knowledge or skills",
-			"STUDY": "a detailed critical inspection",
-			"SURFACE": "the outer boundary of an artifact or material layer",
-			"THUS": "from that fact or reason or as a result",
-			"WORK": "activity directed toward making or doing something",
-			"FOOT": "the part of the leg of a human being below the ankle",
-			"DIFFERENT": "unlike in nature or quality or form",
-			"LIE": "be located or situated somewhere; occupy a position",
-			"SOCIETY": "an extended social group with distinctive organization",
-			"THEREFORE": "from that fact or reason or as a result",
-			"GENERAL": "applying to all or most members of a category",
-			"GROUND": "the solid part of the earth's surface",
-			"INCREASE": "become bigger or greater in amount",
-			"MOMENT": "a particular point in time",
-			"MORNING": "the time period between dawn and noon",
-			"OFFICER": "any person in the armed services holding authority",
-			"REMOVE": "remove something concrete or abstract",
-			"SPEAK": "express in speech",
-			"STREET": "a thoroughfare that is lined with buildings",
-			"TEACH": "impart skills or knowledge to",
-			"ENTER": "to come or go into",
-			"FACT": "a piece of information about circumstances that exist",
-			"ATTEND": "be present at (meetings, university), etc.",
-			"EFFORT": "earnest and conscientious activity to accomplish something",
-			"MINUTE": "a unit of time equal to 60 seconds",
-			"RESULT": "a phenomenon that follows and is caused by something previous",
-			"TRUE": "consistent with fact or reality; not false",
-			"WEAR": "be dressed in",
-			"AGO": "in the past",
-			"STARE": "look at with fixed eyes",
-			"WALL": "an architectural partition with height and length",
-			"NECESSARY": "absolutely essential",
-			"OCCUR": "come to pass",
-			"QUESTION": "an instance of questioning",
-			"SOCIAL": "relating to human society and its members",
-			"CHOOSE": "pick out, select, or choose from alternatives",
-			"FEW": "a quantifier indicating a small but indefinite number",
-			"GIRL": "a young woman",
-			"EARLY": "at or near the beginning of a period of time",
-			"HOLD": "keep in a certain state, position, or activity",
-			"SEND": "cause to go somewhere",
-			"SMILE": "change one's facial expression to signal pleasure",
-			"UP": "spatially or metaphorically from a lower to higher position",
-			"SLOWLY": "without speed",
-			"VOICE": "the distinctive quality or pitch of a person's speech",
-			"WAR": "the waging of armed conflict against an enemy",
-			"DESCRIBE": "give a description of",
-			"MONEY": "the most common medium of exchange; legal tender",
-			"NORMAL": "conforming with or constituting a norm or standard",
-			"SIX": "denoting a quantity consisting of six items",
-			"WATCH": "look attentively",
-			"DATA": "a collection of facts from which conclusions are drawn",
-			"JOB": "the principal activity in your life to earn money",
-			"LIKE": "prefer or wish to do something",
-			"REASON": "a rational motive for a belief or action",
-			"WELL": "in a good or proper or satisfactory manner",
-			"AGE": "how long something has existed",
-			"BASE": "use as a basis for; found on",
-			"COST": "the total spent for goods or services",
-			"JOIN": "become part of; become a member of a group",
-			"LEG": "a human limb between the knee and ankle",
-			"PURPOSE": "an anticipated outcome that guides your planned actions",
-			"ANNOUNCE": "make known; make an announcement",
-			"FOLLOW": "to travel behind, go after, come after",
-			"SINGLE": "being or characteristic of a single thing or person",
-			"BATTLE": "a hostile meeting of opposing military forces",
-			"DIFFERENCE": "the quality of being unlike or dissimilar",
-			"DOCTOR": "a licensed medical practitioner",
-			"FEAR": "an emotion experienced in anticipation of danger",
-			"MATERIAL": "the tangible substance that makes up a physical object",
-			"MERELY": "and nothing more",
-			"PATIENT": "a person who requires medical care",
-			"SELL": "exchange or deliver for money or its equivalent",
-			"TALL": "great in vertical dimension; high in stature",
-			"THIRD": "coming next after the second and before the fourth",
-			"CARRY": "move while supporting, either in a vehicle or hands",
-			"CASE": "an occurrence of something",
-			"CONDITION": "a state at a particular time",
-			"DEAD": "no longer having or seeming to have life",
-			"FATHER": "a male parent",
-			"THING": "a special situation",
-			"WINDOW": "a framework of wood or metal that contains glass",
-			"CAR": "a motor vehicle with four wheels",
-			"CELL": "any small compartment",
-			"TEN": "being one more than nine",
-			"TRAINING": "activity leading to skilled behavior",
-			"WIN": "be the winner in a contest or competition",
-			"ABLE": "having the necessary means or skill to do something",
-			"AWAY": "from a particular thing or place or position",
-			"GROW": "pass into a condition gradually; become",
-			"MONTH": "one of the twelve divisions of the calendar year",
-			"PLAY": "participate in games or sport",
-			"SIZE": "the physical magnitude of something",
-			"THOUGHT": "the content of cognition; the main thing on your mind",
-			"WAGE": "something that remunerates",
-			"BETTER": "superior to another in excellence or quality",
-			"LEVEL": "a position on a scale of intensity or amount",
-			"PRODUCE": "bring forth or yield",
-			"TODAY": "the present time or age",
-			"ASSUME": "take to be the case; accept without proof",
-			"BEFORE": "earlier in time; previously",
-			"COUNTRY": "a politically organized body of people",
-			"HUSBAND": "a married man; a woman's partner in marriage",
-			"INDICATE": "be a signal for or a symptom of",
-			"LESS": "used to form the comparative of adjectives",
-			"RATE": "a magnitude or frequency relative to a time unit",
-			"ANIMAL": "a living organism characterized by voluntary movement",
-			"COMMUNITY": "a group of people living in a particular local area",
-			"COMPLETE": "having every necessary or normal part",
-			"ELECTION": "a vote to select the winner of a position",
-			"MEMBER": "one of the persons who compose a social group",
-			"OPPORTUNITY": "a possibility due to a favorable combination of circumstances",
-			"STRESS": "the relative prominence of a syllable or musical note",
-			"STUDENT": "a learner who is enrolled in an educational institution",
-			"TOWN": "an urban area with a fixed boundary smaller than a city",
-			"ANODE": "a positively charged electrode",
-			"ENEMY": "an opposing military force",
-			"ESPECIALLY": "to a distinctly greater extent than is common",
-			"FAIL": "fail to do something; leave something undone",
-			"FAMILY": "a social unit living together",
-			"IMAGINE": "form a mental image of something not present",
-			"IMPROVE": "to make better",
-			"INDEED": "in truth; tends to intensify",
-			"LIFE": "a characteristic state or mode of living",
-			"OPEN": "cause to open or to become open",
-			"SITUATION": "the general state of things; combination of circumstances",
-			"ALLOW": "make it possible through a specific action",
-			"ATTITUDE": "a complex mental state involving beliefs and feelings",
-			"ECONOMIC": "of or relating to an economy, materials and wealth",
-			"FIGURE": "a diagram or picture illustrating textual material",
-			"LETTER": "a written message addressed to a person",
-			"PRESSURE": "the force applied to a unit area of surface",
-			"REGION": "the extended spatial location of something",
-			"SHOULDER": "the part of the body between the neck and upper arm",
-			"SMOKE": "a cloud of fine particles suspended in a gas",
-			"SORT": "a category of things distinguished by some characteristic",
-			"VALUE": "a numerical quantity measured or assigned or computed",
-			"ADMIT": "declare to be true or admit existence of",
-			"CARE": "feel concern or interest",
-			"LAUGH": "produce laughter",
-			"LIST": "a database containing an ordered array of items",
-			"PERCENT": "a proportion in relation to a whole",
-			"REPORT": "to give an account or representation of in words",
-			"SUDDENLY": "happening unexpectedly",
-			"ANSWER": "react verbally",
-			"DIFFICULT": "not easy; requiring great physical or mental effort",
-			"PLAN": "a series of steps to be carried out or goals",
-			"PLANT": "buildings for carrying on industrial labor",
-			"PROCESS": "a particular course of action intended for a result",
-			"RELIGION": "a strong belief in a supernatural power",
-			"AGREE": "be in accord; be in agreement",
-			"EASY": "posing no difficulty; requiring little effort",
-			"EVENT": "something that happens at a given place and time",
-			"INTEREST": "a sense of concern with and curiosity about something",
-			"MENTION": "make reference to",
-			"OFFICE": "place where professional or clerical duties are performed",
-			"POWER": "possession of controlling influence",
-			"PREVENT": "keep from happening or arising; make impossible",
-			"ARMY": "a permanent organization of military land forces",
-			"BLOOD": "the fluid that is pumped through the body by the heart",
-			"COURSE": "education imparted in a series of lessons",
-			"EAT": "take in solid food",
-			"FAR": "to a considerable degree; very much",
-			"FILL": "make full, also in a metaphorical sense",
-			"FORGET": "dismiss from the mind; stop remembering",
-			"PARTICULARLY": "to a distinctly greater extent or degree than is common",
-			"REALLY": "in accordance with truth or fact or reality",
-			"SIMILAR": "marked by correspondence or resemblance",
-			"WHITE": "being of the achromatic color of maximum lightness",
-			"AUDIENCE": "a gathering of spectators or listeners at a performance",
-			"CHURCH": "one of the groups of Christians with shared beliefs",
-			"COMPANY": "an institution created to conduct business",
-			"HOPE": "expect and wish",
-			"LISTEN": "hear with intention",
-			"LITERATURE": "creative writing of recognized artistic value",
-			"PRESENT": "temporal sense; now existing or happening",
-			"SOON": "in the near future",
-			"EXPERIMENT": "the act of conducting a controlled test",
-			"EXPRESS": "give expression to",
-			"HAIR": "a covering for the body",
-			"HOME": "at or to or in the direction of one's home",
-			"INSIST": "be emphatic or resolute and refuse to budge",
-			"RATHER": "on the contrary",
-			"TEND": "have a tendency or disposition to do or be something",
-			"CUT": "separate with or as if with an instrument",
-			"LIKELY": "has a good chance of being the case",
-			"PROVE": "be shown or be found to be",
-			"READY": "completely prepared or in condition for action",
-			"SELECT": "pick out, select, or choose from alternatives",
-			"SLEEP": "be asleep",
-			"STATEMENT": "a message that is stated or declared",
-			"STRONG": "having strength or power greater than average",
-			"SUMMER": "the warmest season of the year",
-			"TECHNIQUE": "a practical method or art applied to some task",
-			"WONDER": "have a wish or desire to know something",
-			"CHANGE": "cause to change; make different; cause transformation",
-			"COMPARE": "examine and note the similarities or differences",
-			"EMPLOYEE": "a worker who is hired to perform a job",
-			"LIP": "either of two fleshy folds of tissue surrounding the mouth",
-			"MAYBE": "by chance",
-			"MODERN": "belonging to the modern era; since the Middle Ages",
-			"QUITE": "to a degree",
-			"STOP": "come to a halt, stop moving",
-			"SUGGEST": "make a proposal, declare a plan for something",
-			"ATTENTION": "the process whereby a person concentrates on features",
-			"CENTER": "an area that is approximately central within a larger region",
-			"CONCERN": "be relevant to",
-			"DRIVE": "operate or control a vehicle",
-			"INDUSTRY": "the people or companies engaged in commercial enterprise",
-			"INVOLVE": "connect closely and often incriminatingly",
-			"PRICE": "the property of having material worth",
-			"PUSH": "move with force",
-			"SHELTER": "a structure that provides privacy and protection",
-			"SIMPLE": "having few parts; not complex or complicated",
-			"ABOUT": "imprecise but fairly close to correct",
-			"CERTAINLY": "definitely or positively",
-			"CLEAR": "readily apparent to the mind",
-			"COMRADE": "a friend who is frequently in the company of another",
-			"JEW": "a person belonging to the worldwide group claiming descent",
-			"LOW": "less than normal in degree or intensity or amount",
-			"PERMIT": "consent to, give permission",
-			"RIVER": "a large natural stream of water",
-			"SERVE": "serve a purpose, role, or function",
-			"WORDS": "the words that are spoken",
-			"DISCUSS": "to consider or examine in speech or writing",
-			"DISTANCE": "the property created by the space between two points",
-			"EVIDENCE": "your basis for belief or disbelief; knowledge",
-			"REAL": "being or occurring in fact or actuality; verified existence",
-			"ENCOURAGE": "contribute to the progress or growth of",
-			"END": "have an end, in a temporal, spatial, or quantitative sense",
-			"FINGER": "any of the terminal members of the hand",
-			"FORWARD": "at or to or toward the front",
-			"KID": "a young person of either sex",
-			"NEARLY": "slightly short of or not quite accomplished",
-			"REPLY": "react verbally",
-			"RIDE": "sit and travel on the back of animal, with control",
-			"TEXT": "the words of something written",
-			"THROW": "propel through the air",
-			"APPARENTLY": "from appearances alone",
-			"ARRIVE": "reach a destination; arrive by movement or progress",
-			"BLACK": "being of the achromatic color of maximum darkness",
-			"DEVELOPMENT": "act of improving by expanding or refining",
-			"DICTIONARY": "a reference book containing an alphabetical list of words",
-			"ENJOY": "derive or receive pleasure from; get enjoyment",
-			"EXPERIENCE": "the accumulation of knowledge from direct participation",
-			"JEWISH": "of or relating to Jews or their culture or religion",
-			"LARGER": "large or big relative to something else",
-			"LATTER": "referring to the second of two things mentioned",
-			"PRODUCT": "commodities offered for sale",
-			"TABLE": "a set of data arranged in rows and columns",
-			"AFTERNOON": "the part of the day between noon and evening",
-			"ANOTHER": "any of various alternatives; some other",
-			"BAD": "having undesirable or negative qualities",
-			"BED": "a piece of furniture that provides a place to sleep",
-			"DOMINANT": "exercising influence or control",
-			"EARTH": "the 3rd planet from the sun; the planet we live on",
-			"EXISTENCE": "the state or fact of existing",
-			"INDIVIDUAL": "a human being",
-			"KNEE": "hinge joint in the human leg connecting tibia and femur",
-			"LINE": "a formation of people or things one beside another",
-			"MUSIC": "an artistic form of auditory communication incorporating tones",
-			"OBJECT": "a tangible and visible entity; casts a shadow",
-			"POINT": "a geometric element that has position but no extension",
-			"SITE": "the piece of land on which something is located",
-			"SURE": "having or feeling no doubt or uncertainty",
-			"ATTEMPT": "make an effort or attempt",
-			"EMOTION": "any strong feeling",
-			"ESTABLISH": "set up or found",
-			"FILE": "record in a public office or in a court of law",
-			"HATE": "dislike intensely; feel antipathy or aversion",
-			"HOT": "used of physical heat; having a high temperature",
-			"IMPORTANCE": "the quality of being important and worthy of note",
-			"LAW": "the collection of rules imposed by authority",
-			"LOUD": "characterized by or producing sound of great volume",
-			"MEANS": "how a result is obtained or an end is achieved",
-			"PUBLIC": "not private; open to or concerning people as a whole",
-			"RECOMMEND": "push for something",
-			"SOMEWHAT": "to a small degree or extent",
-			"ART": "the products of human creativity; works of art",
-			"DARK": "devoid of or deficient in light; shadowed or black",
-			"FARM": "workplace consisting of farm buildings and cultivated land",
-			"FEELING": "the experiencing of affective and emotional states",
-			"FIELD": "a piece of land cleared of trees and usually enclosed",
-			"HISTORY": "the aggregate of past events",
-			"INCH": "a unit of length equal to one twelfth of a foot",
-			"MANNER": "how something is done or how it happens",
-			"MEET": "come together",
-			"MILE": "a unit of length equal to 1,760 yards or 5,280 feet",
-			"SHIP": "a vessel that carries passengers or freight",
-			"SKY": "the atmosphere and outer space as viewed from earth",
-			"THEORY": "a well-substantiated explanation of some aspect of the world",
-			"VOCATIONAL": "of or relating to a vocation or occupation",
-			"WORLD": "everything that exists anywhere",
-			"BLUE": "of the color intermediate between green and violet",
-			"BUILDING": "a structure that has a roof and stands permanently",
-			"COLOR": "a visual attribute of things from the light they emit",
-			"EQUIPMENT": "an instrumentality needed for an undertaking",
-			"FELLOW": "a boy or man",
-			"FORCE": "to cause to do through pressure or necessity, physically",
-			"LANGUAGE": "a systematic means of communicating by symbols",
-			"MEANING": "the message that is intended or expressed or signified",
-			"MOUTH": "the opening through which food is taken in",
-			"REALIZE": "be fully aware or cognizant of",
-			"SAMPLE": "a small part of something representative of the whole",
-			"SON": "a male human offspring",
-			"WISH": "hope for; have a wish",
-			"CROSS": "travel across or pass over",
-			"DEMAND": "request urgently and forcefully",
-			"FEED": "provide as food",
-			"LOCAL": "relating to or applicable to a city or town",
-			"RECALL": "recall knowledge from memory; have a recollection",
-			"REFUSE": "show unwillingness towards",
-			"APPROACH": "move towards",
-			"BOOK": "a written work or composition that has been published",
-			"COFFEE": "a beverage consisting of an infusion of ground coffee beans",
-			"FUTURE": "the time yet to come",
-			"GREATER": "greater in size or importance or degree",
-			"HUMAN": "characteristic of humanity",
-			"IMMEDIATELY": "without delay or hesitation; with no time intervening",
-			"INFORM": "impart knowledge of some fact, state or affairs",
-			"LIGHT": "electromagnetic radiation that can produce a visual sensation",
-			"NATIONAL": "of or relating to or belonging to a nation or country",
-			"RESEARCH": "systematic investigation to establish facts",
-			"SIMPLY": "and nothing more",
-			"SING": "deliver by singing",
-			"SONG": "a short musical composition with words",
-			"VARIOUS": "of many different kinds purposefully arranged",
-			"ANALYSIS": "an investigation of the component parts of a whole",
-			"APPLY": "put into service; make work or employ",
-			"BASIC": "pertaining to or constituting a base or basis",
-			"COLLEGE": "the body of faculty and students of a college",
-			"DEATH": "the event of dying or departure from life",
-			"EXAMPLE": "an item of information typical of a class or group",
-			"FIG": "a diagram or picture illustrating textual material",
-			"INCOME": "the financial gain accruing over a given period",
-			"KNOWLEDGE": "the psychological result of perception and reasoning",
-			"POLITICAL": "involving or characteristic of politics or parties",
-			"PREPARE": "make ready or suitable or equip in advance",
-			"RANGE": "an area in which something acts or operates",
-			"SPIRIT": "the vital principle or animating force within living things",
-			"WIDE": "having great extent from one side to the other",
-			"ALLOTMENT": "a share set aside for a specific purpose",
-			"ARTIST": "a person whose creative work shows sensitivity",
-			"CLOTHES": "clothing in general",
-			"CONDUCT": "direct the course of; manage or control",
-			"DEVELOP": "work out",
-			"ENABLE": "render capable or able for some task",
-			"FINALLY": "after an unspecified period of time or a long delay",
-			"FINISH": "come or bring to a finish or an end",
-			"MARRY": "take in marriage",
-			"NEAR": "not far distant in time or space or degree",
-			"OBVIOUSLY": "unmistakably",
-			"PRIVATE": "confined to particular persons or groups",
-			"PULL": "cause to move by pulling",
-			"REST": "something left after other parts have been taken away",
-			"SEEK": "try to get or reach",
-			"SUPPLY": "give something useful or necessary to",
-			"TAX": "charge against a citizen's person or property",
-			"TRIAL": "the act of testing something",
-			"ACTIVITY": "any specific behavior",
-			"AFFECT": "have an effect upon",
-			"ENTIRELY": "to a complete degree or to the full extent",
-			"FALL": "descend in free fall under the influence of gravity",
-			"FIRE": "the event of something burning",
-			"FUNCTION": "a mathematical relation between sets",
-			"KITCHEN": "a room equipped for preparing meals",
-			"LOVE": "have a great affection or liking for",
-			"MUSCLE": "one of the contractile organs of the body",
-			"NOISE": "sound of any kind",
-			"PROTECT": "shield from danger, injury, destruction, or damage",
-			"RED": "resembling the color of blood or cherries",
-			"SECTION": "a self-contained part of a larger composition",
-			"SHORT": "indicating or being of limited duration",
-			"STAY": "stay the same; remain in a certain state",
-			"SYSTEM": "instrumentality that combines interrelated interacting artifacts",
-			"TEAM": "a cooperative unit",
-			"WOODS": "the trees and other plants in a large densely wooded area",
-			"DRAMA": "a dramatic work intended for performance by actors on a stage",
-			"ZOO": "the facility where wild animals are housed for exhibition",
-			"ZOOM": "move along very quickly"
-        };
-
         async function isValidWord(word) {
             if (!word) return false;
-            const lang = gameDataState?.language || 'EN';
+            const lang = gameDataState?.language || getSelectedLanguage(); // Use Room Dict or selected Dict
 
             if (lang === 'AR') {
                 if (ARABIC_DICTIONARY[word]) return true;
-                // السماح بالكلمات العربية بشكل عام كبديل للقاموس الخارجي
                 return word.length >= 2 && /^[\u0600-\u06FF]+$/.test(word);
             } else {
                 if (INTERNAL_DICTIONARY[word]) return true;
@@ -2819,14 +2577,14 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             btn.disabled = true;
             
-            const lang = gameDataState?.language || 'EN';
+            const lang = gameDataState?.language || getSelectedLanguage();
             const dict = lang === 'AR' ? ARABIC_DICTIONARY : INTERNAL_DICTIONARY;
             const wordsList = Object.keys(dict);
             
             if (Math.random() < 0.4) {
                 const word = wordsList[Math.floor(Math.random() * wordsList.length)];
                 inputEl.value = word;
-                showToast(lang === 'AR' ? "✨ تم اختيار كلمة صعبة!" : "✨ Chosen a hard word!", "success");
+                showToast(t('t_smart_hard'), "success");
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 return;
@@ -2848,7 +2606,7 @@
                     word = lang === 'AR' ? word.replace(/[^\u0600-\u06FF]/g, '') : word.replace(/[^A-Z]/g, '');
                     if (word.length >= 2) {
                         inputEl.value = word;
-                        showToast(lang === 'AR' ? "✨ اقترح الذكاء الاصطناعي كلمة!" : "✨ AI generated a word for you!", "success");
+                        showToast(t('t_smart_gen'), "success");
                         return;
                     }
                 }
@@ -2856,7 +2614,7 @@
             } catch (err) {
                 const word = wordsList[Math.floor(Math.random() * wordsList.length)];
                 inputEl.value = word;
-                showToast(lang === 'AR' ? "✨ تم اختيار كلمة احتياطية!" : "✨ Chosen a backup hard word!", "success");
+                showToast(t('t_smart_backup'), "success");
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -2877,7 +2635,7 @@
                 const wordsList = Object.keys(dict);
                 const cleanWord = wordsList[Math.floor(Math.random() * wordsList.length)];
                 const finalHint = dict[cleanWord];
-                const b64Secret = btoa(unescape(encodeURIComponent(cleanWord))); // Secure btoa for arabic
+                const b64Secret = encodeBase64Unicode(cleanWord); 
 
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
                 await updateDoc(docRef, {
@@ -2903,7 +2661,7 @@
                 window.botGuessTimer = null;
                 if (!gameDataState || gameDataState.status !== 'playing' || !gameDataState.timerActive || gameDataState.currentSetter !== 'player1') return;
 
-                const actualWord = decodeURIComponent(escape(atob(gameDataState.secretWord)));
+                const actualWord = decodeBase64Unicode(gameDataState.secretWord);
                 const firstLetter = actualWord.charAt(0);
                 
                 // Bot gets smarter if few chances remain
@@ -2960,7 +2718,6 @@
         function handleBotLogic(data) {
             if (!data.isSinglePlayer || localPlayerRole !== 'player1') return;
             
-            // Handle auto-advancing rounds for Bot
             if (data.turnOutcome !== 'none') {
                 clearBotTimers();
                 if (!data.player2.acknowledgedOutcome) {
@@ -2991,7 +2748,7 @@
                         window.botSetTimer = setTimeout(() => {
                             window.botSetTimer = null;
                             botSetWord();
-                        }, 1500); // 1.5s wait before bot picks word
+                        }, 1500); 
                     }
                 } else if (data.currentSetter === 'player1' && data.secretWordSubmitted && data.timerActive) {
                     if (!window.botGuessTimer) scheduleBotGuess(data);
@@ -3000,9 +2757,7 @@
                 }
             }
         }
-        // ---------------------------------------------
 
-        // Helper to advance round
         async function advanceRound(freshData, docRef) {
             const nextRound = freshData.currentRound + 1;
             const nextSetter = (freshData.currentSetter === 'player1') ? 'player2' : 'player1';
@@ -3025,14 +2780,15 @@
         }
 
         function startOrSyncTurnTimer(data) {
-            // FIX: Avoid interval recreation/stutters if the timer event reference is the same
             if (activeTimerStart === data.timerStart) {
                 return;
             }
             activeTimerStart = data.timerStart;
             clearInterval(countdownTimerInterval);
             isLocalTimeoutUpdating = false;
-            localTimeLeft = 15; // Reset remaining seconds locally
+            
+            const elapsedSeconds = Math.max(0, Math.floor((Date.now() - data.timerStart) / 1000));
+            localTimeLeft = Math.max(0, Math.min(15, 15 - elapsedSeconds));
 
             const setProgress = document.getElementById('display-setter-timer-progress');
             const setVal = document.getElementById('display-setter-timer-value');
@@ -3085,7 +2841,7 @@
             };
 
             timerTick();
-            countdownTimerInterval = setInterval(timerTick, 1000); // Perfect 1-second interval execution
+            countdownTimerInterval = setInterval(timerTick, 1000); 
         }
 
         async function triggerLocalTimerTimeout() {
@@ -3102,7 +2858,7 @@
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
 
             soundEffects.playFailure();
-            showToast("Time's up! Lost a chance.", "error");
+            showToast(t("t_time_up"), "error");
 
             try {
                 if (nextChances <= 0) {
@@ -3140,22 +2896,21 @@
             const cleanWord = inputEl.value.trim().toUpperCase();
 
             if (!cleanWord || cleanWord.length < 2) {
-                showToast("Word must be at least 2 letters.", "warning");
+                showToast(t("t_word_min"), "warning");
                 return;
             }
             if (/\s/.test(cleanWord)) {
-                showToast("Word cannot contain spaces.", "warning");
+                showToast(t("t_no_space"), "warning");
                 return;
             }
 
             const originalBtnHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validating...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             btn.disabled = true;
 
             const isValid = await isValidWord(cleanWord);
             if (!isValid) {
-                const isAr = gameDataState?.language === 'AR';
-                showToast(isAr ? "الكلمة غير صحيحة! يرجى إدخال كلمة عربية صالحة." : "Word not found! Enter a valid word.", "error");
+                showToast(t("t_word_not_found"), "error");
                 btn.innerHTML = originalBtnHTML;
                 btn.disabled = false;
                 return;
@@ -3193,8 +2948,7 @@
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
             
             try {
-                // Use unescape/encodeURIComponent for reliable arabic btoa conversion
-                const b64Secret = btoa(unescape(encodeURIComponent(cleanWord)));
+                const b64Secret = encodeBase64Unicode(cleanWord);
 
                 await updateDoc(docRef, {
                     secretWord: b64Secret,
@@ -3209,9 +2963,9 @@
                 });
 
                 inputEl.value = ''; 
-                showToast("Word submitted and hint ready! Let the duel begin.", "success");
+                showToast(t("t_word_ready"), "success");
             } catch (error) {
-                showToast("Failed to send word to network.", "error");
+                showToast(t("t_word_send_fail"), "error");
             } finally {
                 btn.innerHTML = originalBtnHTML;
                 btn.disabled = false;
@@ -3224,18 +2978,17 @@
             const rawGuess = inputEl.value.trim().toUpperCase();
 
             if (!rawGuess) {
-                showToast("Please type your guess first.", "warning");
+                showToast(t("t_type_guess"), "warning");
                 return;
             }
 
             const originalBtnHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             btn.disabled = true;
 
-            const lang = gameDataState?.language || 'EN';
             const isValid = await isValidWord(rawGuess);
             if (!isValid) {
-                showToast(lang === 'AR' ? "كلمة غير صحيحة، لم تخسر محاولة." : "Sorry, not a real word. No chance deducted.", "warning");
+                showToast(t("t_not_real_word"), "warning");
                 btn.innerHTML = originalBtnHTML;
                 btn.disabled = false;
                 inputEl.value = '';
@@ -3243,7 +2996,7 @@
             }
 
             const data = gameDataState;
-            const actualWord = decodeURIComponent(escape(atob(data.secretWord)));
+            const actualWord = decodeBase64Unicode(data.secretWord);
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', currentGameId);
 
             const isCorrect = (rawGuess === actualWord);
@@ -3271,7 +3024,7 @@
                     });
 
                     inputEl.value = '';
-                    showToast("Excellent! You uncovered the word.", "success");
+                    showToast(t("t_excellent"), "success");
 
                 } else {
                     const nextChances = data.chancesLeft - 1;
@@ -3298,14 +3051,14 @@
                             timerStart: Date.now(), 
                             lastAction: `Wrong guess: ${rawGuess}`
                         });
-                        showToast(lang === 'AR' ? "إجابة خاطئة، حاول مرة أخرى!" : "Incorrect word. Try again!", "error");
+                        showToast(t("t_wrong_guess"), "error");
                     }
 
                     inputEl.value = '';
                 }
 
             } catch (error) {
-                showToast("Error submitting guess.", "error");
+                showToast(t("t_guess_err"), "error");
             } finally {
                 btn.innerHTML = originalBtnHTML;
                 btn.disabled = false;
@@ -3320,7 +3073,7 @@
             const nextBtnText = document.getElementById('btn-next-turn-text');
             const nextBtnWaiting = document.getElementById('btn-next-turn-waiting-note');
 
-            reveal.innerText = decodeURIComponent(escape(atob(data.secretWord)));
+            reveal.innerText = decodeBase64Unicode(data.secretWord);
 
             const setterName = (data.currentSetter === 'player1') ? data.player1.name : (data.player2?.name || 'Player 2');
             const guesserName = (data.currentSetter === 'player1') ? (data.player2?.name || 'Player 2') : data.player1.name;
@@ -3328,26 +3081,28 @@
             if (data.turnOutcome === 'guessed') {
                 avatar.innerHTML = '🎯';
                 avatar.className = "w-20 h-20 rounded-full flex items-center justify-center text-4xl border border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-neon-emerald";
-                title.innerText = "Word Solved!";
+                title.innerText = t("t_word_solved");
                 title.className = "text-2xl font-bold font-display text-emerald-400";
-                desc.innerText = `${guesserName} successfully uncovered the secret word and gained (+1) point.`;
+                desc.innerText = t("t_word_solved_desc", {name: guesserName});
             } else if (data.turnOutcome === 'failed') {
                 avatar.innerHTML = '☠️';
                 avatar.className = "w-20 h-20 rounded-full flex items-center justify-center text-4xl border border-rose-500 bg-rose-500/10 text-rose-400 shadow-neon-rose";
-                title.innerText = "Guess Failed!";
+                title.innerText = t("t_guess_failed");
                 title.className = "text-2xl font-bold font-display text-rose-400";
-                desc.innerText = `${guesserName} ran out of chances! ${setterName} wins this round and gets (+1) point.`;
+                desc.innerText = t("t_guess_failed_desc", {name: guesserName, setter: setterName});
             }
 
             const userAcked = (localPlayerRole === 'player1') ? data.player1.acknowledgedOutcome : (data.player2?.acknowledgedOutcome || false);
             if (userAcked) {
-                nextBtnText.innerText = "Ready, waiting for opponent...";
+                nextBtnText.innerText = t("t_ready_waiting");
                 nextBtnWaiting.classList.remove('hidden');
                 document.getElementById('btn-next-turn').className = "w-full py-3 bg-slate-800 text-slate-500 font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-2";
+                document.getElementById('btn-next-turn-icon').classList.add('hidden');
             } else {
-                nextBtnText.innerText = "Continue Duel";
+                nextBtnText.innerText = t("continue_duel");
                 nextBtnWaiting.classList.add('hidden');
                 document.getElementById('btn-next-turn').className = "w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-neon-blue";
+                document.getElementById('btn-next-turn-icon').classList.remove('hidden');
             }
         }
 
@@ -3373,13 +3128,12 @@
                 const freshSnap = await getDoc(docRef);
                 const freshData = freshSnap.data();
 
-                // FIX: Guard against double-advancement race conditions using direct round check
                 if (freshData.player1.acknowledgedOutcome && freshData.player2.acknowledgedOutcome && freshData.currentRound === data.currentRound) {
                     await advanceRound(freshData, docRef);
                 }
 
             } catch (error) {
-                showToast("Failed to confirm round continuation.", "error");
+                showToast(t("t_continue_err"), "error");
             }
         };
 
@@ -3388,15 +3142,14 @@
             const isP1Winner = p1.score >= targetScore;
             const winnerName = isP1Winner ? p1.name : p2.name;
 
-            banner.innerText = `👑 ${winnerName} is the Arena Champion!`;
-            document.getElementById('gameover-target-desc').innerText = `Reached the target (${targetScore} points) first and crowned champion.`;
+            banner.innerText = t('t_winner', {name: winnerName});
+            document.getElementById('gameover-target-desc').innerText = t('t_winner_desc', {target: targetScore});
 
             document.getElementById('gameover-p1-name').innerText = p1.name;
             document.getElementById('gameover-p1-score').innerText = p1.score;
             document.getElementById('gameover-p2-name').innerText = p2.name;
             document.getElementById('gameover-p2-score').innerText = p2.score;
 
-            // Record match result locally and to cloud profile
             if (localPlayerRole === 'player1') {
                 recordMatchResultLocally(isP1Winner, p2.name || 'Unknown Player', p1.score, p2.score);
             } else if (localPlayerRole === 'player2' && !data.isSinglePlayer) {
@@ -3430,9 +3183,9 @@
                 });
                 
                 isMatchResultRecordedLocally = false;
-                showToast("Match reset successfully.", "success");
+                showToast(t("t_match_reset"), "success");
             } catch (error) {
-                showToast("Failed to start new duel.", "error");
+                showToast(t("t_reset_fail"), "error");
             }
         };
 
@@ -3448,16 +3201,14 @@
         }
 
         window.onload = async function() {
-            // Wait for auth and profile load before updating UI to prevent "flickering" default profiles
             await authenticateUser();
 
             const parsed = parseHash();
             if (parsed.room && parsed.room.length === 5) {
                 document.getElementById('input-join-code').value = parsed.room;
-                showToast(`Room code auto-inserted: ${parsed.room}`, "info");
+                showToast(t("t_auto_code", {code: parsed.room}), "info");
             }
 
-            // FIX: Snappy Gameplay Keyboard listeners (Enter triggers submission instantly)
             const secretInput = document.getElementById('input-secret-word');
             if (secretInput) {
                 secretInput.addEventListener('keyup', (e) => {
