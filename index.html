@@ -399,8 +399,20 @@
                                 </div>
                                 <p class="text-xs text-slate-500">Only the first letter is revealed. Guess the English word!</p>
                                 
-                                <!-- AI Hint Container -->
-                                <div id="ai-hint-container" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-xl hidden text-sm text-indigo-300 italic font-medium shadow-inner">
+                                <!-- AI Hint Container with Translation -->
+                                <div id="ai-hint-container" class="mt-4 p-3 bg-indigo-950/40 border border-indigo-900/50 rounded-xl hidden flex-col gap-2 shadow-inner">
+                                    <div id="ai-hint-text" class="text-sm text-indigo-300 italic font-medium text-left"></div>
+                                    <div class="flex justify-end items-center gap-2 border-t border-indigo-900/30 pt-2 mt-1">
+                                        <select id="hint-lang-select" class="bg-slate-900 border border-slate-700 rounded py-1 px-2 text-[11px] font-bold text-slate-300 focus:outline-none focus:border-indigo-500">
+                                            <option value="Arabic">Arabic 🇸🇦</option>
+                                            <option value="Spanish">Spanish 🇪🇸</option>
+                                            <option value="French">French 🇫🇷</option>
+                                            <option value="German">German 🇩🇪</option>
+                                        </select>
+                                        <button onclick="handleTranslateHint()" id="btn-translate-hint" class="px-2.5 py-1 bg-indigo-900/50 hover:bg-indigo-800 text-indigo-200 rounded text-[11px] font-bold transition-all flex items-center gap-1.5">
+                                            <i class="fa-solid fa-language"></i> Translate
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -544,7 +556,8 @@
     <!-- Firebase & Game Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // Added Explicit setPersistence and browserLocalPersistence imports
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Variables
@@ -583,8 +596,9 @@
         let lastLoggedTimerValue = 15;
         let isLocalTimeoutUpdating = false;
         let isMatchResultRecordedLocally = false;
-        let activeTimerStart = null; // Track current active timer source
-        let localTimeLeft = 15; // Track local relative remaining seconds
+        let activeTimerStart = null; 
+        let localTimeLeft = 15; 
+        let currentTranslatedHint = null; // Store translation across timer ticks
 
         // Bot Variables
         window.botGuessTimer = null;
@@ -599,7 +613,7 @@
             history: []
         };
 
-        const availableAvatars = ["👤", "🦊", "🦁", "🐼", "🦅", "🐉", "🦄", "🐺", "🐯", "🦉", "🐙", "👻", "🤖", "👽", "🤠"];
+        const availableAvatars = ["👤", "🦊", "🦁", "🐼","🦝","🦅", "🐉", "🦄", "🐺", "🐯", "🦉", "🐙", "👻", "🤖", "👽", "🤠","🥷", "🧑‍🚀", "🧙‍♂️", "🧛‍♂️", "🧟","🐸","🐧", "🦚", "🐬", "🦈", "🧚", "🧜‍♂️", "🧞‍♂️", "🧟‍♂️", "🧙‍♀️" ];
 
         // Sound Effects System
         const soundEffects = {
@@ -915,8 +929,16 @@
         }
 
         async function authenticateUser() {
+            // ENFORCEMENT: Try to force browser to remember the session despite iframe limitations
+            try {
+                await setPersistence(auth, browserLocalPersistence);
+            } catch (err) {
+                console.warn("Could not explicitly set local persistence (may be blocked by browser):", err);
+            }
+
             // Wait for Firebase to fully retrieve any existing session from IndexedDB
             let user = await waitForAuthInit();
+            let isNewAnonymousLogin = false;
 
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 try {
@@ -931,6 +953,7 @@
                 try {
                     const userCredential = await signInAnonymously(auth);
                     user = userCredential.user;
+                    isNewAnonymousLogin = true;
                 } catch (err) {
                     showToast("Failed secure server connection. Try again.", "error");
                     return;
@@ -939,6 +962,13 @@
 
             currentUserId = user.uid;
             await loadProfile();
+
+            // Reminder feature if we know the user session just got wiped by the browser sandbox
+            if (isNewAnonymousLogin && userProfile.stats.total === 0) {
+                setTimeout(() => {
+                     showToast("Tip: Use the Backup & Restore feature in your Profile to prevent lost stats!", "info");
+                }, 2500);
+            }
 
             // Track any subsequent auth state changes (e.g., token expiration)
             onAuthStateChanged(auth, async (newUser) => {
@@ -968,6 +998,7 @@
             const generatedCode = generateId(5);
             currentGameId = generatedCode;
             isMatchResultRecordedLocally = false;
+            currentTranslatedHint = null;
 
             const initialGameDoc = {
                 id: generatedCode,
@@ -1029,6 +1060,7 @@
             const generatedCode = generateId(5);
             currentGameId = generatedCode;
             isMatchResultRecordedLocally = false;
+            currentTranslatedHint = null;
 
             const initialGameDoc = {
                 id: generatedCode,
@@ -1088,6 +1120,7 @@
 
             currentGameId = enteredCode;
             isMatchResultRecordedLocally = false;
+            currentTranslatedHint = null;
 
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'games', enteredCode);
@@ -1191,6 +1224,7 @@
             gameDataState = null;
             localPlayerRole = null;
             isMatchResultRecordedLocally = false;
+            currentTranslatedHint = null;
             window.location.hash = "";
             
             document.getElementById('screen-welcome').classList.remove('hidden');
@@ -1284,12 +1318,22 @@
                     renderHearts('display-guesser-hearts', data.chancesLeft);
 
                     const hintContainer = document.getElementById('ai-hint-container');
+                    const hintText = document.getElementById('ai-hint-text');
+                    
                     if (data.geminiHint) {
-                        hintContainer.innerText = `💡 Hint: ${data.geminiHint}`;
+                        // Persist translation if it matches the current round's hint
+                        if (currentTranslatedHint && currentTranslatedHint.original === data.geminiHint) {
+                            hintText.innerHTML = `💡 Hint: ${data.geminiHint}<br><span class="text-amber-400/90 mt-1 block font-bold">🌍 ${currentTranslatedHint.lang}: ${currentTranslatedHint.text}</span>`;
+                        } else {
+                            hintText.innerHTML = `💡 Hint: ${data.geminiHint}`;
+                        }
+                        
                         hintContainer.classList.remove('hidden');
+                        hintContainer.classList.add('flex');
                     } else {
                         hintContainer.classList.add('hidden');
-                        hintContainer.innerText = '';
+                        hintContainer.classList.remove('flex');
+                        hintText.innerHTML = '';
                     }
                 }
 
@@ -2480,6 +2524,38 @@
                 showToast("Error submitting guess.", "error");
             } finally {
                 btn.innerHTML = originalBtnHTML;
+                btn.disabled = false;
+            }
+        };
+
+        window.handleTranslateHint = async function() {
+            if (!gameDataState || !gameDataState.geminiHint) return;
+            const targetLang = document.getElementById('hint-lang-select').value;
+            const originalHint = gameDataState.geminiHint;
+            
+            const btn = document.getElementById('btn-translate-hint');
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: `Translate the following hint to ${targetLang}. Output ONLY the translated text, no quotation marks, no extra explanation: "${originalHint}"` }] }]
+                };
+                const result = await fetchGeminiWithBackoff(payload);
+                const translation = result.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                
+                if (translation) {
+                    currentTranslatedHint = { lang: targetLang, text: translation, original: originalHint };
+                    document.getElementById('ai-hint-text').innerHTML = `💡 Hint: ${originalHint}<br><span class="text-amber-400/90 mt-1 block font-bold">🌍 ${targetLang}: ${translation}</span>`;
+                    showToast("Hint translated successfully!", "success");
+                } else {
+                    throw new Error("Empty translation");
+                }
+            } catch(err) {
+                showToast("Failed to translate hint.", "error");
+            } finally {
+                btn.innerHTML = originalBtnHtml;
                 btn.disabled = false;
             }
         };
