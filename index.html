@@ -928,14 +928,14 @@
         }
 
         async function authenticateUser() {
-            // ENFORCEMENT: Try to force browser to remember the session despite iframe limitations
+            // محاولة إجبار المتصفح على تذكر الجلسة
             try {
                 await setPersistence(auth, browserLocalPersistence);
             } catch (err) {
                 console.warn("Could not explicitly set local persistence (may be blocked by browser):", err);
             }
 
-            // Wait for Firebase to fully retrieve any existing session from IndexedDB
+            // انتظار فايربيس للتحقق من الجلسات القديمة
             let user = await waitForAuthInit();
             let isNewAnonymousLogin = false;
 
@@ -959,20 +959,39 @@
                 }
             }
 
-            currentUserId = user.uid;
+            // --- التعديل الرئيسي لمنع مسح الحساب عند التحديث ---
+            // نتحقق مما إذا كان لدينا معرّف مستخدم (UID) محفوظ في التخزين المحلي للمتصفح
+            const savedUid = localStorage.getItem('word_duel_local_uid');
+
+            if (savedUid) {
+                // لدينا لاعب عائد! نستخدم الـ ID القديم الخاص به حتى لو قام فايربيس بعمل جلسة جديدة
+                currentUserId = savedUid;
+                isNewAnonymousLogin = false; // لم يعد لاعباً جديداً
+            } else {
+                // هذا لاعب جديد كلياً. نستخدم الـ UID الجديد ونحفظه في المتصفح للمرات القادمة
+                currentUserId = user.uid;
+                try {
+                    localStorage.setItem('word_duel_local_uid', currentUserId);
+                } catch(e) {
+                    console.warn("Local storage is disabled or unavailable");
+                }
+            }
+            // --------------------------------------------------
+
             await loadProfile();
 
-            // Reminder feature if we know the user session just got wiped by the browser sandbox
+            // إشعار للمستخدمين الجدد بأهمية حفظ بياناتهم
             if (isNewAnonymousLogin && userProfile.stats.total === 0) {
                 setTimeout(() => {
                      showToast("Tip: Use the Backup & Restore feature in your Profile to prevent lost stats!", "info");
                 }, 2500);
             }
 
-            // Track any subsequent auth state changes (e.g., token expiration)
+            // تتبع أي تغييرات لاحقة في المصادقة (مع التأكد من عدم الكتابة فوق معرّفنا المحفوظ)
             onAuthStateChanged(auth, async (newUser) => {
-                if (newUser && newUser.uid !== currentUserId) {
+                if (newUser && !localStorage.getItem('word_duel_local_uid')) {
                     currentUserId = newUser.uid;
+                    try { localStorage.setItem('word_duel_local_uid', currentUserId); } catch(e){}
                     await loadProfile();
                 }
             });
@@ -1450,7 +1469,7 @@
 			"NEW": "not of long duration; having just come into being",
 			"NOW": "in the historical present; at this point in the narration",
 			"COME": "move toward, travel toward something or somebody",
-			"HEAR": "perceive (sound) via the auditory sense",
+			"HEAR": "perceive (sound) via auditory sense",
 			"LOOK": "perceive with attention; direct one's gaze towards",
 			"THINK": "judge or regard; look upon; judge",
 			"PROVIDE": "give something useful or necessary to",
