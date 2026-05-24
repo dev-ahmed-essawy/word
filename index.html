@@ -129,7 +129,7 @@
                     <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 max-w-xl mx-auto">
                         <div class="text-center md:text-start">
                             <p class="text-xs text-slate-500">Playing as:</p>
-                            <p id="welcome-name-display" class="font-bold text-indigo-400 text-lg">Player ...</p>
+                            <p id="welcome-name-display" class="font-bold text-indigo-400 text-lg">Loading...</p>
                         </div>
                         <div class="h-8 w-px bg-slate-800 hidden md:block"></div>
                         <div class="flex items-center gap-3 w-full md:w-auto">
@@ -743,6 +743,8 @@
                 updateProfileUI();
             } catch (e) {
                 console.error("Error loading profile", e);
+                showToast("Could not load cloud profile. Using local defaults.", "warning");
+                updateProfileUI();
             }
         }
 
@@ -903,43 +905,48 @@
 
         // --- Authentication & Start Game ---
 
-        async function authenticateUser() {
-            // FIX: Wait for Firebase to read IndexedDB to retrieve any existing session
-            if (typeof auth.authStateReady === 'function') {
-                await auth.authStateReady();
-            } else {
-                await new Promise(resolve => {
-                    const unsub = onAuthStateChanged(auth, user => {
-                        unsub();
-                        resolve();
-                    });
+        function waitForAuthInit() {
+            return new Promise((resolve) => {
+                const unsubscribe = onAuthStateChanged(auth, (user) => {
+                    unsubscribe();
+                    resolve(user);
                 });
-            }
+            });
+        }
 
-            if (auth.currentUser) {
-                currentUserId = auth.currentUser.uid;
-                await loadProfile();
-                return;
-            }
+        async function authenticateUser() {
+            // Wait for Firebase to fully retrieve any existing session from IndexedDB
+            let user = await waitForAuthInit();
 
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 try {
                     const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
-                    currentUserId = userCredential.user.uid;
-                    await loadProfile();
-                    return;
+                    user = userCredential.user;
                 } catch (err) {
-                    console.warn("Failed custom token auth, falling back to anonymous:", err);
+                    console.warn("Failed custom token auth, falling back:", err);
                 }
             }
 
-            try {
-                const userCredential = await signInAnonymously(auth);
-                currentUserId = userCredential.user.uid;
-                await loadProfile();
-            } catch (err) {
-                showToast("Failed secure server connection. Try again.", "error");
+            if (!user) {
+                try {
+                    const userCredential = await signInAnonymously(auth);
+                    user = userCredential.user;
+                } catch (err) {
+                    showToast("Failed secure server connection. Try again.", "error");
+                    return;
+                }
             }
+
+            currentUserId = user.uid;
+            await loadProfile();
+
+            // Track any subsequent auth state changes (e.g., token expiration)
+            onAuthStateChanged(auth, async (newUser) => {
+                if (newUser && newUser.uid !== currentUserId) {
+                    currentUserId = newUser.uid;
+                    await loadProfile();
+                }
+            });
         }
 
         function getTargetScore() {
@@ -2613,8 +2620,7 @@
         }
 
         window.onload = async function() {
-            updateProfileUI();
-
+            // Wait for auth and profile load before updating UI to prevent "flickering" default profiles
             await authenticateUser();
 
             const parsed = parseHash();
